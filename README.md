@@ -1,0 +1,4 @@
+GLSlayer
+========
+
+OpenGL Sanity Layer is an object-oriented 3D graphics API on top of OpenGL written in C++. It is designed not just to provide an encapsulation of OpenGL objects, but to provide a cleaner and more streamlined interface similar to Direct3D and hide some of OpenGL's weak spots such as bind-to-edit semantics, multiple stage object creation, unavailability of platform independent initialization and loading of extensions to expose features. With GLSlayer it is easy to create a rendering context just by filling a structure and calling a function. All extensions needed to expose features for requested OpenGL version are loaded automatically. The code needed to create, setup and use objects is reduced and made intuitive. It supports OpenGL versions from 3.3 to 4.3, only forward compatible contexts.
