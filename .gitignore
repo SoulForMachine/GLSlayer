@@ -11,3 +11,12 @@
 *.lai
 *.la
 *.a
+
+# VS files
+*.user
+*.sdf
+*.suo
+
+**/Debug*/
+**/Release*/
+**/x64*/

@@ -1,0 +1,39 @@
+#ifndef _SAMPLES_COMMON_SAMPLE_FRAMEWORK_LINUX_H_
+#define _SAMPLES_COMMON_SAMPLE_FRAMEWORK_LINUX_H_
+
+#include <string>
+#include <GL/glx.h>
+
+
+class ISample;
+
+
+class SampleFramework
+{
+public:
+    SampleFramework(const wchar_t* name, int wndWidth, int wndHeight);
+    ~SampleFramework();
+    int Run(ISample* sample);
+
+private:
+    void OnKeyPress(XKeyEvent* event);
+    void OnKeyRelease(XKeyEvent* event);
+    void OnMotionNotify(XMotionEvent* event);
+    void OnButtonPress(XButtonEvent* event);
+    void OnButtonRelease(XButtonEvent* event);
+    void ProcessEvent(XEvent* event);
+
+    Display* _display;
+    Atom _wmDeleteMessage;
+    int _wndWidth;
+    int _wndHeight;
+    std::wstring _appName;
+    int _prevMouseX, _prevMouseY;
+    bool _lbtnDown, _rbtnDown, _mbtnDown;
+    ISample* _sample;
+    bool _quit;
+};
+
+
+#endif // _SAMPLES_COMMON_SAMPLE_FRAMEWORK_LINUX_H_
+
