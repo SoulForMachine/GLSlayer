@@ -9,17 +9,11 @@ layout(binding = 0) uniform VsConstants
 	mat4 worldMatrix;
 };
 
-in VsInput
-{
-	layout(location = 0) vec3 inVertPosition;
-	layout(location = 1) vec3 inVertNormal;
-};
+layout(location = 0) in vec3 inVertPosition;
+layout(location = 1) in vec3 inVertNormal;
 
-out VsOutput
-{
-	layout(location = 0) vec3 outWorldPosition;
-	layout(location = 1) vec3 outWorldNormal;
-};
+layout(location = 0) out vec3 outWorldPosition;
+layout(location = 1) out vec3 outWorldNormal;
 
 out gl_PerVertex
 {

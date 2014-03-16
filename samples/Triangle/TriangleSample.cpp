@@ -72,7 +72,7 @@ bool TriangleSample::Init(Display* display, Window window, const gls::Framebuffe
 	string source = LoadShaderSource("Shaders/Triangle/Simple.vert");
 	if(source.empty())
 	{
-		_console.PrintLn("Failed to load vertex shader from file.");
+		_console.PrintLn("Failed to load vertex shader from file: Shaders/Triangle/Simple.vert");
 		Deinit();
 		return false;
 	}
@@ -80,7 +80,7 @@ bool TriangleSample::Init(Display* display, Window window, const gls::Framebuffe
 	_vertexShader = _renderContext->CreateVertexShader(1, vs_sources, success);
 	if(!success)
 	{
-		_console.PrintLn("Failed to compile vertex shader.\n%s", _vertexShader->GetInfoLog());
+		_console.PrintLn("Failed to compile vertex shader: Shaders/Triangle/Simple.vert\n%s", _vertexShader->GetInfoLog());
 		Deinit();
 		return false;
 	}
@@ -88,7 +88,7 @@ bool TriangleSample::Init(Display* display, Window window, const gls::Framebuffe
 	source = LoadShaderSource("Shaders/Triangle/Simple.frag");
 	if(source.empty())
 	{
-		_console.PrintLn("Failed to load fragment shader from file.");
+		_console.PrintLn("Failed to load fragment shader from file: Shaders/Triangle/Simple.frag");
 		Deinit();
 		return false;
 	}
@@ -96,7 +96,7 @@ bool TriangleSample::Init(Display* display, Window window, const gls::Framebuffe
 	_fragmentShader = _renderContext->CreateFragmentShader(1, fs_sources, success);
 	if(!success)
 	{
-		_console.PrintLn("Failed to compile fragment shader.\n%s", _fragmentShader->GetInfoLog());
+		_console.PrintLn("Failed to compile fragment shader: Shaders/Triangle/Simple.frag\n%s", _fragmentShader->GetInfoLog());
 		Deinit();
 		return false;
 	}

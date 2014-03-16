@@ -8,16 +8,10 @@ layout(binding = 0) uniform VsConstants
 	mat4 wvpMatrix;
 };
 
-in VsInput
-{
-	layout(location = 0) vec3 inVertPosition;
-	layout(location = 1) vec4 inVertColor;
-};
+layout(location = 0) in vec3 inVertPosition;
+layout(location = 1) in vec4 inVertColor;
 
-out VsOutput
-{
-	layout(location = 0) vec4 outColor;
-};
+layout(location = 0) out vec4 outColor;
 
 out gl_PerVertex
 {

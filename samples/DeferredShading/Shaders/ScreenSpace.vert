@@ -3,16 +3,10 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
 
-in VsInput
-{
-	layout(location = 0) vec2 inVertPosition; // screen-space position
-	layout(location = 1) vec2 inVertUV;
-};
+layout(location = 0) in vec2 inVertPosition; // screen-space position
+layout(location = 1) in vec2 inVertUV;
 
-out VsOutput
-{
-	layout(location = 0) vec2 outUV;
-};
+layout(location = 0) out vec2 outUV;
 
 layout(binding = 0) uniform VsConstants
 {

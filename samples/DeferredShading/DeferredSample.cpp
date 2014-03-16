@@ -119,13 +119,18 @@ DeferredSample::DeferredSample()
 	// create shaders
 
 	string source = LoadShaderSource("Shaders/DeferredShading/GBuffer.vert");
+	if(source.empty())
+	{
+		_console.PrintLn("Failed to load vertex shader from file: Shaders/DeferredShading/GBuffer.vert");
+		Deinit();
+		return false;
+	}
 	const char* sources[] = { source.c_str() };
 	bool success;
 	_vertShaderGbuffer = _renderContext->CreateVertexShader(1, sources, success);
 	if(_vertShaderGbuffer->GetInfoLogLength() > 1)
 	{
-		_console.PrintLn("Shaders/DeferredShading/GBuffer.vert");
-		_console.PrintLn(_vertShaderGbuffer->GetInfoLog());
+		_console.PrintLn("Failed to compile vertex shader: Shaders/DeferredShading/GBuffer.vert\n%s", _vertShaderGbuffer->GetInfoLog());
 	}
 
 	if(!success)
@@ -135,12 +140,17 @@ DeferredSample::DeferredSample()
 	}
 
 	source = LoadShaderSource("Shaders/DeferredShading/GBuffer.frag");
+	if(source.empty())
+	{
+		_console.PrintLn("Failed to load fragment shader from file: Shaders/DeferredShading/GBuffer.frag");
+		Deinit();
+		return false;
+	}
 	sources[0] = source.c_str();
 	_fragShaderGBuffer = _renderContext->CreateFragmentShader(1, sources, success);
 	if(_fragShaderGBuffer->GetInfoLogLength() > 1)
 	{
-		_console.PrintLn("Shaders/DeferredShading/GBuffer.frag");
-		_console.PrintLn(_fragShaderGBuffer->GetInfoLog());
+		_console.PrintLn("Failed to compile fragment shader: Shaders/DeferredShading/GBuffer.frag\n%s", _fragShaderGBuffer->GetInfoLog());
 	}
 
 	if(!success)
@@ -150,12 +160,17 @@ DeferredSample::DeferredSample()
 	}
 
 	source = LoadShaderSource("Shaders/DeferredShading/ScreenSpace.vert");
+	if(source.empty())
+	{
+		_console.PrintLn("Failed to load vertex shader from file: Shaders/DeferredShading/ScreenSpace.vert");
+		Deinit();
+		return false;
+	}
 	sources[0] = source.c_str();
 	_vertShaderScreenSpace = _renderContext->CreateVertexShader(1, sources, success);
 	if(_vertShaderScreenSpace->GetInfoLogLength() > 1)
 	{
-		_console.PrintLn("Shaders/DeferredShading/ScreenSpace.vert");
-		_console.PrintLn(_vertShaderScreenSpace->GetInfoLog());
+		_console.PrintLn("Failed to compile vertex shader: Shaders/DeferredShading/ScreenSpace.vert\n%s", _vertShaderScreenSpace->GetInfoLog());
 	}
 
 	if(!success)
@@ -165,12 +180,17 @@ DeferredSample::DeferredSample()
 	}
 
 	source = LoadShaderSource("Shaders/DeferredShading/SimpleTexture.frag");
+	if(source.empty())
+	{
+		_console.PrintLn("Failed to load fragment shader from file: Shaders/DeferredShading/SimpleTexture.frag");
+		Deinit();
+		return false;
+	}
 	sources[0] = source.c_str();
 	_fragShaderSimpleTex = _renderContext->CreateFragmentShader(1, sources, success);
 	if(_fragShaderSimpleTex->GetInfoLogLength() > 1)
 	{
-		_console.PrintLn("Shaders/DeferredShading/SimpleTexture.frag");
-		_console.PrintLn(_fragShaderSimpleTex->GetInfoLog());
+		_console.PrintLn("Failed to compile fragment shader: Shaders/DeferredShading/SimpleTexture.frag\n%s", _fragShaderSimpleTex->GetInfoLog());
 	}
 
 	if(!success)
@@ -182,12 +202,17 @@ DeferredSample::DeferredSample()
 	// lighting sphere shaders
 
 	source = LoadShaderSource("Shaders/DeferredShading/Lighting.vert");
+	if(source.empty())
+	{
+		_console.PrintLn("Failed to load vertex shader from file: Shaders/DeferredShading/Lighting.vert");
+		Deinit();
+		return false;
+	}
 	sources[0] = source.c_str();
 	_vertShaderLight = _renderContext->CreateVertexShader(1, sources, success);
 	if(_vertShaderLight->GetInfoLogLength() > 1)
 	{
-		_console.PrintLn("Shaders/DeferredShading/Lighting.vert");
-		_console.PrintLn(_vertShaderLight->GetInfoLog());
+		_console.PrintLn("Failed to compile vertex shader: Shaders/DeferredShading/Lighting.vert\n%s", _vertShaderLight->GetInfoLog());
 	}
 
 	if(!success)
@@ -197,12 +222,17 @@ DeferredSample::DeferredSample()
 	}
 
 	source = LoadShaderSource("Shaders/DeferredShading/Lighting.frag");
+	if(source.empty())
+	{
+		_console.PrintLn("Failed to load fragment shader from file: Shaders/DeferredShading/Lighting.frag");
+		Deinit();
+		return false;
+	}
 	sources[0] = source.c_str();
 	_fragShaderLight= _renderContext->CreateFragmentShader(1, sources, success);
 	if(_fragShaderLight->GetInfoLogLength() > 1)
 	{
-		_console.PrintLn("Shaders/DeferredShading/Lighting.frag");
-		_console.PrintLn(_fragShaderLight->GetInfoLog());
+		_console.PrintLn("Failed to compile fragment shader: Shaders/DeferredShading/Lighting.frag\n%s", _fragShaderLight->GetInfoLog());
 	}
 
 	if(!success)

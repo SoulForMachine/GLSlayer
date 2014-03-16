@@ -65,10 +65,8 @@
     <CustomBuild Include="..\..\..\samples\DeferredShading\Shaders\SimpleTexture.frag">
       <Filter>Shaders</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="..\..\..\samples\Common\Models\skull.obj">
+    <CustomBuild Include="..\..\..\samples\Common\Models\skull.obj">
       <Filter>Models</Filter>
-    </Object>
+    </CustomBuild>
   </ItemGroup>
 </Project>
