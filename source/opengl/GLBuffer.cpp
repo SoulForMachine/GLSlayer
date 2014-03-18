@@ -119,16 +119,6 @@ BufferType GLBuffer::GetBufferType()
 	return _bufferType;
 }
 
-void GLBuffer::BufferData(size_t size, const void* data, BufferUsage usage)
-{
-	assert(_id);
-	assert(!_mapped);
-	STATE_MACHINE_HACK
-	glBufferData(_target, size, data, GetGLEnum(usage));
-	_size = size;
-	_usage = usage;
-}
-
 void GLBuffer::BufferSubData(size_t offset, size_t size, const void* data)
 {
 	assert(_id);
@@ -159,7 +149,7 @@ void* GLBuffer::Map(BufferAccess access, bool discard)
 	STATE_MACHINE_HACK
 	if(discard)
 	{
-		BufferData(_size, 0, _usage);
+		glBufferData(_target, _size, 0, GetGLEnum(_usage));	// or glInvalidateBufferData
 		OPENGL_ERROR_CHECK
 	}
 	void* ptr = glMapBuffer(_target, GetGLEnum(access));

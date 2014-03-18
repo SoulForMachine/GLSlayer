@@ -14,7 +14,6 @@ namespace gls
 		virtual ~IBuffer() {}
 
 		virtual BufferType GetBufferType() = 0;
-		virtual void BufferData(size_t size, const void* data, BufferUsage usage) = 0;
 		virtual void BufferSubData(size_t offset, size_t size, const void* data) = 0;
 		virtual void GetBufferSubData(size_t offset, size_t size, void* data) = 0;
 		virtual void* Map(BufferAccess access, bool discard) = 0;

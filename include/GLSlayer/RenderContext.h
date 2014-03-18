@@ -424,51 +424,42 @@ namespace gls
 		virtual ISamplerState* CreateSamplerState(const SamplerStateDesc& descriptor) = 0;
 		virtual void DestroySamplerState(ISamplerState* samp_state) = 0;
 
-		virtual ITexture1D* CreateTexture1D() = 0;
 		virtual ITexture1D* CreateTexture1D(size_t levels, PixelFormat internal_format, int width) = 0;
 		virtual ITexture1D* CreateTexture1DView(ITexture1D* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 		virtual ITexture1D* CreateTexture1DView(ITexture1DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint layer) = 0;
 
-		virtual ITexture1DArray* CreateTexture1DArray() = 0;
 		virtual ITexture1DArray* CreateTexture1DArray(size_t levels, PixelFormat internal_format, int width, int height) = 0;
 		virtual ITexture1DArray* CreateTexture1DArrayView(ITexture1D* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 		virtual ITexture1DArray* CreateTexture1DArrayView(ITexture1DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 
-		virtual ITexture2D* CreateTexture2D() = 0;
 		virtual ITexture2D* CreateTexture2D(size_t levels, PixelFormat internal_format, int width, int height) = 0;
 		virtual ITexture2D* CreateTexture2DView(ITexture2D* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 		virtual ITexture2D* CreateTexture2DView(ITexture2DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint layer) = 0;
 		virtual ITexture2D* CreateTexture2DView(ITextureCube* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint layer) = 0;
 		virtual ITexture2D* CreateTexture2DView(ITextureCubeArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint layer) = 0;
 
-		virtual ITexture2DArray* CreateTexture2DArray() = 0;
 		virtual ITexture2DArray* CreateTexture2DArray(size_t levels, PixelFormat internal_format, int width, int height, int depth) = 0;
 		virtual ITexture2DArray* CreateTexture2DArrayView(ITexture2D* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 		virtual ITexture2DArray* CreateTexture2DArrayView(ITexture2DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 		virtual ITexture2DArray* CreateTexture2DArrayView(ITextureCube* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 		virtual ITexture2DArray* CreateTexture2DArrayView(ITextureCubeArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 
-		virtual ITexture2DMultisample* CreateTexture2DMultisample() = 0;
 		virtual ITexture2DMultisample* CreateTexture2DMultisample(int samples, PixelFormat internal_format, int width, int height, bool fixed_sample_locations) = 0;
 		virtual ITexture2DMultisample* CreateTexture2DMultisampleView(ITexture2DMultisample* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 		virtual ITexture2DMultisample* CreateTexture2DMultisampleView(ITexture2DMultisampleArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 
-		virtual ITexture2DMultisampleArray* CreateTexture2DMultisampleArray() = 0;
 		virtual ITexture2DMultisampleArray* CreateTexture2DMultisampleArray(int samples, PixelFormat internal_format, int width, int height, int depth, bool fixed_sample_locations) = 0;
 		virtual ITexture2DMultisampleArray* CreateTexture2DMultisampleArrayView(ITexture2DMultisample* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 		virtual ITexture2DMultisampleArray* CreateTexture2DMultisampleArrayView(ITexture2DMultisampleArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 
-		virtual ITexture3D* CreateTexture3D() = 0;
 		virtual ITexture3D* CreateTexture3D(size_t levels, PixelFormat internal_format, int width, int height, int depth) = 0;
 		virtual ITexture3D* CreateTexture3DView(ITexture3D* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 
-		virtual ITextureCube* CreateTextureCube() = 0;
 		virtual ITextureCube* CreateTextureCube(size_t levels, PixelFormat internal_format, int width) = 0;
 		virtual ITextureCube* CreateTextureCubeView(ITextureCube* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 		virtual ITextureCube* CreateTextureCubeView(ITextureCubeArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 		virtual ITextureCube* CreateTextureCubeView(ITexture2DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 
-		virtual ITextureCubeArray* CreateTextureCubeArray() = 0;
 		virtual ITextureCubeArray* CreateTextureCubeArray(size_t levels, PixelFormat internal_format, int width, int depth) = 0;
 		virtual ITextureCubeArray* CreateTextureCubeArrayView(ITextureCube* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 		virtual ITextureCubeArray* CreateTextureCubeArrayView(ITextureCubeArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
@@ -476,7 +467,6 @@ namespace gls
 
 		virtual ITextureBuffer* CreateTextureBuffer() = 0;
 
-		virtual ITextureRectangle* CreateTextureRectangle() = 0;
 		virtual ITextureRectangle* CreateTextureRectangle(size_t levels, PixelFormat internal_format, int width, int height) = 0;
 		virtual ITextureRectangle* CreateTextureRectangleView(ITextureRectangle* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 

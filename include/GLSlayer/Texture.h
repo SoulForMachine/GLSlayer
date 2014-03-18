@@ -35,9 +35,6 @@ namespace gls
 	class ITexture1D: public ITexture
 	{
 	public:
-		virtual void TexImage(int level, PixelFormat internal_format, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
-		virtual void TexImage(int level, PixelFormat internal_format, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
-		virtual void CompressedTexImage(int level, PixelFormat internal_format, int width, size_t size, void* pixels) = 0;
 		virtual void TexSubImage(int level, int xoffset, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
 		virtual void TexSubImage(int level, int xoffset, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
 		virtual void CompressedTexSubImage(int level, int xoffset, int width, ImageFormat format, size_t size, void* pixels) = 0;
@@ -56,9 +53,6 @@ namespace gls
 	class ITexture2D: public ITexture
 	{
 	public:
-		virtual void TexImage(int level, PixelFormat internal_format, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
-		virtual void TexImage(int level, PixelFormat internal_format, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
-		virtual void CompressedTexImage(int level, PixelFormat internal_format, int width, int height, size_t size, void* pixels) = 0;
 		virtual void TexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
 		virtual void TexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
 		virtual void CompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, size_t size, void* pixels) = 0;
@@ -78,7 +72,6 @@ namespace gls
 	class ITexture2DMultisample : public ITexture
 	{
 	public:
-		virtual void TexImage(int samples, PixelFormat internal_format, int width, int height, bool fixed_sample_locations) = 0;
 		virtual void InvalidateTexImage() = 0;
 		virtual void InvalidateTexSubImage(int xoffset, int yoffset, int width, int height) = 0;
 
@@ -89,9 +82,6 @@ namespace gls
 	class ITexture3D: public ITexture
 	{
 	public:
-		virtual void TexImage(int level, PixelFormat internal_format, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
-		virtual void TexImage(int level, PixelFormat internal_format, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
-		virtual void CompressedTexImage(int level, PixelFormat internal_format, int width, int height, int depth, size_t size, void* pixels) = 0;
 		virtual void TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
 		virtual void TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
 		virtual void CompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, size_t size, void* pixels) = 0;
@@ -111,11 +101,6 @@ namespace gls
 	class ITextureCube: public ITexture
 	{
 	public:
-		virtual void TexImage(int level, PixelFormat internal_format, int width, ImageFormat format, DataType type, const PixelStore* const* pixel_store, void** pixels) = 0;
-		virtual void TexImage(CubeFace face, int level, PixelFormat internal_format, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
-		virtual void TexImage(CubeFace face, int level, PixelFormat internal_format, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
-		virtual void CompressedTexImage(int level, PixelFormat internal_format, int width, size_t size, void** pixels) = 0;
-		virtual void CompressedTexImage(CubeFace face, int level, PixelFormat internal_format, int width, size_t size, void* pixels) = 0;
 		virtual void TexSubImage(CubeFace face, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
 		virtual void TexSubImage(CubeFace face, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
 		virtual void CompressedTexSubImage(CubeFace face, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, size_t size, void* pixels) = 0;
@@ -134,9 +119,6 @@ namespace gls
 	class ITexture1DArray: public ITexture
 	{
 	public:
-		virtual void TexImage(int level, PixelFormat internal_format, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
-		virtual void TexImage(int level, PixelFormat internal_format, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
-		virtual void CompressedTexImage(int level, PixelFormat internal_format, int width, int height, size_t size, void* pixels) = 0;
 		virtual void TexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
 		virtual void TexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
 		virtual void CompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, size_t size, void* pixels) = 0;
@@ -156,9 +138,6 @@ namespace gls
 	class ITexture2DArray: public ITexture
 	{
 	public:
-		virtual void TexImage(int level, PixelFormat internal_format, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
-		virtual void TexImage(int level, PixelFormat internal_format, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
-		virtual void CompressedTexImage(int level, PixelFormat internal_format, int width, int height, int depth, size_t size, void* pixels) = 0;
 		virtual void TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
 		virtual void TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
 		virtual void CompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, size_t size, void* pixels) = 0;
@@ -178,7 +157,6 @@ namespace gls
 	class ITexture2DMultisampleArray : public ITexture
 	{
 	public:
-		virtual void TexImage(int samples, PixelFormat internal_format, int width, int height, int depth, bool fixed_sample_locations) = 0;
 		virtual void InvalidateTexImage() = 0;
 		virtual void InvalidateTexSubImage(int xoffset, int yoffset, int zoffset, int width, int height, int depth) = 0;
 
@@ -189,9 +167,6 @@ namespace gls
 	class ITextureCubeArray : public ITexture
 	{
 	public:
-		virtual void TexImage(int level, PixelFormat internal_format, int width, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
-		virtual void TexImage(int level, PixelFormat internal_format, int width, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
-		virtual void CompressedTexImage(int level, PixelFormat internal_format, int width, int depth, size_t size, void* pixels) = 0;
 		virtual void TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
 		virtual void TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
 		virtual void CompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, size_t size, void* pixels) = 0;
@@ -224,8 +199,6 @@ namespace gls
 	class ITextureRectangle: public ITexture
 	{
 	public:
-		virtual void TexImage(PixelFormat internal_format, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
-		virtual void TexImage(PixelFormat internal_format, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
 		virtual void TexSubImage(int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) = 0;
 		virtual void TexSubImage(int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
 		virtual void CopyTexImage(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, PixelFormat internal_format, int x, int y, int width, int height) = 0;

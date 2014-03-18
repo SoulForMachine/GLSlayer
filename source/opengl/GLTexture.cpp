@@ -253,44 +253,6 @@ bool GLTexture1D::CreateView(GLState* gl_state, GLuint orig_tex, PixelFormat int
 	return true;
 }
 
-void GLTexture1D::TexImage(int level, PixelFormat internal_format, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	__SetPixelUnpackState(_glState, pixel_store);
-	glTexImage1D(GL_TEXTURE_1D, level, GetGLEnum(internal_format), width, 0, GetGLEnum(format), GetGLEnum(type), pixels);
-	OPENGL_ERROR_CHECK
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-	}
-}
-
-void GLTexture1D::TexImage(int level, PixelFormat internal_format, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
-{
-	UNPACK_BUFFER_STATE_MACHINE_HACK
-
-	return TexImage(level, internal_format, width, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
-}
-
-void GLTexture1D::CompressedTexImage(int level, PixelFormat internal_format, int width, size_t size, void* pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	glCompressedTexImage1D(GL_TEXTURE_1D, level, GetGLEnum(internal_format), width, 0, (GLsizei)size, pixels);
-	OPENGL_ERROR_CHECK
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-	}
-}
-
 void GLTexture1D::TexSubImage(int level, int xoffset, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)
 {
 	assert(_id);
@@ -458,45 +420,6 @@ bool GLTexture2D::CreateView(GLState* gl_state, GLuint orig_tex, PixelFormat int
 	_glState->imageUnits[0].texture = _id;
 
 	return true;
-}
-
-void GLTexture2D::TexImage(int level, PixelFormat internal_format, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	__SetPixelUnpackState(_glState, pixel_store);
-	glTexImage2D(GL_TEXTURE_2D, level, GetGLEnum(internal_format), width, height, 0, GetGLEnum(format), GetGLEnum(type), pixels);
-	OPENGL_ERROR_CHECK
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-		_height = height;
-	}
-}
-
-void GLTexture2D::TexImage(int level, PixelFormat internal_format, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
-{
-	UNPACK_BUFFER_STATE_MACHINE_HACK
-	TexImage(level, internal_format, width, height, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
-}
-
-void GLTexture2D::CompressedTexImage(int level, PixelFormat internal_format, int width, int height, size_t size, void* pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	glCompressedTexImage2D(GL_TEXTURE_2D, level, GetGLEnum(internal_format), width, height, 0, (GLsizei)size, pixels);
-	OPENGL_ERROR_CHECK
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-		_height = height;
-	}
 }
 
 void GLTexture2D::TexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)
@@ -668,19 +591,6 @@ bool GLTexture2DMultisample::CreateView(GLState* gl_state, GLuint orig_tex, Pixe
 	return true;
 }
 
-void GLTexture2DMultisample::TexImage(int samples, PixelFormat internal_format, int width, int height, bool fixed_sample_locations)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GetGLEnum(internal_format), width, height, fixed_sample_locations);
-	OPENGL_ERROR_CHECK
-
-	_format = internal_format;
-	_width = width;
-	_height = height;
-}
-
 void GLTexture2DMultisample::InvalidateTexImage()
 {
 	assert(_id);
@@ -768,47 +678,6 @@ bool GLTexture3D::CreateView(GLState* gl_state, GLuint orig_tex, PixelFormat int
 	_glState->imageUnits[0].texture = _id;
 
 	return true;
-}
-
-void GLTexture3D::TexImage(int level, PixelFormat internal_format, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	__SetPixelUnpackState(_glState, pixel_store);
-	glTexImage3D(GL_TEXTURE_3D, level, GetGLEnum(internal_format), width, height, depth, 0, GetGLEnum(format), GetGLEnum(type), pixels);
-	OPENGL_ERROR_CHECK
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-		_height = height;
-		_depth = depth;
-	}
-}
-
-void GLTexture3D::TexImage(int level, PixelFormat internal_format, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
-{
-	UNPACK_BUFFER_STATE_MACHINE_HACK
-	TexImage(level, internal_format, width, height, depth, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
-}
-
-void GLTexture3D::CompressedTexImage(int level, PixelFormat internal_format, int width, int height, int depth, size_t size, void* pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	glCompressedTexImage3D(GL_TEXTURE_3D, level, GetGLEnum(internal_format), width, height, depth, 0, (GLsizei)size, pixels);
-	OPENGL_ERROR_CHECK
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-		_height = height;
-		_depth = depth;
-	}
 }
 	
 void GLTexture3D::TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)
@@ -960,80 +829,6 @@ bool GLTextureCube::CreateView(GLState* gl_state, GLuint orig_tex, PixelFormat i
 	_glState->imageUnits[0].texture = _id;
 
 	return true;
-}
-
-void GLTextureCube::TexImage(int level, PixelFormat internal_format, int width, ImageFormat format, DataType type, const PixelStore* const* pixel_store, void** pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	for(int i = 0; i < 6; ++i)
-	{
-		__SetPixelUnpackState(_glState, pixel_store? pixel_store[i]: 0);
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, level, GetGLEnum(internal_format), width, width, 0, GetGLEnum(format), GetGLEnum(type), pixels[i]);
-		OPENGL_ERROR_CHECK
-	}
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-	}
-}
-
-void GLTextureCube::TexImage(CubeFace face, int level, PixelFormat internal_format, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	__SetPixelUnpackState(_glState, pixel_store);
-	glTexImage2D(GetGLEnum(face), level, GetGLEnum(internal_format), width, width, 0, GetGLEnum(format), GetGLEnum(type), pixels);
-	OPENGL_ERROR_CHECK
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-	}
-}
-
-void GLTextureCube::TexImage(CubeFace face, int level, PixelFormat internal_format, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
-{
-	UNPACK_BUFFER_STATE_MACHINE_HACK
-	TexImage(face, level, internal_format, width, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
-}
-
-void GLTextureCube::CompressedTexImage(int level, PixelFormat internal_format, int width, size_t size, void** pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	for(int i = 0; i < 6; ++i)
-	{
-		glCompressedTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, level, GetGLEnum(internal_format), width, width, 0, (GLsizei)size, pixels[i]);
-		OPENGL_ERROR_CHECK
-	}
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-	}
-}
-
-void GLTextureCube::CompressedTexImage(CubeFace face, int level, PixelFormat internal_format, int width, size_t size, void* pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	glCompressedTexImage2D(GetGLEnum(face), level, GetGLEnum(internal_format), width, width, 0, (GLsizei)size, pixels);
-	OPENGL_ERROR_CHECK
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-	}
 }
 
 void GLTextureCube::TexSubImage(CubeFace face, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)
@@ -1202,45 +997,6 @@ bool GLTexture1DArray::CreateView(GLState* gl_state, GLuint orig_tex, PixelForma
 	_glState->imageUnits[0].texture = _id;
 
 	return true;
-}
-
-void GLTexture1DArray::TexImage(int level, PixelFormat internal_format, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	__SetPixelUnpackState(_glState, pixel_store);
-	glTexImage2D(GL_TEXTURE_1D_ARRAY, level, GetGLEnum(internal_format), width, height, 0, GetGLEnum(format), GetGLEnum(type), pixels);
-	OPENGL_ERROR_CHECK
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-		_height = height;
-	}
-}
-
-void GLTexture1DArray::TexImage(int level, PixelFormat internal_format, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
-{
-	UNPACK_BUFFER_STATE_MACHINE_HACK
-	TexImage(level, internal_format, width, height, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
-}
-
-void GLTexture1DArray::CompressedTexImage(int level, PixelFormat internal_format, int width, int height, size_t size, void* pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	glCompressedTexImage2D(GL_TEXTURE_1D_ARRAY, level, GetGLEnum(internal_format), width, height, 0, (GLsizei)size, pixels);
-	OPENGL_ERROR_CHECK
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-		_height = height;
-	}
 }
 
 void GLTexture1DArray::TexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)
@@ -1415,47 +1171,6 @@ bool GLTexture2DArray::CreateView(GLState* gl_state, GLuint orig_tex, PixelForma
 	return true;
 }
 
-void GLTexture2DArray::TexImage(int level, PixelFormat internal_format, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	__SetPixelUnpackState(_glState, pixel_store);
-	glTexImage3D(GL_TEXTURE_2D_ARRAY, level, GetGLEnum(internal_format), width, height, depth, 0, GetGLEnum(format), GetGLEnum(type), pixels);
-	OPENGL_ERROR_CHECK
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-		_height = height;
-		_depth = depth;
-	}
-}
-
-void GLTexture2DArray::TexImage(int level, PixelFormat internal_format, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
-{
-	UNPACK_BUFFER_STATE_MACHINE_HACK
-	TexImage(level, internal_format, width, height, depth, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
-}
-
-void GLTexture2DArray::CompressedTexImage(int level, PixelFormat internal_format, int width, int height, int depth, size_t size, void* pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	glCompressedTexImage3D(GL_TEXTURE_2D_ARRAY, level, GetGLEnum(internal_format), width, height, depth, 0, (GLsizei)size, pixels);
-	OPENGL_ERROR_CHECK
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-		_height = height;
-		_depth = depth;
-	}
-}
-
 void GLTexture2DArray::TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)
 {
 	assert(_id);
@@ -1611,20 +1326,6 @@ bool GLTexture2DMultisampleArray::CreateView(GLState* gl_state, GLuint orig_tex,
 	return true;
 }
 
-void GLTexture2DMultisampleArray::TexImage(int samples, PixelFormat internal_format, int width, int height, int depth, bool fixed_sample_locations)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	glTexImage3DMultisample(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, samples, GetGLEnum(internal_format), width, height, depth, fixed_sample_locations);
-	OPENGL_ERROR_CHECK
-
-	_format = internal_format;
-	_width = width;
-	_height = height;
-	_depth = depth;
-}
-
 void GLTexture2DMultisampleArray::InvalidateTexImage()
 {
 	assert(_id);
@@ -1709,46 +1410,6 @@ bool GLTextureCubeArray::CreateView(GLState* gl_state, GLuint orig_tex, PixelFor
 	_glState->imageUnits[0].texture = _id;
 
 	return true;
-}
-
-void GLTextureCubeArray::TexImage(int level, PixelFormat internal_format, int width, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	__SetPixelUnpackState(_glState, pixel_store);
-
-	glTexImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, level, GetGLEnum(internal_format), width, width, depth, 0, GetGLEnum(format), GetGLEnum(type), pixels);
-	OPENGL_ERROR_CHECK
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-		_depth = depth;
-	}
-}
-
-void GLTextureCubeArray::TexImage(int level, PixelFormat internal_format, int width, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
-{
-	UNPACK_BUFFER_STATE_MACHINE_HACK
-	TexImage(level, internal_format, width, depth, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
-}
-
-void GLTextureCubeArray::CompressedTexImage(int level, PixelFormat internal_format, int width, int depth, size_t size, void* pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	glCompressedTexImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, level, GetGLEnum(internal_format), width, width, depth, 0, (GLsizei)size, pixels);
-	OPENGL_ERROR_CHECK
-
-	if(level == 0)
-	{
-		_format = internal_format;
-		_width = width;
-		_depth = depth;
-	}
 }
 
 void GLTextureCubeArray::TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)
@@ -1954,26 +1615,6 @@ bool GLTextureRectangle::CreateView(GLState* gl_state, GLuint orig_tex, PixelFor
 	_glState->imageUnits[0].texture = _id;
 
 	return true;
-}
-
-void GLTextureRectangle::TexImage(PixelFormat internal_format, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-
-	__SetPixelUnpackState(_glState, pixel_store);
-	glTexImage2D(GL_TEXTURE_RECTANGLE, 0, GetGLEnum(internal_format), width, height, 0, GetGLEnum(format), GetGLEnum(type), pixels);
-	OPENGL_ERROR_CHECK
-
-	_format = internal_format;
-	_width = width;
-	_height = height;
-}
-
-void GLTextureRectangle::TexImage(PixelFormat internal_format, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
-{
-	UNPACK_BUFFER_STATE_MACHINE_HACK
-	TexImage(internal_format, width, height, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
 void GLTextureRectangle::TexSubImage(int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels)

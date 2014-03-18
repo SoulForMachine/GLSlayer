@@ -2327,18 +2327,6 @@ void GLRenderContext::DestroySamplerState(ISamplerState* samp_state)
 	}
 }
 
-ITexture1D* GLRenderContext::CreateTexture1D()
-{
-	GLTexture1D* tex = new GLTexture1D;
-	bool result = tex->Create(&_glState);
-	if(!result)
-	{
-		delete tex;
-		tex = 0;
-	}
-	return tex;
-}
-
 ITexture1D* GLRenderContext::CreateTexture1D(size_t levels, PixelFormat internal_format, int width)
 {
 	GLTexture1D* tex = new GLTexture1D;
@@ -2375,18 +2363,6 @@ ITexture1D* GLRenderContext::CreateTexture1DView(ITexture1DArray* orig_tex, Pixe
 	return tex;
 }
 
-ITexture1DArray* GLRenderContext::CreateTexture1DArray()
-{
-	GLTexture1DArray* tex = new GLTexture1DArray;
-	bool result = tex->Create(&_glState);
-	if(!result)
-	{
-		delete tex;
-		tex = 0;
-	}
-	return tex;
-}
-
 ITexture1DArray* GLRenderContext::CreateTexture1DArray(size_t levels, PixelFormat internal_format, int width, int height)
 {
 	GLTexture1DArray* tex = new GLTexture1DArray;
@@ -2415,18 +2391,6 @@ ITexture1DArray* GLRenderContext::CreateTexture1DArrayView(ITexture1DArray* orig
 {
 	GLTexture1DArray* tex = new GLTexture1DArray;
 	bool result = tex->CreateView(&_glState, dyn_cast_ptr<GLTexture*>(orig_tex)->GetID(), internal_format, min_level, num_levels, min_layer, num_layers);
-	if(!result)
-	{
-		delete tex;
-		tex = 0;
-	}
-	return tex;
-}
-
-ITexture2D* GLRenderContext::CreateTexture2D()
-{
-	GLTexture2D* tex = new GLTexture2D;
-	bool result = tex->Create(&_glState);
 	if(!result)
 	{
 		delete tex;
@@ -2495,18 +2459,6 @@ ITexture2D* GLRenderContext::CreateTexture2DView(ITextureCubeArray* orig_tex, Pi
 	return tex;
 }
 
-ITexture2DArray* GLRenderContext::CreateTexture2DArray()
-{
-	GLTexture2DArray* tex = new GLTexture2DArray;
-	bool result = tex->Create(&_glState);
-	if(!result)
-	{
-		delete tex;
-		tex = 0;
-	}
-	return tex;
-}
-
 ITexture2DArray* GLRenderContext::CreateTexture2DArray(size_t levels, PixelFormat internal_format, int width, int height, int depth)
 {
 	GLTexture2DArray* tex = new GLTexture2DArray;
@@ -2567,18 +2519,6 @@ ITexture2DArray* GLRenderContext::CreateTexture2DArrayView(ITextureCubeArray* or
 	return tex;
 }
 
-ITexture2DMultisample* GLRenderContext::CreateTexture2DMultisample()
-{
-	GLTexture2DMultisample* tex = new GLTexture2DMultisample;
-	bool result = tex->Create(&_glState);
-	if(!result)
-	{
-		delete tex;
-		tex = 0;
-	}
-	return tex;
-}
-
 ITexture2DMultisample* GLRenderContext::CreateTexture2DMultisample(int samples, PixelFormat internal_format, int width, int height, bool fixed_sample_locations)
 {
 	GLTexture2DMultisample* tex = new GLTexture2DMultisample;
@@ -2607,18 +2547,6 @@ ITexture2DMultisample* GLRenderContext::CreateTexture2DMultisampleView(ITexture2
 {
 	GLTexture2DMultisample* tex = new GLTexture2DMultisample;
 	bool result = tex->CreateView(&_glState, dyn_cast_ptr<GLTexture*>(orig_tex)->GetID(), internal_format, min_level, num_levels);
-	if(!result)
-	{
-		delete tex;
-		tex = 0;
-	}
-	return tex;
-}
-
-ITexture2DMultisampleArray* GLRenderContext::CreateTexture2DMultisampleArray()
-{
-	GLTexture2DMultisampleArray* tex = new GLTexture2DMultisampleArray;
-	bool result = tex->Create(&_glState);
 	if(!result)
 	{
 		delete tex;
@@ -2663,18 +2591,6 @@ ITexture2DMultisampleArray* GLRenderContext::CreateTexture2DMultisampleArrayView
 	return tex;
 }
 
-ITexture3D* GLRenderContext::CreateTexture3D()
-{
-	GLTexture3D* tex = new GLTexture3D;
-	bool result = tex->Create(&_glState);
-	if(!result)
-	{
-		delete tex;
-		tex = 0;
-	}
-	return tex;
-}
-
 ITexture3D* GLRenderContext::CreateTexture3D(size_t levels, PixelFormat internal_format, int width, int height, int depth)
 {
 	GLTexture3D* tex = new GLTexture3D;
@@ -2691,18 +2607,6 @@ ITexture3D* GLRenderContext::CreateTexture3DView(ITexture3D* orig_tex, PixelForm
 {
 	GLTexture3D* tex = new GLTexture3D;
 	bool result = tex->CreateView(&_glState, dyn_cast_ptr<GLTexture*>(orig_tex)->GetID(), internal_format, min_level, num_levels);
-	if(!result)
-	{
-		delete tex;
-		tex = 0;
-	}
-	return tex;
-}
-
-ITextureCube* GLRenderContext::CreateTextureCube()
-{
-	GLTextureCube* tex = new GLTextureCube;
-	bool result = tex->Create(&_glState);
 	if(!result)
 	{
 		delete tex;
@@ -2753,18 +2657,6 @@ ITextureCube* GLRenderContext::CreateTextureCubeView(ITexture2DArray* orig_tex, 
 
 	GLTextureCube* tex = new GLTextureCube;
 	bool result = tex->CreateView(&_glState, dyn_cast_ptr<GLTexture*>(orig_tex)->GetID(), internal_format, min_level, num_levels, min_layer, num_layers);
-	if(!result)
-	{
-		delete tex;
-		tex = 0;
-	}
-	return tex;
-}
-
-ITextureCubeArray* GLRenderContext::CreateTextureCubeArray()
-{
-	GLTextureCubeArray* tex = new GLTextureCubeArray;
-	bool result = tex->Create(&_glState);
 	if(!result)
 	{
 		delete tex;
@@ -2826,18 +2718,6 @@ ITextureCubeArray* GLRenderContext::CreateTextureCubeArrayView(ITexture2DArray* 
 ITextureBuffer* GLRenderContext::CreateTextureBuffer()
 {
 	GLTextureBuffer* tex = new GLTextureBuffer;
-	bool result = tex->Create(&_glState);
-	if(!result)
-	{
-		delete tex;
-		tex = 0;
-	}
-	return tex;
-}
-
-ITextureRectangle* GLRenderContext::CreateTextureRectangle()
-{
-	GLTextureRectangle* tex = new GLTextureRectangle;
 	bool result = tex->Create(&_glState);
 	if(!result)
 	{

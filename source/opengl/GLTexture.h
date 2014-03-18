@@ -79,14 +79,10 @@ public:
 
 	static const int typeID = TYPE_ID_TEXTURE_1D;
 
-	bool Create(GLState* gl_state);
 	bool CreateImmutable(GLState* gl_state, size_t levels, gls::PixelFormat internal_format, int width);
 	bool CreateView(GLState* gl_state, GLuint orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer);
 
 	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_TEXTURE_1D) ? this : GLTexture::DynamicCast(type_id); }
-	void TexImage(int level, gls::PixelFormat internal_format, int width, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
-	void TexImage(int level, gls::PixelFormat internal_format, int width, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
-	void CompressedTexImage(int level, gls::PixelFormat internal_format, int width, size_t size, void* pixels);
 	void TexSubImage(int level, int xoffset, int width, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
 	void TexSubImage(int level, int xoffset, int width, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
 	void CompressedTexSubImage(int level, int xoffset, int width, gls::ImageFormat format, size_t size, void* pixels);
@@ -103,6 +99,8 @@ public:
 		{ return _width; }
 
 private:
+	bool Create(GLState* gl_state);
+
 	int _width;
 };
 
@@ -114,14 +112,10 @@ public:
 
 	static const int typeID = TYPE_ID_TEXTURE_2D;
 
-	bool Create(GLState* gl_state);
 	bool CreateImmutable(GLState* gl_state, size_t levels, gls::PixelFormat internal_format, int width, int height);
 	bool CreateView(GLState* gl_state, GLuint orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer);
 
 	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_TEXTURE_2D) ? this : GLTexture::DynamicCast(type_id); }
-	void TexImage(int level, gls::PixelFormat internal_format, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
-	void TexImage(int level, gls::PixelFormat internal_format, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
-	void CompressedTexImage(int level, gls::PixelFormat internal_format, int width, int height, size_t size, void* pixels);
 	void TexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
 	void TexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
 	void CompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, size_t size, void* pixels);
@@ -140,6 +134,8 @@ public:
 		{ return _height; }
 
 private:
+	bool Create(GLState* gl_state);
+
 	int _width;
 	int _height;
 };
@@ -152,12 +148,10 @@ public:
 
 	static const int typeID = TYPE_ID_TEXTURE_2D_MULTISAMPLE;
 
-	bool Create(GLState* gl_state);
 	bool CreateImmutable(GLState* gl_state, int samples, gls::PixelFormat internal_format, int width, int height, bool fixed_sample_locations);
 	bool CreateView(GLState* gl_state, GLuint orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
 
 	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_TEXTURE_2D_MULTISAMPLE) ? this : GLTexture::DynamicCast(type_id); }
-	void TexImage(int samples, gls::PixelFormat internal_format, int width, int height, bool fixed_sample_locations);
 	void InvalidateTexImage();
 	void InvalidateTexSubImage(int xoffset, int yoffset, int width, int height);
 
@@ -167,6 +161,8 @@ public:
 		{ return _height; }
 
 private:
+	bool Create(GLState* gl_state);
+
 	int _width;
 	int _height;
 };
@@ -179,14 +175,10 @@ public:
 
 	static const int typeID = TYPE_ID_TEXTURE_3D;
 
-	bool Create(GLState* gl_state);
 	bool CreateImmutable(GLState* gl_state, size_t levels, gls::PixelFormat internal_format, int width, int height, int depth);
 	bool CreateView(GLState* gl_state, GLuint orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
 
 	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_TEXTURE_3D) ? this : GLTexture::DynamicCast(type_id); }
-	void TexImage(int level, gls::PixelFormat internal_format, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
-	void TexImage(int level, gls::PixelFormat internal_format, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
-	void CompressedTexImage(int level, gls::PixelFormat internal_format, int width, int height, int depth, size_t size, void* pixels);
 	void TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
 	void TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
 	void CompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, size_t size, void* pixels);
@@ -206,6 +198,8 @@ public:
 		{ return _depth; }
 
 private:
+	bool Create(GLState* gl_state);
+
 	int _width;
 	int _height;
 	int _depth;
@@ -219,16 +213,10 @@ public:
 
 	static const int typeID = TYPE_ID_TEXTURE_CUBE;
 
-	bool Create(GLState* gl_state);
 	bool CreateImmutable(GLState* gl_state, size_t levels, gls::PixelFormat internal_format, int width);
 	bool CreateView(GLState* gl_state, GLuint orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
 
 	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_TEXTURE_CUBE) ? this : GLTexture::DynamicCast(type_id); }
-	void TexImage(int level, gls::PixelFormat internal_format, int width, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* const* pixel_store, void** pixels);
-	void TexImage(gls::CubeFace face, int level, gls::PixelFormat internal_format, int width, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
-	void TexImage(gls::CubeFace face, int level, gls::PixelFormat internal_format, int width, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
-	void CompressedTexImage(int level, gls::PixelFormat internal_format, int width, size_t size, void** pixels);
-	void CompressedTexImage(gls::CubeFace face, int level, gls::PixelFormat internal_format, int width, size_t size, void* pixels);
 	void TexSubImage(gls::CubeFace face, int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
 	void TexSubImage(gls::CubeFace face, int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
 	void CompressedTexSubImage(gls::CubeFace face, int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, size_t size, void* pixels);
@@ -245,6 +233,8 @@ public:
 		{ return _width; }
 
 private:
+	bool Create(GLState* gl_state);
+
 	int _width;
 };
 
@@ -256,14 +246,10 @@ public:
 
 	static const int typeID = TYPE_ID_TEXTURE_1D_ARRAY;
 
-	bool Create(GLState* gl_state);
 	bool CreateImmutable(GLState* gl_state, size_t levels, gls::PixelFormat internal_format, int width, int height);
 	bool CreateView(GLState* gl_state, GLuint orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
 
 	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_TEXTURE_1D_ARRAY) ? this : GLTexture::DynamicCast(type_id); }
-	void TexImage(int level, gls::PixelFormat internal_format, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
-	void TexImage(int level, gls::PixelFormat internal_format, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
-	void CompressedTexImage(int level, gls::PixelFormat internal_format, int width, int height, size_t size, void* pixels);
 	void TexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
 	void TexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
 	void CompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, size_t size, void* pixels);
@@ -282,6 +268,8 @@ public:
 		{ return _height; }
 
 private:
+	bool Create(GLState* gl_state);
+
 	int _width;
 	int _height;
 };
@@ -294,14 +282,10 @@ public:
 
 	static const int typeID = TYPE_ID_TEXTURE_2D_ARRAY;
 
-	bool Create(GLState* gl_state);
 	bool CreateImmutable(GLState* gl_state, size_t levels, gls::PixelFormat internal_format, int width, int height, int depth);
 	bool CreateView(GLState* gl_state, GLuint orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
 
 	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_TEXTURE_2D_ARRAY) ? this : GLTexture::DynamicCast(type_id); }
-	void TexImage(int level, gls::PixelFormat internal_format, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
-	void TexImage(int level, gls::PixelFormat internal_format, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
-	void CompressedTexImage(int level, gls::PixelFormat internal_format, int width, int height, int depth, size_t size, void* pixels);
 	void TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
 	void TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
 	void CompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, size_t size, void* pixels);
@@ -321,6 +305,8 @@ public:
 		{ return _depth; }
 
 private:
+	bool Create(GLState* gl_state);
+
 	int _width;
 	int _height;
 	int _depth;
@@ -334,12 +320,10 @@ public:
 
 	static const int typeID = TYPE_ID_TEXTURE_2D_MULTISAMPLE_ARRAY;
 
-	bool Create(GLState* gl_state);
 	bool CreateImmutable(GLState* gl_state, int samples, gls::PixelFormat internal_format, int width, int height, int depth, bool fixed_sample_locations);
 	bool CreateView(GLState* gl_state, GLuint orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
 
 	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_TEXTURE_2D_MULTISAMPLE_ARRAY) ? this : GLTexture::DynamicCast(type_id); }
-	void TexImage(int samples, gls::PixelFormat internal_format, int width, int height, int depth, bool fixed_sample_locations);
 	void InvalidateTexImage();
 	void InvalidateTexSubImage(int xoffset, int yoffset, int zoffset, int width, int height, int depth);
 
@@ -351,6 +335,8 @@ public:
 		{ return _depth; }
 
 private:
+	bool Create(GLState* gl_state);
+
 	int _width;
 	int _height;
 	int _depth;
@@ -364,14 +350,10 @@ public:
 
 	static const int typeID = TYPE_ID_TEXTURE_CUBE_ARRAY;
 
-	bool Create(GLState* gl_state);
 	bool CreateImmutable(GLState* gl_state, size_t levels, gls::PixelFormat internal_format, int width, int depth);
 	bool CreateView(GLState* gl_state, GLuint orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
 
 	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_TEXTURE_CUBE_ARRAY) ? this : GLTexture::DynamicCast(type_id); }
-	void TexImage(int level, gls::PixelFormat internal_format, int width, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
-	void TexImage(int level, gls::PixelFormat internal_format, int width, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
-	void CompressedTexImage(int level, gls::PixelFormat internal_format, int width, int depth, size_t size, void* pixels);
 	void TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
 	void TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
 	void CompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, size_t size, void* pixels);
@@ -387,6 +369,8 @@ public:
 		{ return _depth; }
 
 private:
+	bool Create(GLState* gl_state);
+
 	int _width;
 	int _depth;
 };
@@ -426,13 +410,10 @@ public:
 
 	static const int typeID = TYPE_ID_TEXTURE_RECTANGLE;
 
-	bool Create(GLState* gl_state);
 	bool CreateImmutable(GLState* gl_state, size_t levels, gls::PixelFormat internal_format, int width, int height);
 	bool CreateView(GLState* gl_state, GLuint orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
 
 	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_TEXTURE_RECTANGLE) ? this : GLTexture::DynamicCast(type_id); }
-	void TexImage(gls::PixelFormat internal_format, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
-	void TexImage(gls::PixelFormat internal_format, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
 	void TexSubImage(int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels);
 	void TexSubImage(int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
 	void CopyTexImage(gls::IFramebuffer* source_fbuf, gls::ColorBuffer source_color_buf, gls::PixelFormat internal_format, int x, int y, int width, int height);
@@ -448,9 +429,11 @@ public:
 		{ return _height; }
 
 private:
-	// these are not applicable to buffer textures
+	// these are not applicable to rectangle textures
 	using GLTexture::GenerateMipmap;
 	using GLTexture::IsCompressed;
+
+	bool Create(GLState* gl_state);
 
 	int _width;
 	int _height;

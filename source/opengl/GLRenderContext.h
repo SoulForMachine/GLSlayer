@@ -252,51 +252,42 @@ public:
 	gls::ISamplerState* CreateSamplerState(const gls::SamplerStateDesc& descriptor);
 	void DestroySamplerState(gls::ISamplerState* samp_state);
 
-	gls::ITexture1D* CreateTexture1D();
 	gls::ITexture1D* CreateTexture1D(size_t levels, gls::PixelFormat internal_format, int width);
 	gls::ITexture1D* CreateTexture1DView(gls::ITexture1D* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
 	gls::ITexture1D* CreateTexture1DView(gls::ITexture1DArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint layer);
 
-	gls::ITexture1DArray* CreateTexture1DArray();
 	gls::ITexture1DArray* CreateTexture1DArray(size_t levels, gls::PixelFormat internal_format, int width, int height);
 	gls::ITexture1DArray* CreateTexture1DArrayView(gls::ITexture1D* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
 	gls::ITexture1DArray* CreateTexture1DArrayView(gls::ITexture1DArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
 
-	gls::ITexture2D* CreateTexture2D();
 	gls::ITexture2D* CreateTexture2D(size_t levels, gls::PixelFormat internal_format, int width, int height);
 	gls::ITexture2D* CreateTexture2DView(gls::ITexture2D* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
 	gls::ITexture2D* CreateTexture2DView(gls::ITexture2DArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint layer);
 	gls::ITexture2D* CreateTexture2DView(gls::ITextureCube* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint layer);
 	gls::ITexture2D* CreateTexture2DView(gls::ITextureCubeArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint layer);
 
-	gls::ITexture2DArray* CreateTexture2DArray();
 	gls::ITexture2DArray* CreateTexture2DArray(size_t levels, gls::PixelFormat internal_format, int width, int height, int depth);
 	gls::ITexture2DArray* CreateTexture2DArrayView(gls::ITexture2D* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
 	gls::ITexture2DArray* CreateTexture2DArrayView(gls::ITexture2DArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
 	gls::ITexture2DArray* CreateTexture2DArrayView(gls::ITextureCube* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
 	gls::ITexture2DArray* CreateTexture2DArrayView(gls::ITextureCubeArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
 
-	gls::ITexture2DMultisample* CreateTexture2DMultisample();
 	gls::ITexture2DMultisample* CreateTexture2DMultisample(int samples, gls::PixelFormat internal_format, int width, int height, bool fixed_sample_locations);
 	gls::ITexture2DMultisample* CreateTexture2DMultisampleView(gls::ITexture2DMultisample* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
 	gls::ITexture2DMultisample* CreateTexture2DMultisampleView(gls::ITexture2DMultisampleArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
 
-	gls::ITexture2DMultisampleArray* CreateTexture2DMultisampleArray();
 	gls::ITexture2DMultisampleArray* CreateTexture2DMultisampleArray(int samples, gls::PixelFormat internal_format, int width, int height, int depth, bool fixed_sample_locations);
 	gls::ITexture2DMultisampleArray* CreateTexture2DMultisampleArrayView(gls::ITexture2DMultisample* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
 	gls::ITexture2DMultisampleArray* CreateTexture2DMultisampleArrayView(gls::ITexture2DMultisampleArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
 
-	gls::ITexture3D* CreateTexture3D();
 	gls::ITexture3D* CreateTexture3D(size_t levels, gls::PixelFormat internal_format, int width, int height, int depth);
 	gls::ITexture3D* CreateTexture3DView(gls::ITexture3D* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
 
-	gls::ITextureCube* CreateTextureCube();
 	gls::ITextureCube* CreateTextureCube(size_t levels, gls::PixelFormat internal_format, int width);
 	gls::ITextureCube* CreateTextureCubeView(gls::ITextureCube* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
 	gls::ITextureCube* CreateTextureCubeView(gls::ITextureCubeArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
 	gls::ITextureCube* CreateTextureCubeView(gls::ITexture2DArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
 
-	gls::ITextureCubeArray* CreateTextureCubeArray();
 	gls::ITextureCubeArray* CreateTextureCubeArray(size_t levels, gls::PixelFormat internal_format, int width, int depth);
 	gls::ITextureCubeArray* CreateTextureCubeArrayView(gls::ITextureCube* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
 	gls::ITextureCubeArray* CreateTextureCubeArrayView(gls::ITextureCubeArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
@@ -304,7 +295,6 @@ public:
 
 	gls::ITextureBuffer* CreateTextureBuffer();
 
-	gls::ITextureRectangle* CreateTextureRectangle();
 	gls::ITextureRectangle* CreateTextureRectangle(size_t levels, gls::PixelFormat internal_format, int width, int height);
 	gls::ITextureRectangle* CreateTextureRectangleView(gls::ITextureRectangle* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
 

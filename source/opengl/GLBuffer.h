@@ -24,7 +24,6 @@ public:
 
 	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_BUFFER) ? this : GLResource::DynamicCast(type_id); }
 	gls::BufferType GetBufferType();
-	void BufferData(size_t size, const void* data, gls::BufferUsage usage);
 	void BufferSubData(size_t offset, size_t size, const void* data);
 	void GetBufferSubData(size_t offset, size_t size, void* data);
 	void* Map(gls::BufferAccess access, bool discard);
