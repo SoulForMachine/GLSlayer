@@ -21,14 +21,14 @@ bool IsExtSupported(const char* extension, Display* display)
 	if(!extension || !extension[0])
 		return false;
 
-	glGetStringi = (PFNGLGETSTRINGIPROC)glXGetProcAddressARB((const GLubyte*)"glGetStringi");
-	if(glGetStringi)
+	PFNGLGETSTRINGIPROC ptr_glGetStringi = (PFNGLGETSTRINGIPROC)glXGetProcAddressARB((const GLubyte*)"glGetStringi");
+	if(ptr_glGetStringi)
 	{
 		GLint count = 0;
 		glGetIntegerv(GL_NUM_EXTENSIONS, &count);
 		for(int i = 0; i < count; ++i)
 		{
-			const char* ext_string = (const char*)glGetStringi(GL_EXTENSIONS, i);
+			const char* ext_string = (const char*)ptr_glGetStringi(GL_EXTENSIONS, i);
 
 			if(ext_string && !strcmp(ext_string, extension))
 				return true;
@@ -239,12 +239,12 @@ bool GLRenderContext::LoadPlatformOpenGLExtensions()
 	bool result = true;
 
 	// GLX extensions
-	CHECK_EXTENSION_REQ(GLX_ARB_multisample, pextMultisample);
-	LOAD_EXTENSION_REQ(GLX_EXT_swap_control, pextSwapControl);
-	CHECK_EXTENSION(GLX_OML_swap_method, pextSwapMethod);
-	CHECK_EXTENSION(GLX_EXT_framebuffer_sRGB, pextFramebufferSRGB);
-	LOAD_EXTENSION_REQ(GLX_ARB_create_context, pextCreateContext);
-	CHECK_EXTENSION(GLX_ARB_fbconfig_float, pextPixelFormatFloat);
+	LOAD_EXTENSION_REQ(GLX_ARB_multisample);
+	LOAD_EXTENSION_REQ(GLX_EXT_swap_control);
+	LOAD_EXTENSION(GLX_OML_swap_method);
+	LOAD_EXTENSION(GLX_EXT_framebuffer_sRGB);
+	LOAD_EXTENSION_REQ(GLX_ARB_create_context);
+	LOAD_EXTENSION(GLX_ARB_fbconfig_float);
 
 	return result;
 }
@@ -269,5 +269,4 @@ void GLRenderContext::SwapBuffers()
 void GLRenderContext::SwapInterval(int interval)
 {
 	glXSwapIntervalEXT(_display, _window, interval);
-	OPENGL_ERROR_CHECK
 }

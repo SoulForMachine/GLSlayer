@@ -1,27 +1,24 @@
 
+// WGL_ARB_multisample
+
+
 // WGL_ARB_extensions_string
 
-EXTPTR bool glextLoad_WGL_ARB_extensions_string();
-
-EXTPTR PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB;
 
 // WGL_ARB_pixel_format
 
-EXTPTR bool glextLoad_WGL_ARB_pixel_format();
+EXTPTR PFNWGLCHOOSEPIXELFORMATARBPROC ptr_wglChoosePixelFormatARB;
 
-EXTPTR PFNWGLGETPIXELFORMATATTRIBIVARBPROC wglGetPixelFormatAttribivARB;
-EXTPTR PFNWGLGETPIXELFORMATATTRIBFVARBPROC wglGetPixelFormatAttribfvARB;
-EXTPTR PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB;
+// WGL_ARB_pixel_format_float
+
 
 // WGL_ARB_create_context
 
-EXTPTR bool glextLoad_WGL_ARB_create_context();
-
-EXTPTR PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB;
+EXTPTR PFNWGLCREATECONTEXTATTRIBSARBPROC ptr_wglCreateContextAttribsARB;
 
 // WGL_EXT_swap_control
 
-EXTPTR bool glextLoad_WGL_EXT_swap_control();
+EXTPTR PFNWGLSWAPINTERVALEXTPROC ptr_wglSwapIntervalEXT;
 
-EXTPTR PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
-EXTPTR PFNWGLGETSWAPINTERVALEXTPROC wglGetSwapIntervalEXT;
+// WGL_EXT_framebuffer_sRGB
+

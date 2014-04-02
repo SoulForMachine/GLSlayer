@@ -1,3 +1,6 @@
 
-ruby glelcg.rb "glext.h" extensions_windows.txt glext_windows
-ruby glelcg.rb "wglext.h" wgl_extensions.txt
+echo Generating source for loading core functionality and extensions...
+ruby glelcg-xml.rb -l -f extensions_windows.txt -u .. gl.xml glext_windows
+
+echo Generating source for loading WGL extensions...
+ruby glelcg-xml.rb -l -f wgl_extensions.txt -u .. wgl.xml wglext

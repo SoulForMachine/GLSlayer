@@ -32,9 +32,11 @@
     <ClInclude Include="..\..\include\GLSlayer\TransformFeedback.h" />
     <ClInclude Include="..\..\include\GLSlayer\VertexFormat.h" />
     <ClInclude Include="..\..\source\opengl\extensions\glext.h" />
+    <ClInclude Include="..\..\source\opengl\extensions\glext_windows_load_decl.h" />
     <ClInclude Include="..\..\source\opengl\extensions\glext_windows_ptrs.h" />
     <ClInclude Include="..\..\source\opengl\extensions\h_glext.h" />
     <ClInclude Include="..\..\source\opengl\extensions\wglext.h" />
+    <ClInclude Include="..\..\source\opengl\extensions\wglext_load_decl.h" />
     <ClInclude Include="..\..\source\opengl\extensions\wglext_ptrs.h" />
     <ClInclude Include="..\..\source\opengl\GLBuffer.h" />
     <ClInclude Include="..\..\source\opengl\GLCommon.h" />
@@ -52,11 +54,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\source\opengl\extensions\extensions_windows.txt" />
-    <None Include="..\..\source\opengl\extensions\glelcg.rb" />
-    <None Include="..\..\source\opengl\extensions\glext_windows_load.inc" />
+    <None Include="..\..\source\opengl\extensions\glelcg-xml.rb" />
+    <None Include="..\..\source\opengl\extensions\glext_windows_load_def.inc" />
     <None Include="..\..\source\opengl\extensions\glext_windows_ptrs.inc" />
     <None Include="..\..\source\opengl\extensions\make_exts.bat" />
-    <None Include="..\..\source\opengl\extensions\wglext_load.inc" />
+    <None Include="..\..\source\opengl\extensions\wglext_load_def.inc" />
     <None Include="..\..\source\opengl\extensions\wglext_ptrs.inc" />
     <None Include="..\..\source\opengl\extensions\wgl_extensions.txt" />
   </ItemGroup>

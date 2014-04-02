@@ -37,7 +37,6 @@ namespace gls
 		int maxViewportWidth;
 		int maxViewportHeight;
 		int maxVertexAttribs;
-		int maxTextureCoords;
 		int maxCombinedTextureImageUnits;
 		float maxTextureAnisotropy;
 		int maxDrawBuffers;

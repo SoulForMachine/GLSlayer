@@ -1,12 +1,20 @@
 
+// GLX_ARB_multisample
+
+
+// GLX_ARB_fbconfig_float
+
+
 // GLX_ARB_create_context
 
-EXTPTR bool glextLoad_GLX_ARB_create_context();
+EXTPTR PFNGLXCREATECONTEXTATTRIBSARBPROC ptr_glXCreateContextAttribsARB;
 
-EXTPTR PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB;
+// GLX_OML_swap_method
+
+
+// GLX_EXT_framebuffer_sRGB
+
 
 // GLX_EXT_swap_control
 
-EXTPTR bool glextLoad_GLX_EXT_swap_control();
-
-EXTPTR PFNGLXSWAPINTERVALEXTPROC glXSwapIntervalEXT;
+EXTPTR PFNGLXSWAPINTERVALEXTPROC ptr_glXSwapIntervalEXT;

@@ -22,12 +22,10 @@ bool GLShader::Create(size_t count, const char** source)
 {
 	GLint linked = GL_FALSE;
 	_id = glCreateShaderProgramv(_target, (GLsizei)count, source);
-	OPENGL_ERROR_CHECK
 
 	if(_id)
 	{
 		glGetProgramiv(_id, GL_LINK_STATUS, &linked);
-		OPENGL_ERROR_CHECK
 
 		RetrieveLog();
 	}
@@ -43,10 +41,8 @@ bool GLShader::Create(size_t size, const void* binary, uint format)
 	{
 		glProgramParameteri(_id, GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glProgramBinary(_id, format, binary, (GLsizei)size);
-		OPENGL_ERROR_CHECK
 
 		glGetProgramiv(_id, GL_LINK_STATUS, &linked);
-		OPENGL_ERROR_CHECK
 
 		RetrieveLog();
 	}
@@ -61,9 +57,7 @@ bool GLShader::CreateWithTransformFeedback(size_t count, const char** source, si
 	if(shader)
 	{
 		glShaderSource(shader, (GLsizei)count, source, 0);
-		OPENGL_ERROR_CHECK
 		glCompileShader(shader);
-		OPENGL_ERROR_CHECK
 		GLuint program = glCreateProgram();
 		if(program)
 		{
@@ -73,10 +67,8 @@ bool GLShader::CreateWithTransformFeedback(size_t count, const char** source, si
 			if(compiled)
 			{
 				glAttachShader(program, shader);
-				OPENGL_ERROR_CHECK
 
 				glTransformFeedbackVaryings(program, (GLsizei)attrib_count, attrib_names, GL_INTERLEAVED_ATTRIBS);
-				OPENGL_ERROR_CHECK
 
 				glLinkProgram(program);
 				glDetachShader(program, shader);
@@ -99,7 +91,6 @@ bool GLShader::CreateWithTransformFeedback(size_t size, const void* binary, uint
 	{
 		glProgramParameteri(_id, GL_PROGRAM_SEPARABLE, GL_TRUE);
 		glTransformFeedbackVaryings(_id, (GLsizei)attrib_count, attrib_names, GL_INTERLEAVED_ATTRIBS);
-		OPENGL_ERROR_CHECK
 
 		glProgramBinary(_id, format, binary, (GLsizei)size);
 		glGetProgramiv(_id, GL_LINK_STATUS, &linked);
@@ -115,7 +106,6 @@ void GLShader::Destroy()
 	if(_id)
 	{
 		glDeleteProgram(_id);
-		OPENGL_ERROR_CHECK
 		_id = 0;
 	}
 }
@@ -139,11 +129,9 @@ int GLShader::GetInfoLogLength()
 bool GLShader::Validate()
 {
 	glValidateProgram(_id);
-	OPENGL_ERROR_CHECK
 
 	GLint status;
 	glGetProgramiv(_id, GL_VALIDATE_STATUS, &status);
-	OPENGL_ERROR_CHECK
 
 	RetrieveLog();
 
@@ -153,22 +141,18 @@ bool GLShader::Validate()
 uint GLShader::GetSubroutineIndex(const char* name)
 {
 	uint index = glGetSubroutineIndex(_id, _target, name);
-	OPENGL_ERROR_CHECK
 	return index;
 }
 
 bool GLShader::GetBinary(gls::uint& format, size_t buffer_size, void* buffer)
 {
 	/*glProgramParameteri(_id, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
-	OPENGL_ERROR_CHECK
 
 	glLinkProgram(_id);
-	OPENGL_ERROR_CHECK
 
 	bool result = (glGetError() == GL_NO_ERROR);
 	GLint status;
 	glGetProgramiv(_id, GL_LINK_STATUS, &status);
-	OPENGL_ERROR_CHECK
 	result = result && (status == GL_TRUE);
 
 	RetrieveLog();
@@ -179,7 +163,6 @@ bool GLShader::GetBinary(gls::uint& format, size_t buffer_size, void* buffer)
 	GLsizei length;
 	GLenum gl_fmt;
 	glGetProgramBinary(_id, (GLsizei)buffer_size, &length, &gl_fmt, buffer);
-	OPENGL_ERROR_CHECK
 
 	format = gl_fmt;
 	return (glGetError() == GL_NO_ERROR);
@@ -189,7 +172,6 @@ int GLShader::GetBinarySize()
 {
 	GLint size;
 	glGetProgramiv(_id, GL_PROGRAM_BINARY_LENGTH, &size);
-	OPENGL_ERROR_CHECK
 	return size;
 }
 
@@ -197,7 +179,6 @@ void GLShader::RetrieveLog()
 {
 	GLint log_len;
 	glGetProgramiv(_id, GL_INFO_LOG_LENGTH, &log_len);
-	OPENGL_ERROR_CHECK
 
 	_logInfoLength = log_len;
 	delete[] _logInfo;
@@ -206,7 +187,6 @@ void GLShader::RetrieveLog()
 	if(log_len > 1)
 	{
 		glGetProgramInfoLog(_id, log_len, 0, _logInfo);
-		OPENGL_ERROR_CHECK
 	}
 }
 
@@ -214,11 +194,9 @@ void GLShader::RetrieveLog2(GLuint program, GLuint shader)
 {
 	GLint prog_log_len;
 	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &prog_log_len);
-	OPENGL_ERROR_CHECK
 
 	GLint shader_log_len;
 	glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &shader_log_len);
-	OPENGL_ERROR_CHECK
 
 	_logInfoLength = prog_log_len + shader_log_len;
 	delete[] _logInfo;
@@ -228,14 +206,12 @@ void GLShader::RetrieveLog2(GLuint program, GLuint shader)
 	if(prog_log_len > 1)
 	{
 		glGetProgramInfoLog(program, prog_log_len, 0, _logInfo);
-		OPENGL_ERROR_CHECK
 	}
 
 	if(shader_log_len > 1)
 	{
 		GLint append_index = max(prog_log_len - 1, 0);
 		glGetShaderInfoLog(shader, shader_log_len, 0, &_logInfo[append_index]);
-		OPENGL_ERROR_CHECK
 	}
 }
 
@@ -251,7 +227,6 @@ GLVertexShader::GLVertexShader()
 void GLVertexShader::TransformFeedbackVaryings(size_t count, const char** varyings, TransformFeedbackBufferMode mode)
 {
 	glTransformFeedbackVaryings(_id, (GLsizei)count, varyings, GetGLEnum(mode));
-	OPENGL_ERROR_CHECK
 }
 
 //================================ GLTessControlShader ==============================================
@@ -267,7 +242,6 @@ int GLTessControlShader::GetOutputVertexCount()
 {
 	GLint count;
 	glGetProgramiv(_id, GL_TESS_CONTROL_OUTPUT_VERTICES, &count);
-	OPENGL_ERROR_CHECK
 	return count;
 }
 
@@ -284,7 +258,6 @@ TessGenPrimitiveType GLTessEvaluationShader::GetMode()
 {
 	GLint mode;
 	glGetProgramiv(_id, GL_TESS_GEN_MODE, &mode);
-	OPENGL_ERROR_CHECK
 	return GetFromGLEnum<TessGenPrimitiveType>(mode);
 }
 
@@ -292,7 +265,6 @@ TessGenSpacing GLTessEvaluationShader::GetSpacing()
 {
 	GLint spacing;
 	glGetProgramiv(_id, GL_TESS_GEN_SPACING, &spacing);
-	OPENGL_ERROR_CHECK
 	return GetFromGLEnum<TessGenSpacing>(spacing);
 }
 
@@ -300,7 +272,6 @@ VertexOrder GLTessEvaluationShader::GetVertexOrder()
 {
 	GLint order;
 	glGetProgramiv(_id, GL_TESS_GEN_VERTEX_ORDER, &order);
-	OPENGL_ERROR_CHECK
 	return GetFromGLEnum<VertexOrder>(order);
 }
 
@@ -308,7 +279,6 @@ bool GLTessEvaluationShader::GetPointMode()
 {
 	GLint mode;
 	glGetProgramiv(_id, GL_TESS_GEN_POINT_MODE, &mode);
-	OPENGL_ERROR_CHECK
 	return (mode == GL_TRUE);
 }
 
@@ -324,14 +294,12 @@ GLGeometryShader::GLGeometryShader()
 void GLGeometryShader::TransformFeedbackVaryings(size_t count, const char** varyings, TransformFeedbackBufferMode mode)
 {
 	glTransformFeedbackVaryings(_id, (GLsizei)count, varyings, GetGLEnum(mode));
-	OPENGL_ERROR_CHECK
 }
 
 int GLGeometryShader::GetInvocations()
 {
 	int invocations;
 	glGetProgramiv(_id, GL_GEOMETRY_SHADER_INVOCATIONS, &invocations);
-	OPENGL_ERROR_CHECK
 	return invocations;
 }
 
@@ -355,6 +323,5 @@ GLComputeShader::GLComputeShader()
 
 void GLComputeShader::GetWorkGroupSize(int work_group_size[3])
 {
-	glGetProgramiv(_id, GL_COMPUTE_LOCAL_WORK_SIZE, work_group_size); //!GL_COMPUTE_WORK_GROUP_SIZE?
-	OPENGL_ERROR_CHECK
+	glGetProgramiv(_id, GL_COMPUTE_WORK_GROUP_SIZE, work_group_size);
 }

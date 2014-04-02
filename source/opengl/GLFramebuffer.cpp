@@ -14,7 +14,6 @@ using namespace gls;
 	if(_id != _glState->renderbuffer) \
 	{ \
 		glBindRenderbuffer(_target, _id); \
-		OPENGL_ERROR_CHECK \
 		_glState->renderbuffer = _id; \
 	}
 
@@ -28,12 +27,10 @@ bool GLRenderbuffer::Create(GLState* gl_state)
 	_glState = gl_state;
 
 	glGenRenderbuffers(1, &_id);
-	OPENGL_ERROR_CHECK
 	if(!_id)
 		return false;
 
 	glBindRenderbuffer(GL_RENDERBUFFER, _id);
-	OPENGL_ERROR_CHECK
 	_glState->renderbuffer = _id;
 	_resType = RES_RENDERBUFFER;
 	_target = GL_RENDERBUFFER;
@@ -51,7 +48,6 @@ void GLRenderbuffer::Destroy()
 			_glState->renderbuffer = 0;
 		}
 		glDeleteRenderbuffers(1, &_id);
-		OPENGL_ERROR_CHECK
 		_id = 0;
 	}
 }
@@ -61,7 +57,6 @@ void GLRenderbuffer::Storage(size_t samples, PixelFormat internal_format, size_t
 	assert(_id);
 	STATE_MACHINE_HACK
 	glRenderbufferStorageMultisample(GL_RENDERBUFFER, (GLsizei)samples, GetGLEnum(internal_format), (GLsizei)width, (GLsizei)height);
-	OPENGL_ERROR_CHECK
 }
 
 // =================== Framebuffer ==================
@@ -71,7 +66,6 @@ void GLRenderbuffer::Storage(size_t samples, PixelFormat internal_format, size_t
 if(_id != _glState->drawFbuf) \
 { \
 	glBindFramebuffer(_target, _id); \
-	OPENGL_ERROR_CHECK \
 	_glState->drawFbuf = _id; \
 }
 
@@ -84,7 +78,6 @@ bool GLFramebuffer::Create(GLState* gl_state)
 	_glState = gl_state;
 
 	glGenFramebuffers(1, &_id);
-	OPENGL_ERROR_CHECK
 	if(!_id)
 		return false;
 
@@ -92,7 +85,6 @@ bool GLFramebuffer::Create(GLState* gl_state)
 	_resType = RES_FRAMEBUFFER;
 
 	glBindFramebuffer(_target, _id);
-	OPENGL_ERROR_CHECK
 	_glState->drawFbuf = _id;
 
 	return true;
@@ -107,7 +99,6 @@ bool GLFramebuffer::CreateWithoutAttachments(GLState* gl_state, const Framebuffe
 		glFramebufferParameteri(_target, GL_FRAMEBUFFER_DEFAULT_LAYERS, params.layers);
 		glFramebufferParameteri(_target, GL_FRAMEBUFFER_DEFAULT_SAMPLES, params.samples);
 		glFramebufferParameteri(_target, GL_FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS, params.fixedSampleLocations);
-		OPENGL_ERROR_CHECK
 
 		return true;
 	}
@@ -132,7 +123,6 @@ void GLFramebuffer::Destroy()
 		}
 
 		glDeleteFramebuffers(1, &_id);
-		OPENGL_ERROR_CHECK
 		_id = 0;
 	}
 }
@@ -143,7 +133,6 @@ void GLFramebuffer::AttachTexture(AttachmentBuffer attachment, ITexture* texture
 	STATE_MACHINE_HACK
 
 	glFramebufferTexture(_target, GetGLEnum(attachment), dyn_cast_ptr<GLTexture*>(texture)->GetID(), level);
-	OPENGL_ERROR_CHECK
 }
 
 void GLFramebuffer::AttachTextureLayer(AttachmentBuffer attachment, ITexture* texture, int level, int layer)
@@ -152,7 +141,6 @@ void GLFramebuffer::AttachTextureLayer(AttachmentBuffer attachment, ITexture* te
 	STATE_MACHINE_HACK
 
 	glFramebufferTextureLayer(_target, GetGLEnum(attachment), dyn_cast_ptr<GLTexture*>(texture)->GetID(), level, layer);
-	OPENGL_ERROR_CHECK
 }
 
 void GLFramebuffer::AttachTextureFace(AttachmentBuffer attachment, ITexture* texture, int level, CubeFace face)
@@ -160,8 +148,7 @@ void GLFramebuffer::AttachTextureFace(AttachmentBuffer attachment, ITexture* tex
 	assert(_id);
 	STATE_MACHINE_HACK
 
-	glFramebufferTextureFaceARB(_target, GetGLEnum(attachment), dyn_cast_ptr<GLTexture*>(texture)->GetID(), level, GetGLEnum(face));
-	OPENGL_ERROR_CHECK
+	glFramebufferTexture2D(_target, GetGLEnum(attachment), GetGLEnum(face), dyn_cast_ptr<GLTexture*>(texture)->GetID(), level);
 }
 
 void GLFramebuffer::AttachRenderbuffer(AttachmentBuffer attachment, IRenderbuffer* renderbuffer)
@@ -170,7 +157,6 @@ void GLFramebuffer::AttachRenderbuffer(AttachmentBuffer attachment, IRenderbuffe
 	STATE_MACHINE_HACK
 
 	glFramebufferRenderbuffer(_target, GetGLEnum(attachment), GL_RENDERBUFFER, dyn_cast_ptr<GLRenderbuffer*>(renderbuffer)->GetID());
-	OPENGL_ERROR_CHECK
 }
 
 FramebufferStatus GLFramebuffer::CheckStatus()
@@ -179,7 +165,6 @@ FramebufferStatus GLFramebuffer::CheckStatus()
 	STATE_MACHINE_HACK
 
 	GLenum status = glCheckFramebufferStatus(_target);
-	OPENGL_ERROR_CHECK
 
 	return GetFromGLEnum<FramebufferStatus>(status);
 }
@@ -194,7 +179,6 @@ void GLFramebuffer::InvalidateFramebuffer(int num_attachments, const AttachmentB
 		attach_enums[i] = GetGLEnum(attachments[i]);
 
 	glInvalidateFramebuffer(_target, num_attachments, attach_enums);
-	OPENGL_ERROR_CHECK
 }
 
 void GLFramebuffer::InvalidateSubFramebuffer(int num_attachments, const AttachmentBuffer* attachments, int x, int y, int width, int height)
@@ -207,5 +191,4 @@ void GLFramebuffer::InvalidateSubFramebuffer(int num_attachments, const Attachme
 		attach_enums[i] = GetGLEnum(attachments[i]);
 
 	glInvalidateSubFramebuffer(_target, num_attachments, attach_enums, x, y, width, height);
-	OPENGL_ERROR_CHECK
 }

@@ -19,7 +19,6 @@ bool GLSamplerState::Create(const SamplerStateDesc& desc)
 		return false;
 
 	glGenSamplers(1, &_id);
-	OPENGL_ERROR_CHECK
 	if(!_id)
 		return false;
 
@@ -35,7 +34,6 @@ bool GLSamplerState::Create(const SamplerStateDesc& desc)
 	glSamplerParameteri(_id, GL_TEXTURE_COMPARE_MODE, GetGLEnum(desc.texCmpMode));
 	glSamplerParameteri(_id, GL_TEXTURE_COMPARE_FUNC, GetGLEnum(desc.texCmpFunc));
 	glSamplerParameterf(_id, GL_TEXTURE_MAX_ANISOTROPY_EXT, desc.maxAnisotropy);
-	OPENGL_ERROR_CHECK
 
 	if(glGetError() != GL_NO_ERROR)
 		return false;
@@ -48,6 +46,5 @@ void GLSamplerState::Destroy()
 	if(_id != 0)
 	{
 		glDeleteSamplers(1, &_id);
-		OPENGL_ERROR_CHECK
 	}
 }

@@ -102,18 +102,18 @@
     <ClInclude Include="..\..\source\opengl\GLSlayerMessages.h">
       <Filter>OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\glext_windows_load_decl.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\wglext_load_decl.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\source\opengl\extensions\glelcg.rb">
-      <Filter>OpenGL\Extensions</Filter>
-    </None>
     <None Include="..\..\source\opengl\extensions\make_exts.bat">
       <Filter>OpenGL\Extensions</Filter>
     </None>
     <None Include="..\..\source\opengl\extensions\wgl_extensions.txt">
-      <Filter>OpenGL\Extensions</Filter>
-    </None>
-    <None Include="..\..\source\opengl\extensions\wglext_load.inc">
       <Filter>OpenGL\Extensions</Filter>
     </None>
     <None Include="..\..\source\opengl\extensions\wglext_ptrs.inc">
@@ -122,10 +122,16 @@
     <None Include="..\..\source\opengl\extensions\extensions_windows.txt">
       <Filter>OpenGL\Extensions</Filter>
     </None>
-    <None Include="..\..\source\opengl\extensions\glext_windows_load.inc">
+    <None Include="..\..\source\opengl\extensions\glext_windows_ptrs.inc">
       <Filter>OpenGL\Extensions</Filter>
     </None>
-    <None Include="..\..\source\opengl\extensions\glext_windows_ptrs.inc">
+    <None Include="..\..\source\opengl\extensions\glelcg-xml.rb">
+      <Filter>OpenGL\Extensions</Filter>
+    </None>
+    <None Include="..\..\source\opengl\extensions\glext_windows_load_def.inc">
+      <Filter>OpenGL\Extensions</Filter>
+    </None>
+    <None Include="..\..\source\opengl\extensions\wglext_load_def.inc">
       <Filter>OpenGL\Extensions</Filter>
     </None>
   </ItemGroup>
