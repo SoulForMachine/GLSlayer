@@ -5,7 +5,7 @@ const char* messageTable[] =
 {
 	"Version number must be at least 330.",
 	"Failed to create rendering context (version %u): %s.",
-	"The driver does not have all function entries for %s.",
+	"The driver does not have an entry for function %s.",
 	"Extension %s is not supported.",
 
 #if defined (_WIN32)

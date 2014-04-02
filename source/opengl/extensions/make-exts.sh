@@ -1,3 +1,6 @@
 #!/bin/sh
-ruby glelcg.rb "glext.h" extensions_linux.txt glext_linux
-ruby glelcg.rb "glxext.h" glx_extensions.txt
+echo Generating source for loading core functionality and extensions...
+ruby glelcg-xml.rb -l -f extensions_linux.txt -u .. gl.xml glext_linux
+
+echo Generating source for loading GLX extensions...
+ruby glelcg-xml.rb -l -f glx_extensions.txt -u .. glx.xml glxext

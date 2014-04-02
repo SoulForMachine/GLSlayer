@@ -2,6 +2,7 @@
 #ifndef _H_GLEXT_H_
 #define _H_GLEXT_H_
 
+#include <cassert>
 #include "glext.h"
 
 #if defined(_WIN32)
@@ -20,30 +21,20 @@
 	#define EXTPTR extern
 #endif
 
+struct GLContextInfo;
+
 #if defined(_WIN32)
 	#include "glext_windows_ptrs.h"
+	#include "glext_windows_funcs.h"
 	#include "wglext_ptrs.h"
+	#include "wglext_funcs.h"
 #elif defined(__linux__)
 	#include "glext_linux_ptrs.h"
+	#include "glext_linux_funcs.h"
 	#include "glxext_ptrs.h"
+	#include "glxext_funcs.h"
 #endif
 
 //=====================================================================
-
-#ifdef __cplusplus
-extern "C"{
-#endif
-
-void glextLoadAll();
-#if defined(_WIN32)
-	void wglextLoadAll();
-#elif defined(__linux__)
-	void glxextLoadAll();
-#endif
-
-#ifdef __cplusplus
-} // extern "C"
-#endif
-
 
 #endif // _H_GLEXT_H_

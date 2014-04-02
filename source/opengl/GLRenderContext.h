@@ -17,45 +17,14 @@
 
 
 
-#define LOAD_EXTENSION(ext, flag) \
-	_info.flag = IsExtSupported(#ext); \
-	if(_info.flag){ \
-		_info.flag = glextLoad_##ext(); \
-		if(!_info.flag) DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_NOTIFICATION, MESSAGE_ERROR_EXTENSION_MISSING_ENTRIES, #ext); } \
-		else { DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_NOTIFICATION, MESSAGE_ERROR_UNSUPPORTED_EXTENSION, #ext); }
-
-#define LOAD_EXTENSION_REQ(ext, flag) \
-	_info.flag = IsExtSupported(#ext); \
-	if(_info.flag){ \
-		_info.flag = glextLoad_##ext(); \
-		if(!_info.flag){ \
-			DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_NOTIFICATION, MESSAGE_ERROR_EXTENSION_MISSING_ENTRIES, #ext); \
-			result = false; } } \
-	else{ \
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_NOTIFICATION, MESSAGE_ERROR_UNSUPPORTED_EXTENSION, #ext); \
-		result = false; }
-
-#define CHECK_EXTENSION(ext, flag) \
-	_info.flag = IsExtSupported(#ext); \
-	if(!_info.flag) \
+#define LOAD_EXTENSION(ext) \
+	if(!glextLoad_##ext()) \
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_NOTIFICATION, MESSAGE_ERROR_UNSUPPORTED_EXTENSION, #ext);
 
-#define CHECK_EXTENSION_REQ(ext, flag) \
-	_info.flag = IsExtSupported(#ext); \
-	if(!_info.flag){ \
+#define LOAD_EXTENSION_REQ(ext) \
+	if(!glextLoad_##ext()){ \
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_NOTIFICATION, MESSAGE_ERROR_UNSUPPORTED_EXTENSION, #ext); \
-		result = false; }
-
-#define LOAD_VERSION(ext, flag) \
-	_info.flag = glextLoad_##ext(); \
-	if(!_info.flag) \
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_NOTIFICATION, MESSAGE_ERROR_EXTENSION_MISSING_ENTRIES, #ext);
-
-#define LOAD_VERSION_REQ(ext, flag) \
-	_info.flag = glextLoad_##ext(); \
-	if(!_info.flag){ \
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_NOTIFICATION, MESSAGE_ERROR_EXTENSION_MISSING_ENTRIES, #ext); \
-		result = false; }
+		result = false; } \
 
 
 class GLRenderContext : public gls::IRenderContext
@@ -370,7 +339,12 @@ private:
 	bool GetInternalFormatInfo(GLenum type, GLenum internal_format, gls::InternalFormatInfo& info);
 	void DebugMessage(gls::DebugMessageSource source, gls::DebugMessageType type, gls::DebugMessageSeverity severity, ErrorMessageId message_id, ...);
 
+	// Include declarations of extension loading functions.
+	// Declare platform specific data.
 #if defined(_WIN32)
+
+	#include "extensions/glext_windows_load_decl.h"
+	#include "extensions/wglext_load_decl.h"
 
 	HWND _hwnd;
 	HGLRC _hglrc;
@@ -378,6 +352,9 @@ private:
 	HINSTANCE _instanceHandle;
 
 #elif defined(__linux__)
+
+	#include "extensions/glext_linux_load_decl.h"
+	#include "extensions/glxext_load_decl.h"
 
 	Display* _display;
 	Window _window;

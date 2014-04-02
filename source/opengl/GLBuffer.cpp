@@ -9,7 +9,6 @@ using namespace gls;
 	if(_id != *_currentId) \
 	{ \
 		glBindBuffer(_target, _id); \
-		OPENGL_ERROR_CHECK \
 		*_currentId = _id; \
 	}
 
@@ -74,13 +73,11 @@ bool GLBuffer::Create(GLState* gl_state, BufferType type, size_t size, const voi
 	_usage = usage;
 
 	glGenBuffers(1, &_id);
-	OPENGL_ERROR_CHECK
 
 	if(!_id)
 		return false;
 
 	glBindBuffer(_target, _id);
-	OPENGL_ERROR_CHECK
 	*_currentId = _id;
 
 	if(size > 0)
@@ -107,7 +104,6 @@ void GLBuffer::Destroy()
 			*_currentId = 0;
 		}
 		glDeleteBuffers(1, &_id);
-		OPENGL_ERROR_CHECK
 		_id = 0;
 		_size = 0;
 		_mapped = false;
@@ -125,7 +121,6 @@ void GLBuffer::BufferSubData(size_t offset, size_t size, const void* data)
 	assert(!_mapped);
 	STATE_MACHINE_HACK
 	glBufferSubData(_target, offset, size, data);
-	OPENGL_ERROR_CHECK
 }
 
 void GLBuffer::GetBufferSubData(size_t offset, size_t size, void* data)
@@ -134,7 +129,6 @@ void GLBuffer::GetBufferSubData(size_t offset, size_t size, void* data)
 	assert(!_mapped);
 	STATE_MACHINE_HACK
 	glGetBufferSubData(_target, offset, size, data);
-	OPENGL_ERROR_CHECK
 }
 
 /*
@@ -150,10 +144,8 @@ void* GLBuffer::Map(BufferAccess access, bool discard)
 	if(discard)
 	{
 		glBufferData(_target, _size, 0, GetGLEnum(_usage));	// or glInvalidateBufferData
-		OPENGL_ERROR_CHECK
 	}
 	void* ptr = glMapBuffer(_target, GetGLEnum(access));
-	OPENGL_ERROR_CHECK
 	_mapped = true;
 	return ptr;
 }
@@ -182,7 +174,6 @@ void* GLBuffer::MapRange(size_t offset, size_t length, uint map_flags)
 		bits |= GL_MAP_UNSYNCHRONIZED_BIT;
 
 	void* ptr = glMapBufferRange(_target, offset, length, bits);
-	OPENGL_ERROR_CHECK
 	_mapped = true;
 	return ptr;
 }
@@ -193,7 +184,6 @@ void GLBuffer::FlushMappedRange(size_t offset, size_t length)
 	assert(_mapped);
 	STATE_MACHINE_HACK
 	glFlushMappedBufferRange(_target, offset, length);
-	OPENGL_ERROR_CHECK
 }
 
 bool GLBuffer::Unmap()
@@ -202,7 +192,6 @@ bool GLBuffer::Unmap()
 	assert(_mapped);
 	STATE_MACHINE_HACK
 	bool result = (glUnmapBuffer(_target) == GL_TRUE);
-	OPENGL_ERROR_CHECK
 	_mapped = false;
 	return result;
 }
@@ -213,7 +202,6 @@ void GLBuffer::ClearData(PixelFormat internal_format, ImageFormat format, DataTy
 	assert(!_mapped);
 	STATE_MACHINE_HACK
 	glClearBufferData(_target, GetGLEnum(internal_format), GetGLEnum(format), GetGLEnum(type), data);
-	OPENGL_ERROR_CHECK
 }
 
 void GLBuffer::ClearSubData(PixelFormat internal_format, ImageFormat format, DataType type, size_t offset, size_t size, const void* data)
@@ -222,19 +210,16 @@ void GLBuffer::ClearSubData(PixelFormat internal_format, ImageFormat format, Dat
 	assert(!_mapped);
 	STATE_MACHINE_HACK
 	glClearBufferSubData(_target, GetGLEnum(internal_format), offset, size, GetGLEnum(format), GetGLEnum(type), data);
-	OPENGL_ERROR_CHECK
 }
 
 void GLBuffer::InvalidateData()
 {
 	assert(_id);
 	glInvalidateBufferData(_id);
-	OPENGL_ERROR_CHECK
 }
 
 void GLBuffer::InvalidateSubData(size_t offset, size_t size)
 {
 	assert(_id);
 	glInvalidateBufferSubData(_id, offset, size);
-	OPENGL_ERROR_CHECK
 }

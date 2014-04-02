@@ -25,36 +25,3 @@
 	#include "glxext_ptrs.h"
 #endif
 //=====================================================================
-
-
-
-#define INIT_FUNC_PTR(func)\
-		if(!InitFuncPtr(func, #func)) return false
-
-
-template <class _FUNCT>
-inline
-bool InitFuncPtr(_FUNCT& func_ptr, const char* func_name)
-{
-#if defined(_WIN32)
-	func_ptr = (_FUNCT)wglGetProcAddress(func_name);
-#elif defined(__linux__)
-	func_ptr = (_FUNCT)glXGetProcAddressARB((const GLubyte*)func_name);
-#endif
-	return func_ptr != 0;
-}
-
-// include extension loading function definitions
-//=====================================================================
-
-#if defined(_WIN32)
-	#include "glext_windows_ptrs.inc"
-	#include "glext_windows_load.inc"
-	#include "wglext_ptrs.inc"
-	#include "wglext_load.inc"
-#elif defined(__linux__)
-	#include "glext_linux_ptrs.inc"
-	#include "glext_linux_load.inc"
-	#include "glxext_ptrs.inc"
-	#include "glxext_load.inc"
-#endif

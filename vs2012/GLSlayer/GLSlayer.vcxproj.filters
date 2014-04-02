@@ -93,39 +93,39 @@
     <ClInclude Include="..\..\source\opengl\GLVertexFormat.h">
       <Filter>OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\opengl\extensions\glext_windows_ptrs.h">
-      <Filter>OpenGL\Extensions</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\GLSlayer\RenderContextInit.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\opengl\GLSlayerMessages.h">
       <Filter>OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\glext_windows_ptrs.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\glext_windows_funcs.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\wglext_funcs.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\glext_windows_flags.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\source\opengl\extensions\glelcg.rb">
-      <Filter>OpenGL\Extensions</Filter>
-    </None>
     <None Include="..\..\source\opengl\extensions\make_exts.bat">
       <Filter>OpenGL\Extensions</Filter>
     </None>
     <None Include="..\..\source\opengl\extensions\wgl_extensions.txt">
       <Filter>OpenGL\Extensions</Filter>
     </None>
-    <None Include="..\..\source\opengl\extensions\wglext_load.inc">
-      <Filter>OpenGL\Extensions</Filter>
-    </None>
     <None Include="..\..\source\opengl\extensions\wglext_ptrs.inc">
       <Filter>OpenGL\Extensions</Filter>
     </None>
-    <None Include="..\..\source\opengl\extensions\extensions_windows.txt">
-      <Filter>OpenGL\Extensions</Filter>
-    </None>
-    <None Include="..\..\source\opengl\extensions\glext_windows_load.inc">
-      <Filter>OpenGL\Extensions</Filter>
-    </None>
     <None Include="..\..\source\opengl\extensions\glext_windows_ptrs.inc">
+      <Filter>OpenGL\Extensions</Filter>
+    </None>
+    <None Include="..\..\source\opengl\extensions\glelcg-xml.rb">
       <Filter>OpenGL\Extensions</Filter>
     </None>
   </ItemGroup>
@@ -169,5 +169,10 @@
     <ClCompile Include="..\..\source\opengl\GLSlayerMessages.cpp">
       <Filter>OpenGL</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\source\opengl\extensions\extensions_windows.txt">
+      <Filter>OpenGL\Extensions</Filter>
+    </Text>
   </ItemGroup>
 </Project>

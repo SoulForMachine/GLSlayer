@@ -80,59 +80,45 @@ def GenerateSource
 		
 		c_file = File.new("#{out_fname_base}_ptrs.inc", "w")
 		h_file = File.new("#{out_fname_base}_ptrs.h", "w")
-		loadall_file = File.new("#{out_fname_base}_load.inc", "w")
-		
-		loadall_file << "\nvoid #{in_fname}LoadAll()\n{\n"
 
+		ext_name = ""
 		while line = in_file.gets()
 			if line =~ /\s*#ifndef\s+(GL_|WGL_|GLX_)/
 				ext_name = line.slice(/\s+(GL_|WGL_|GLX_)[a-z|A-Z|0-9|_]+/)
 				ext_name.strip!
-				
-				line = in_file.gets()
-				line = in_file.gets()
-				while line[0, 2] == "/*"
-					line = in_file.gets()
-				end
-				
-				if line =~ /#ifdef.*_PROTOTYPES/
-					if OkToProcess(ext_name)
-						h_file << "\n// #{ext_name}\n"
-						h_file << "\nEXTPTR bool glextLoad_#{ext_name}();\n\n"
+			elsif !ext_name.empty? && line =~ /#ifdef.+_PROTOTYPES/
+				if OkToProcess(ext_name)
+					h_file << "\n// #{ext_name}\n"
+					h_file << "\nEXTPTR bool glextLoad_#{ext_name}();\n\n"
 						
-						c_file << "\n// #{ext_name}\n"
-						c_file << "\nbool glextLoad_#{ext_name}()\n{\n"
+					c_file << "\n// #{ext_name}\n"
+					c_file << "\nbool glextLoad_#{ext_name}()\n{\n"
 						
-						loadall_file << "\tglextLoad_#{ext_name}();\n"
-						
-						while line = in_file.gets()
-							break if line =~ /\s*#endif.*/
+					while line = in_file.gets()
+						break if line =~ /\s*#endif.*/
 							
-							line = line.slice(/[a-z|A-Z|0-9|_]+\s*\(/)
-							func_name = line.slice(/[a-z|A-Z|0-9|_]+/)
-							func_type = "PFN#{func_name.upcase}PROC"
+						line = line.slice(/[a-z|A-Z|0-9|_]+\s*\(/)
+						func_name = line.slice(/[a-z|A-Z|0-9|_]+/)
+						func_type = "PFN#{func_name.upcase}PROC"
 							
-							h_file << "EXTPTR #{func_type} #{func_name};\n"
+						h_file << "EXTPTR #{func_type} #{func_name};\n"
 							
-							c_file << "\tINIT_FUNC_PTR(#{func_name});\n"
-						end
-						
-						c_file << "\n\treturn true;\n}\n"
+						c_file << "\tINIT_FUNC_PTR(#{func_name});\n"
 					end
+						
+					c_file << "\n\treturn true;\n}\n"
 				end
 			end
 		end
 		
-		loadall_file << "}\n"
-		
-	rescue
+	rescue Exception => ex
 		puts "Error occured while processing extension file."
+		puts ex.message
 		result = false
 	ensure
 		in_file.close() unless in_file.nil?
 		c_file.close() unless c_file.nil?
 		h_file.close() unless h_file.nil?
-		loadall_file.close() unless loadall_file.nil?
 	end
 
 	return result

@@ -30,20 +30,6 @@ using gls::uint64;
 using gls::int64;
 
 
-#define GL_ERROR_CHECKING 1
-#if defined(_DEBUG) && defined(GL_ERROR_CHECKING)
-/*	#define GL_INVALID_ENUM                   0x0500
-	#define GL_INVALID_VALUE                  0x0501
-	#define GL_INVALID_OPERATION              0x0502
-	#define GL_STACK_OVERFLOW                 0x0503
-	#define GL_STACK_UNDERFLOW                0x0504
-	#define GL_OUT_OF_MEMORY                  0x0505 */
-	__declspec(thread) extern GLenum __last_gl_error;
-	#define OPENGL_ERROR_CHECK assert((__last_gl_error = glGetError()) == GL_NO_ERROR);
-#else
-	#define OPENGL_ERROR_CHECK
-#endif
-
 #define BUFFER_OFFSET(offset) ((char*)0 + (offset))
 
 

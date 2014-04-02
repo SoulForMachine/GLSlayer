@@ -11,9 +11,47 @@
 using namespace gls;
 
 
-#ifdef _DEBUG
-__declspec(thread) GLenum __last_gl_error;
+// Inclide definitions of extension loading functions.
+// ===========================================================================
+
+#define INIT_FUNC_PTR(func) \
+	if(!InitFuncPtr(ptr_##func, #func)) { \
+		result = false; \
+		DebugMessage( \
+			DEBUG_SOURCE_THIRD_PARTY, \
+			DEBUG_TYPE_ERROR, \
+			DEBUG_SEVERITY_NOTIFICATION, \
+			MESSAGE_ERROR_EXTENSION_MISSING_ENTRIES, \
+			#func); }
+
+
+
+template <class _FUNCT>
+inline
+bool InitFuncPtr(_FUNCT& func_ptr, const char* func_name)
+{
+#if defined(_WIN32)
+	func_ptr = (_FUNCT)wglGetProcAddress(func_name);
+#elif defined(__linux__)
+	func_ptr = (_FUNCT)glXGetProcAddressARB((const GLubyte*)func_name);
 #endif
+	return func_ptr != 0;
+}
+
+
+#if defined(_WIN32)
+
+	#include "extensions/glext_windows_load_def.inc"
+	#include "extensions/wglext_load_def.inc"
+
+#elif defined(__linux__)
+
+	#include "extensions/glext_linux_load_def.inc"
+	#include "extensions/glxext_load_def.inc"
+
+#endif
+
+// ===========================================================================
 
 const PixelStore __defaultPixelStore;
 
@@ -26,84 +64,72 @@ void __SetPixelPackState(GLState* gl_state, const PixelStore* pixel_store)
 	if(ps->swapBytes != cur_ps->swapBytes)
 	{
 		glPixelStorei(GL_PACK_SWAP_BYTES, (GLint)ps->swapBytes);
-		OPENGL_ERROR_CHECK
 		cur_ps->swapBytes = ps->swapBytes;
 	}
 
 	if(ps->lsbFirst != cur_ps->lsbFirst)
 	{
 		glPixelStorei(GL_PACK_LSB_FIRST, (GLint)ps->lsbFirst);
-		OPENGL_ERROR_CHECK
 		cur_ps->lsbFirst = ps->lsbFirst;
 	}
 
 	if(ps->rowLength != cur_ps->rowLength)
 	{
 		glPixelStorei(GL_PACK_ROW_LENGTH, ps->rowLength);
-		OPENGL_ERROR_CHECK
 		cur_ps->rowLength = ps->rowLength;
 	}
 
 	if(ps->skipRows != cur_ps->skipRows)
 	{
 		glPixelStorei(GL_PACK_SKIP_ROWS, ps->skipRows);
-		OPENGL_ERROR_CHECK
 		cur_ps->skipRows = ps->skipRows;
 	}
 
 	if(ps->skipPixels != cur_ps->skipPixels)
 	{
 		glPixelStorei(GL_PACK_SKIP_PIXELS, ps->skipPixels);
-		OPENGL_ERROR_CHECK
 		cur_ps->skipPixels = ps->skipPixels;
 	}
 
 	if(ps->alignment != cur_ps->alignment)
 	{
 		glPixelStorei(GL_PACK_ALIGNMENT, ps->alignment);
-		OPENGL_ERROR_CHECK
 		cur_ps->alignment = ps->alignment;
 	}
 
 	if(ps->imageHeight != cur_ps->imageHeight)
 	{
 		glPixelStorei(GL_PACK_IMAGE_HEIGHT, ps->imageHeight);
-		OPENGL_ERROR_CHECK
 		cur_ps->imageHeight = ps->imageHeight;
 	}
 
 	if(ps->skipImages != cur_ps->skipImages)
 	{
 		glPixelStorei(GL_PACK_SKIP_IMAGES, ps->skipImages);
-		OPENGL_ERROR_CHECK
 		cur_ps->skipImages = ps->skipImages;
 	}
 
 	if(ps->compressedBlockWidth != cur_ps->compressedBlockWidth)
 	{
 		glPixelStorei(GL_PACK_COMPRESSED_BLOCK_WIDTH, ps->compressedBlockWidth);
-		OPENGL_ERROR_CHECK
 		cur_ps->compressedBlockWidth = ps->compressedBlockWidth;
 	}
 
 	if(ps->compressedBlockHeight != cur_ps->compressedBlockHeight)
 	{
 		glPixelStorei(GL_PACK_COMPRESSED_BLOCK_HEIGHT, ps->compressedBlockHeight);
-		OPENGL_ERROR_CHECK
 		cur_ps->compressedBlockHeight = ps->compressedBlockHeight;
 	}
 
 	if(ps->compressedBlockDepth != cur_ps->compressedBlockDepth)
 	{
 		glPixelStorei(GL_PACK_COMPRESSED_BLOCK_DEPTH, ps->compressedBlockDepth);
-		OPENGL_ERROR_CHECK
 		cur_ps->compressedBlockDepth = ps->compressedBlockDepth;
 	}
 
 	if(ps->compressedBlockSize != cur_ps->compressedBlockSize)
 	{
 		glPixelStorei(GL_PACK_COMPRESSED_BLOCK_SIZE, ps->compressedBlockSize);
-		OPENGL_ERROR_CHECK
 		cur_ps->compressedBlockSize = ps->compressedBlockSize;
 	}
 }
@@ -116,87 +142,76 @@ void __SetPixelUnpackState(GLState* gl_state, const PixelStore* pixel_store)
 	if(ps->swapBytes != cur_ps->swapBytes)
 	{
 		glPixelStorei(GL_UNPACK_SWAP_BYTES, (GLint)ps->swapBytes);
-		OPENGL_ERROR_CHECK
 		cur_ps->swapBytes = ps->swapBytes;
 	}
 
 	if(ps->lsbFirst != cur_ps->lsbFirst)
 	{
 		glPixelStorei(GL_UNPACK_LSB_FIRST, (GLint)ps->lsbFirst);
-		OPENGL_ERROR_CHECK
 		cur_ps->lsbFirst = ps->lsbFirst;
 	}
 
 	if(ps->rowLength != cur_ps->rowLength)
 	{
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, ps->rowLength);
-		OPENGL_ERROR_CHECK
 		cur_ps->rowLength = ps->rowLength;
 	}
 
 	if(ps->skipRows != cur_ps->skipRows)
 	{
 		glPixelStorei(GL_UNPACK_SKIP_ROWS, ps->skipRows);
-		OPENGL_ERROR_CHECK
 		cur_ps->skipRows = ps->skipRows;
 	}
 
 	if(ps->skipPixels != cur_ps->skipPixels)
 	{
 		glPixelStorei(GL_UNPACK_SKIP_PIXELS, ps->skipPixels);
-		OPENGL_ERROR_CHECK
 		cur_ps->skipPixels = ps->skipPixels;
 	}
 
 	if(ps->alignment != cur_ps->alignment)
 	{
 		glPixelStorei(GL_UNPACK_ALIGNMENT, ps->alignment);
-		OPENGL_ERROR_CHECK
 		cur_ps->alignment = ps->alignment;
 	}
 
 	if(ps->imageHeight != cur_ps->imageHeight)
 	{
 		glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, ps->imageHeight);
-		OPENGL_ERROR_CHECK
 		cur_ps->imageHeight = ps->imageHeight;
 	}
 
 	if(ps->skipImages != cur_ps->skipImages)
 	{
 		glPixelStorei(GL_UNPACK_SKIP_IMAGES, ps->skipImages);
-		OPENGL_ERROR_CHECK
 		cur_ps->skipImages = ps->skipImages;
 	}
 
 	if(ps->compressedBlockWidth != cur_ps->compressedBlockWidth)
 	{
 		glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_WIDTH, ps->compressedBlockWidth);
-		OPENGL_ERROR_CHECK
 		cur_ps->compressedBlockWidth = ps->compressedBlockWidth;
 	}
 
 	if(ps->compressedBlockHeight != cur_ps->compressedBlockHeight)
 	{
 		glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_HEIGHT, ps->compressedBlockHeight);
-		OPENGL_ERROR_CHECK
 		cur_ps->compressedBlockHeight = ps->compressedBlockHeight;
 	}
 
 	if(ps->compressedBlockDepth != cur_ps->compressedBlockDepth)
 	{
 		glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_DEPTH, ps->compressedBlockDepth);
-		OPENGL_ERROR_CHECK
 		cur_ps->compressedBlockDepth = ps->compressedBlockDepth;
 	}
 
 	if(ps->compressedBlockSize != cur_ps->compressedBlockSize)
 	{
 		glPixelStorei(GL_UNPACK_COMPRESSED_BLOCK_SIZE, ps->compressedBlockSize);
-		OPENGL_ERROR_CHECK
 		cur_ps->compressedBlockSize = ps->compressedBlockSize;
 	}
 }
+
 
 GLRenderContext::GLRenderContext(IDebugLogger* logger)
 {
@@ -236,11 +251,9 @@ bool GLRenderContext::InitCommon(uint version)
 	GLuint vao = 0;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
-	OPENGL_ERROR_CHECK
 
 	glGenProgramPipelines(1, &_pipeline);
 	glBindProgramPipeline(_pipeline);
-	OPENGL_ERROR_CHECK
 
 	_initialized = true;
 
@@ -285,7 +298,6 @@ void GLRenderContext::GetContextInfo()
 	_info.maxViewportHeight = vport_dims[1];
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &_info.maxVertexAttribs);
 	_info.maxVertexAttribBindings = _info.maxVertexAttribs; // maxVertexAttribBindings will be overwritten below if version is >= 430
-	glGetIntegerv(GL_MAX_TEXTURE_COORDS, &_info.maxTextureCoords);
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &_info.maxCombinedTextureImageUnits);
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &_info.maxTextureAnisotropy);
 	glGetIntegerv(GL_MAX_DRAW_BUFFERS, &_info.maxDrawBuffers);
@@ -421,7 +433,6 @@ void GLRenderContext::GetContextInfo()
 		glGetIntegerv(GL_MAX_VERTEX_ATTRIB_BINDINGS, &_info.maxVertexAttribBindings);
 	}
 	
-	OPENGL_ERROR_CHECK
 }
 
 bool GLRenderContext::LoadOpenGLExtensions(uint version)
@@ -429,127 +440,60 @@ bool GLRenderContext::LoadOpenGLExtensions(uint version)
 	bool result = true;
 
 #if defined (_WIN32)
-	LOAD_VERSION_REQ(GL_VERSION_1_2, extVersion_1_2);
-	LOAD_VERSION_REQ(GL_VERSION_1_3, extVersion_1_3);
+	LOAD_EXTENSION_REQ(GL_VERSION_1_2);
+	LOAD_EXTENSION_REQ(GL_VERSION_1_3);
 #endif
-	LOAD_VERSION_REQ(GL_VERSION_1_4, extVersion_1_4);
-	LOAD_VERSION_REQ(GL_VERSION_1_5, extVersion_1_5);
-	LOAD_VERSION_REQ(GL_VERSION_2_0, extVersion_2_0);
+	LOAD_EXTENSION_REQ(GL_VERSION_1_4);
+	LOAD_EXTENSION_REQ(GL_VERSION_1_5);
+	LOAD_EXTENSION_REQ(GL_VERSION_2_0);
+	LOAD_EXTENSION_REQ(GL_VERSION_2_1);
+	LOAD_EXTENSION_REQ(GL_VERSION_3_0);
+	LOAD_EXTENSION_REQ(GL_VERSION_3_1);
+	LOAD_EXTENSION_REQ(GL_VERSION_3_2);
+	LOAD_EXTENSION_REQ(GL_VERSION_3_3);
+	LOAD_EXTENSION_REQ(GL_EXT_texture_sRGB);
+	LOAD_EXTENSION_REQ(GL_EXT_texture_filter_anisotropic);
+	LOAD_EXTENSION(GL_EXT_texture_snorm);
 
-	LOAD_VERSION_REQ(GL_VERSION_2_1, extVersion_2_1);
-	CHECK_EXTENSION_REQ(GL_ARB_pixel_buffer_object, extPixelBufferObject);
-	CHECK_EXTENSION_REQ(GL_EXT_texture_sRGB, extTextureSRGB);
-	
-	LOAD_VERSION_REQ(GL_VERSION_3_0, extVersion_3_0);
-	LOAD_EXTENSION_REQ(GL_ARB_framebuffer_object, extFramebufferObject);
-	LOAD_EXTENSION_REQ(GL_ARB_map_buffer_range, extMapBufferRange);
-	LOAD_EXTENSION_REQ(GL_ARB_vertex_array_object, extVertexArrayObject);
-	CHECK_EXTENSION_REQ(GL_ARB_depth_buffer_float, extDepthBufferFloat);
-	CHECK_EXTENSION_REQ(GL_ARB_framebuffer_sRGB, extFramebufferSRGB);
-	CHECK_EXTENSION_REQ(GL_ARB_half_float_vertex, extHalfFloatVertex);
-	CHECK_EXTENSION_REQ(GL_ARB_texture_compression_rgtc, extTexCompressionRGTC);
-	CHECK_EXTENSION_REQ(GL_ARB_texture_rg, extTextureRG);
-	CHECK_EXTENSION_REQ(GL_EXT_texture_filter_anisotropic, extTextureFilterAnisotropic);
-
-	LOAD_VERSION_REQ(GL_VERSION_3_1, extVersion_3_1);
-	LOAD_EXTENSION_REQ(GL_ARB_copy_buffer, extCopyBuffer);
-	LOAD_EXTENSION_REQ(GL_ARB_uniform_buffer_object, extUniformBufferObject);
-	CHECK_EXTENSION_REQ(GL_ARB_texture_rectangle, extTextureRectangle);
-	CHECK_EXTENSION(GL_EXT_texture_snorm, extTextureSNorm);
-	
-	LOAD_VERSION_REQ(GL_VERSION_3_2, extVersion_3_2);
-	CHECK_EXTENSION(GL_ARB_depth_clamp, extDepthClamp);
-	LOAD_EXTENSION_REQ(GL_ARB_draw_elements_base_vertex, extDrawElementsBaseVertex);
-	LOAD_EXTENSION_REQ(GL_ARB_provoking_vertex, extProvokingVertex);
-	LOAD_EXTENSION_REQ(GL_ARB_sync, extSync);
-	LOAD_EXTENSION_REQ(GL_ARB_texture_multisample, extTextureMultisample);
-	LOAD_EXTENSION_REQ(GL_ARB_geometry_shader4, extGeometryShader4);
-	CHECK_EXTENSION_REQ(GL_ARB_fragment_coord_conventions, extFragmentCoordConventions);
-	CHECK_EXTENSION_REQ(GL_ARB_seamless_cube_map, extSeamlessCubeMap);
-	
-	LOAD_VERSION_REQ(GL_VERSION_3_3, extVersion_3_3);
-	LOAD_EXTENSION_REQ(GL_ARB_blend_func_extended, extBlendFuncExtended);
-	LOAD_EXTENSION_REQ(GL_ARB_sampler_objects, extSamplerObjects);
-	CHECK_EXTENSION_REQ(GL_ARB_explicit_attrib_location, extExplicitAttribLocation);
-	CHECK_EXTENSION_REQ(GL_ARB_occlusion_query2, extOcclusionQuery2);
-	CHECK_EXTENSION(GL_ARB_shader_bit_encoding, extShaderBitEncoding);
-	CHECK_EXTENSION_REQ(GL_ARB_texture_rgb10_a2ui, extTextureRGB10A2ui);
-	CHECK_EXTENSION_REQ(GL_ARB_texture_swizzle, extTextureSwizzle);
-	LOAD_EXTENSION_REQ(GL_ARB_timer_query, extTimerQuery);
-	CHECK_EXTENSION_REQ(GL_ARB_vertex_type_2_10_10_10_rev, extVertexType_2_10_10_10_rev);
-	
 	if(version >= 400)
 	{
-		LOAD_VERSION_REQ(GL_VERSION_4_0, extVersion_4_0);
-		CHECK_EXTENSION_REQ(GL_ARB_texture_query_lod, extTextureQueryLod);
-		LOAD_EXTENSION_REQ(GL_ARB_draw_indirect, extDrawIndirect);
-		CHECK_EXTENSION_REQ(GL_ARB_gpu_shader5, extGPUShader5);
-		LOAD_EXTENSION_REQ(GL_ARB_gpu_shader_fp64, extGPUShaderFP64);
-		LOAD_EXTENSION_REQ(GL_ARB_shader_subroutine, extShaderSubroutine);
-		LOAD_EXTENSION_REQ(GL_ARB_tessellation_shader, extTessellationShader);
-		CHECK_EXTENSION_REQ(GL_ARB_texture_buffer_object_rgb32, extTextureBufferObjectRGB32);
-		CHECK_EXTENSION_REQ(GL_ARB_texture_cube_map_array, extTextureCubeMapArray);
-		CHECK_EXTENSION_REQ(GL_ARB_texture_gather, extTextureGather);
-		LOAD_EXTENSION_REQ(GL_ARB_transform_feedback2, extTransformFeedback2);
-		LOAD_EXTENSION_REQ(GL_ARB_transform_feedback3, extTransformFeedback3);
+		LOAD_EXTENSION_REQ(GL_VERSION_4_0);
 	}
 
 	if(version >= 410)
 	{
-		//LOAD_VERSION_REQ(GL_VERSION_4_1, extVersion_4_1);
-		LOAD_EXTENSION_REQ(GL_ARB_ES2_compatibility, extES2Compatibility);
-		LOAD_EXTENSION_REQ(GL_ARB_get_program_binary, extGetProgramBinary);
-		CHECK_EXTENSION_REQ(GL_ARB_shader_precision, extShaderPrecision);
-		LOAD_EXTENSION_REQ(GL_ARB_vertex_attrib_64bit, extVertexAttrib64bit);
-		_info.extVersion_4_1 = result;
+		LOAD_EXTENSION_REQ(GL_VERSION_4_1);
 	}
-	LOAD_EXTENSION_REQ(GL_ARB_separate_shader_objects, extSeparateShaderObjects);
-	LOAD_EXTENSION_REQ(GL_ARB_viewport_array, extViewportArray);
+	else
+	{
+		LOAD_EXTENSION_REQ(GL_ARB_separate_shader_objects);
+		LOAD_EXTENSION_REQ(GL_ARB_viewport_array);
+	}
 
 	if(version >= 420)
 	{
-		//LOAD_VERSION_REQ(GL_VERSION_4_2, extVersion_4_2);
-		CHECK_EXTENSION_REQ(GL_ARB_shading_language_420pack, extShaderLanguage420Pack);
-		LOAD_EXTENSION_REQ(GL_ARB_transform_feedback_instanced, extTransformFeedbackInstanced);
-		CHECK_EXTENSION_REQ(GL_ARB_compressed_texture_pixel_storage, extCompressedTexturePixelStorage);
-		CHECK_EXTENSION_REQ(GL_ARB_conservative_depth, extConservativeDepth);
-		LOAD_EXTENSION_REQ(GL_ARB_internalformat_query, extInternalformatQuery);
-		CHECK_EXTENSION_REQ(GL_ARB_map_buffer_alignment, extMapBufferAlignment);
-		LOAD_EXTENSION_REQ(GL_ARB_shader_atomic_counters, extShaderAtomicCounters);
-		LOAD_EXTENSION_REQ(GL_ARB_shader_image_load_store, extShaderImageLoadStore);
-		CHECK_EXTENSION_REQ(GL_ARB_shading_language_packing, extShadingLanguagePacking);
-		CHECK_EXTENSION(GL_ARB_texture_compression_bptc, extTextureCompressionBPTC);
-		_info.extVersion_4_2 = result;
+		LOAD_EXTENSION_REQ(GL_VERSION_4_2);
 	}
-	LOAD_EXTENSION_REQ(GL_ARB_base_instance, extBaseInstance);
-	LOAD_EXTENSION_REQ(GL_ARB_texture_storage, extTextureStorage);
+	else
+	{
+		LOAD_EXTENSION_REQ(GL_ARB_base_instance);
+		LOAD_EXTENSION_REQ(GL_ARB_texture_storage);
+	}
 
 	if(version >= 430)
 	{
-		//LOAD_VERSION_REQ(GL_VERSION_4_3, extVersion_4_3);
-		CHECK_EXTENSION_REQ(GL_ARB_arrays_of_arrays, extArraysOfArrays);
-		LOAD_EXTENSION_REQ(GL_ARB_clear_buffer_object, extClearBufferObject);
-		LOAD_EXTENSION_REQ(GL_ARB_compute_shader, extComputeShader);
-		LOAD_EXTENSION_REQ(GL_ARB_copy_image, extCopyImage);
-		CHECK_EXTENSION_REQ(GL_ARB_ES3_compatibility, extES3Compatibility);
-		CHECK_EXTENSION_REQ(GL_ARB_fragment_layer_viewport, extFragmentLayerViewport);
-		LOAD_EXTENSION_REQ(GL_ARB_framebuffer_no_attachments, extFramebufferNoAttachments);
-		LOAD_EXTENSION_REQ(GL_ARB_internalformat_query2, extInternalformatQuery2);
-		LOAD_EXTENSION_REQ(GL_ARB_invalidate_subdata, extInvalidateSubdata);
-		LOAD_EXTENSION_REQ(GL_ARB_multi_draw_indirect, extMultiDrawIndirect);
-		//LOAD_EXTENSION_REQ(GL_ARB_program_interface_query, extProgramInterfaceQuery);
-		CHECK_EXTENSION_REQ(GL_ARB_shader_image_size, extShaderImageSize);
-		LOAD_EXTENSION_REQ(GL_ARB_shader_storage_buffer_object, extShaderStorageBufferObject);
-		CHECK_EXTENSION_REQ(GL_ARB_stencil_texturing, extStencilTexturing);
-		LOAD_EXTENSION_REQ(GL_ARB_texture_buffer_range, extTextureBufferRange);
-		CHECK_EXTENSION_REQ(GL_ARB_texture_query_levels, extTextureQueryLevel);
-		LOAD_EXTENSION_REQ(GL_ARB_texture_storage_multisample, extTextureStorageMultisample);
-		LOAD_EXTENSION_REQ(GL_ARB_texture_view, extTextureView);
-		LOAD_EXTENSION_REQ(GL_ARB_vertex_attrib_binding, extVertexAttribBinding);
-		_info.extVersion_4_3 = result;
+		LOAD_EXTENSION_REQ(GL_VERSION_4_3);
 	}
-	CHECK_EXTENSION(GL_ARB_explicit_uniform_location, extExplicitUniformLocation);
-	LOAD_EXTENSION(GL_KHR_debug, extDebug);
+	else
+	{
+		LOAD_EXTENSION(GL_ARB_explicit_uniform_location);
+		LOAD_EXTENSION(GL_KHR_debug);
+	}
+
+	if(version >= 440)
+	{
+		LOAD_EXTENSION_REQ(GL_VERSION_4_4);
+	}
 
 	result = LoadPlatformOpenGLExtensions() && result;
 
@@ -605,14 +549,13 @@ void GLRenderContext::ActiveVertexFormat(IVertexFormat* format)
 {
 	_vertexFormat = static_cast<GLVertexFormat*>(format);
 
-	if(_info.extVertexAttribBinding)
+	if(_info.featuresGL.ARB_vertex_attrib_binding)
 	{
 		int* vert_attrib_index = _enabledVertexAttribs;
 
 		while(*vert_attrib_index != -1)
 		{
 			glDisableVertexAttribArray(*vert_attrib_index);
-			OPENGL_ERROR_CHECK
 			_vertexAttribs[*vert_attrib_index].enabled = false;
 			++vert_attrib_index;
 		}
@@ -637,12 +580,10 @@ void GLRenderContext::ActiveVertexFormat(IVertexFormat* format)
 				else
 					glVertexAttribFormat(desc.attribute, desc.numComponents, GetGLEnum(desc.type), desc.normalized, (GLuint)desc.offset);
 			}
-			OPENGL_ERROR_CHECK
 			
 			if(desc.divisor != vattrib.divisor)
 			{
 				glVertexBindingDivisor(desc.attribute, desc.divisor);
-				OPENGL_ERROR_CHECK
 				vattrib.divisor = desc.divisor;
 			}
 
@@ -668,7 +609,6 @@ void GLRenderContext::EnablePrimitiveRestart(bool enable)
 		glEnable(GL_PRIMITIVE_RESTART);
 	else
 		glDisable(GL_PRIMITIVE_RESTART);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnablePrimitiveRestartFixedIndex(bool enable)
@@ -677,49 +617,41 @@ void GLRenderContext::EnablePrimitiveRestartFixedIndex(bool enable)
 		glEnable(GL_PRIMITIVE_RESTART_FIXED_INDEX);
 	else
 		glDisable(GL_PRIMITIVE_RESTART_FIXED_INDEX);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::PrimitiveRestartIndex(uint index)
 {
 	glPrimitiveRestartIndex(index);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::ProvokingVertex(VertexConvention vertex_convention)
 {
 	glProvokingVertex(GetGLEnum(vertex_convention));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::PatchVertexCount(int count)
 {
 	glPatchParameteri(GL_PATCH_VERTICES, count);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::PatchDefaultOuterLevels(float values[4])
 {
 	glPatchParameterfv(GL_PATCH_DEFAULT_OUTER_LEVEL, values);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::PatchDefaultInnerLevels(float values[2])
 {
 	glPatchParameterfv(GL_PATCH_DEFAULT_INNER_LEVEL, values);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::BeginConditionalRender(IQuery* query, ConditionalRenderMode mode)
 {
 	glBeginConditionalRender(static_cast<GLQuery*>(query)->GetID(), mode);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EndConditionalRender()
 {
 	glEndConditionalRender();
-	OPENGL_ERROR_CHECK
 }
 
 /*
@@ -731,42 +663,35 @@ void GLRenderContext::BeginTransformFeedback(PrimitiveType primitive, ITransform
 	if(tf_id != _glState.transformFeedback)
 	{
 		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, tf_id);
-		OPENGL_ERROR_CHECK
 		_glState.transformFeedback = tf_id;
 	}
 
 	glBeginTransformFeedback(GetGLEnum(primitive));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EndTransformFeedback()
 {
 	glEndTransformFeedback();
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::PauseTransformFeedback()
 {
 	glPauseTransformFeedback();
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::ResumeTransformFeedback()
 {
 	glResumeTransformFeedback();
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::Viewport(int x, int y, int width, int height)
 {
 	glViewport(x, y, width, height);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::ViewportIndexed(uint index, float x, float y, float width, float height)
 {
 	glViewportIndexedf(index, x, y, width, height);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableFaceCulling(bool enable)
@@ -775,25 +700,21 @@ void GLRenderContext::EnableFaceCulling(bool enable)
 		glEnable(GL_CULL_FACE);
 	else
 		glDisable(GL_CULL_FACE);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::CullFace(PolygonFace face)
 {
 	glCullFace(GetGLEnum(face));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::FrontFace(VertexOrder orient)
 {
 	glFrontFace(GetGLEnum(orient));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::RasterizationMode(RasterMode mode)
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GetGLEnum(mode));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableRasterizerDiscard(bool enable)
@@ -802,7 +723,6 @@ void GLRenderContext::EnableRasterizerDiscard(bool enable)
 		glEnable(GL_RASTERIZER_DISCARD);
 	else
 		glDisable(GL_RASTERIZER_DISCARD);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableMultisampling(bool enable)
@@ -811,7 +731,6 @@ void GLRenderContext::EnableMultisampling(bool enable)
 		glEnable(GL_MULTISAMPLE);
 	else
 		glDisable(GL_MULTISAMPLE);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableSampleAlphaToCoverage(bool enable)
@@ -820,7 +739,6 @@ void GLRenderContext::EnableSampleAlphaToCoverage(bool enable)
 		glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 	else
 		glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableSampleAlphaToOne(bool enable)
@@ -829,7 +747,6 @@ void GLRenderContext::EnableSampleAlphaToOne(bool enable)
 		glEnable(GL_SAMPLE_ALPHA_TO_ONE);
 	else
 		glDisable(GL_SAMPLE_ALPHA_TO_ONE);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableSampleCoverage(bool enable)
@@ -838,7 +755,6 @@ void GLRenderContext::EnableSampleCoverage(bool enable)
 		glEnable(GL_SAMPLE_COVERAGE);
 	else
 		glDisable(GL_SAMPLE_COVERAGE);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableSampleShading(bool enable)
@@ -847,33 +763,28 @@ void GLRenderContext::EnableSampleShading(bool enable)
 		glEnable(GL_SAMPLE_SHADING);
 	else
 		glDisable(GL_SAMPLE_SHADING);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SampleCoverage(float value, bool invert)
 {
 	glSampleCoverage(value, invert);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SampleMask(uint index, uint mask)
 {
 	assert(index < (uint)_info.maxSampleMaskWords);
 	glSampleMaski(index, mask);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::GetSamplePosition(uint index, float position[2])
 {
 	assert(index < (uint)_info.numSamples);
 	glGetMultisamplefv(GL_SAMPLE_POSITION, index, position);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::MinSampleShading(float value)
 {
 	glMinSampleShading(value);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableScissorTest(bool enable)
@@ -882,7 +793,6 @@ void GLRenderContext::EnableScissorTest(bool enable)
 		glEnable(GL_SCISSOR_TEST);
 	else
 		glDisable(GL_SCISSOR_TEST);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableScissorTestIndexed(uint index, bool enable)
@@ -891,19 +801,16 @@ void GLRenderContext::EnableScissorTestIndexed(uint index, bool enable)
 		glEnablei(GL_SCISSOR_TEST, index);
 	else
 		glDisablei(GL_SCISSOR_TEST, index);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::Scissor(int x, int y, int width, int height)
 {
 	glScissor(x, y, width, height);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::ScissorIndexed(uint index, int x, int y, int width, int height)
 {
 	glScissorIndexed(index, x, y, width, height);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableDepthTest(bool enable)
@@ -912,31 +819,26 @@ void GLRenderContext::EnableDepthTest(bool enable)
 		glEnable(GL_DEPTH_TEST);
 	else
 		glDisable(GL_DEPTH_TEST);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::DepthTestFunc(CompareFunc func)
 {
 	glDepthFunc(GetGLEnum(func));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::DepthRange(float dnear, float dfar)
 {
 	glDepthRange(dnear, dfar);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::DepthRangeIndexed(uint index, float dnear, float dfar)
 {
 	glDepthRangeIndexed(index, dnear, dfar);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::DepthOffset(float factor, float units)
 {
 	glPolygonOffset(factor, units);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableDepthClamp(bool enable)
@@ -945,7 +847,6 @@ void GLRenderContext::EnableDepthClamp(bool enable)
 		glEnable(GL_DEPTH_CLAMP);
 	else
 		glDisable(GL_DEPTH_CLAMP);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableStencilTest(bool enable)
@@ -954,19 +855,16 @@ void GLRenderContext::EnableStencilTest(bool enable)
 		glEnable(GL_STENCIL_TEST);
 	else
 		glDisable(GL_STENCIL_TEST);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::StencilFunc(PolygonFace face, CompareFunc func, int ref, uint mask)
 {
 	glStencilFuncSeparate(GetGLEnum(face), GetGLEnum(func), ref, mask);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::StencilOperation(PolygonFace face, StencilOp stencil_fail, StencilOp depth_fail, StencilOp depth_pass)
 {
 	glStencilOpSeparate(GetGLEnum(face), GetGLEnum(stencil_fail), GetGLEnum(depth_fail), GetGLEnum(depth_pass));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableBlending(bool enable)
@@ -975,7 +873,6 @@ void GLRenderContext::EnableBlending(bool enable)
 		glEnable(GL_BLEND);
 	else
 		glDisable(GL_BLEND);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableBlending(uint buffer, bool enable)
@@ -984,61 +881,51 @@ void GLRenderContext::EnableBlending(uint buffer, bool enable)
 		glEnablei(GL_BLEND, buffer);
 	else
 		glDisablei(GL_BLEND, buffer);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::BlendingColor(float color[4])
 {
 	glBlendColor(color[0], color[1], color[2], color[3]);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::BlendingFunc(BlendFunc src_factor, BlendFunc dest_factor)
 {
 	glBlendFunc(GetGLEnum(src_factor), GetGLEnum(dest_factor));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::BlendingFunc(BlendFunc src_rgb_factor, BlendFunc dest_rgb_factor, BlendFunc src_alpha_factor, BlendFunc dest_alpha_factor)
 {
 	glBlendFuncSeparate(GetGLEnum(src_rgb_factor), GetGLEnum(dest_rgb_factor), GetGLEnum(src_alpha_factor), GetGLEnum(dest_alpha_factor));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::BlendingFunc(uint buffer, BlendFunc src_factor, BlendFunc dest_factor)
 {
 	glBlendFunci(buffer, GetGLEnum(src_factor), GetGLEnum(dest_factor));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::BlendingFunc(uint buffer, BlendFunc src_rgb_factor, BlendFunc dest_rgb_factor, BlendFunc src_alpha_factor, BlendFunc dest_alpha_factor)
 {
 	glBlendFuncSeparatei(buffer, GetGLEnum(src_rgb_factor), GetGLEnum(dest_rgb_factor), GetGLEnum(src_alpha_factor), GetGLEnum(dest_alpha_factor));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::BlendingOperation(BlendOp op)
 {
 	glBlendEquation(GetGLEnum(op));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::BlendingOperation(BlendOp op_rgb, BlendOp op_alpha)
 {
 	glBlendEquationSeparate(GetGLEnum(op_rgb), GetGLEnum(op_alpha));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::BlendingOperation(uint buffer, BlendOp op)
 {
 	glBlendEquationi(buffer, GetGLEnum(op));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::BlendingOperation(uint buffer, BlendOp op_rgb, BlendOp op_alpha)
 {
 	glBlendEquationSeparatei(buffer, GetGLEnum(op_rgb), GetGLEnum(op_alpha));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableLogicOperation(bool enable)
@@ -1047,13 +934,11 @@ void GLRenderContext::EnableLogicOperation(bool enable)
 		glEnable(GL_COLOR_LOGIC_OP);
 	else
 		glDisable(GL_COLOR_LOGIC_OP);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::LogicOperation(LogicOp op)
 {
 	glLogicOp(GetGLEnum(op));
-	OPENGL_ERROR_CHECK
 }
 
 /*
@@ -1070,7 +955,6 @@ void GLRenderContext::ActiveColorBuffers(IFramebuffer* fbuf, size_t count, const
 	if(id != _glState.drawFbuf)
 	{
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id);
-		OPENGL_ERROR_CHECK
 		_glState.drawFbuf = id;
 	}
 
@@ -1081,13 +965,11 @@ void GLRenderContext::ActiveColorBuffers(IFramebuffer* fbuf, size_t count, const
 			enums[i] = GetGLEnum(buffers[i]);
 
 		glDrawBuffers((GLsizei)count, enums);
-		OPENGL_ERROR_CHECK
 	}
 	else
 	{
 		GLenum enums[] = { GL_NONE };
 		glDrawBuffers(1, enums);
-		OPENGL_ERROR_CHECK
 	}
 }
 
@@ -1097,7 +979,6 @@ void GLRenderContext::EnableFramebufferSRGB(bool enable)
 		glEnable(GL_FRAMEBUFFER_SRGB);
 	else
 		glDisable(GL_FRAMEBUFFER_SRGB);
-	OPENGL_ERROR_CHECK
 }
 
 /*
@@ -1106,7 +987,6 @@ void GLRenderContext::EnableFramebufferSRGB(bool enable)
 void GLRenderContext::EnableColorWrite(bool r, bool g, bool b, bool a)
 {
 	glColorMask(r, g, b, a);
-	OPENGL_ERROR_CHECK
 }
 
 /*
@@ -1115,19 +995,16 @@ void GLRenderContext::EnableColorWrite(bool r, bool g, bool b, bool a)
 void GLRenderContext::EnableColorWrite(uint buffer, bool r, bool g, bool b, bool a)
 {
 	glColorMaski(buffer, r, g, b, a);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableDepthWrite(bool enable)
 {
 	glDepthMask(enable);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableStencilWrite(PolygonFace face, uint mask)
 {
 	glStencilMaskSeparate(GetGLEnum(face), mask);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::ClearColorBuffer(IFramebuffer* fbuf, uint buffer, float color[4])
@@ -1138,12 +1015,10 @@ void GLRenderContext::ClearColorBuffer(IFramebuffer* fbuf, uint buffer, float co
 	if(id != _glState.drawFbuf)
 	{
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id);
-		OPENGL_ERROR_CHECK
 		_glState.drawFbuf = id;
 	}
 
 	glClearBufferfv(GL_COLOR, buffer, color);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::ClearColorBuffer(IFramebuffer* fbuf, uint buffer, int color[4])
@@ -1154,12 +1029,10 @@ void GLRenderContext::ClearColorBuffer(IFramebuffer* fbuf, uint buffer, int colo
 	if(id != _glState.drawFbuf)
 	{
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id);
-		OPENGL_ERROR_CHECK
 		_glState.drawFbuf = id;
 	}
 
 	glClearBufferiv(GL_COLOR, buffer, color);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::ClearColorBuffer(IFramebuffer* fbuf, uint buffer, uint color[4])
@@ -1170,12 +1043,10 @@ void GLRenderContext::ClearColorBuffer(IFramebuffer* fbuf, uint buffer, uint col
 	if(id != _glState.drawFbuf)
 	{
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id);
-		OPENGL_ERROR_CHECK
 		_glState.drawFbuf = id;
 	}
 
 	glClearBufferuiv(GL_COLOR, buffer, color);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::ClearDepthBuffer(IFramebuffer* fbuf, float depth)
@@ -1184,12 +1055,10 @@ void GLRenderContext::ClearDepthBuffer(IFramebuffer* fbuf, float depth)
 	if(id != _glState.drawFbuf)
 	{
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id);
-		OPENGL_ERROR_CHECK
 		_glState.drawFbuf = id;
 	}
 
 	glClearBufferfv(GL_DEPTH, 0, &depth);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::ClearStencilBuffer(IFramebuffer* fbuf, int stencil)
@@ -1198,12 +1067,10 @@ void GLRenderContext::ClearStencilBuffer(IFramebuffer* fbuf, int stencil)
 	if(id != _glState.drawFbuf)
 	{
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id);
-		OPENGL_ERROR_CHECK
 		_glState.drawFbuf = id;
 	}
 
 	glClearBufferiv(GL_STENCIL, 0, &stencil);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::ClearDepthStencilBuffer(IFramebuffer* fbuf, float depth, int stencil)
@@ -1212,12 +1079,10 @@ void GLRenderContext::ClearDepthStencilBuffer(IFramebuffer* fbuf, float depth, i
 	if(id != _glState.drawFbuf)
 	{
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id);
-		OPENGL_ERROR_CHECK
 		_glState.drawFbuf = id;
 	}
 
 	glClearBufferfi(GL_DEPTH_STENCIL, 0, depth, stencil);
-	OPENGL_ERROR_CHECK
 }
 
 /*
@@ -1231,25 +1096,21 @@ void GLRenderContext::ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_c
 	if(id != _glState.readFbuf)
 	{
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, id);
-		OPENGL_ERROR_CHECK
 		_glState.readFbuf = id;
 	}
 
 	if(source_color_buf != COLOR_BUFFER_NONE)
 	{
 		glReadBuffer(GetGLEnum(source_color_buf));
-		OPENGL_ERROR_CHECK
 	}
 
 	// apply pixel store states
 	__SetPixelPackState(&_glState, pixel_store);
 
 	glClampColor(GL_CLAMP_READ_COLOR, GetGLEnum(color_clamp));
-	OPENGL_ERROR_CHECK
 
 	// read framebuffer pixels into buffer
 	glReadPixels(x, y, width, height, GetGLEnum(format), GetGLEnum(type), buffer);
-	OPENGL_ERROR_CHECK
 }
 
 /*
@@ -1263,14 +1124,12 @@ void GLRenderContext::ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_c
 	if(id != _glState.readFbuf)
 	{
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, id);
-		OPENGL_ERROR_CHECK
 		_glState.readFbuf = id;
 	}
 
 	if(source_color_buf != COLOR_BUFFER_NONE)
 	{
 		glReadBuffer(GetGLEnum(source_color_buf));
-		OPENGL_ERROR_CHECK
 	}
 
 	assert(buffer);
@@ -1278,7 +1137,6 @@ void GLRenderContext::ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_c
 	if(id != _glState.pixelPackBuf)
 	{
 		glBindBuffer(GL_PIXEL_PACK_BUFFER, id);
-		OPENGL_ERROR_CHECK
 		_glState.pixelPackBuf = id;
 	}
 
@@ -1286,11 +1144,9 @@ void GLRenderContext::ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_c
 	__SetPixelPackState(&_glState, pixel_store);
 
 	glClampColor(GL_CLAMP_READ_COLOR, GetGLEnum(color_clamp));
-	OPENGL_ERROR_CHECK
 
 	// read framebuffer pixels into buffer
 	glReadPixels(x, y, width, height, GetGLEnum(format), GetGLEnum(type), BUFFER_OFFSET(buffer_offset));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::BlitFramebuffer(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, int src_x0, int src_y0, int src_x1, int src_y1, IFramebuffer* dest_fbuf, int dst_x0, int dst_y0, int dst_x1, int dst_y1, uint buffers, TexFilter filter)
@@ -1299,21 +1155,18 @@ void GLRenderContext::BlitFramebuffer(IFramebuffer* source_fbuf, ColorBuffer sou
 	if(id != _glState.readFbuf)
 	{
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, id);
-		OPENGL_ERROR_CHECK
 		_glState.readFbuf = id;
 	}
 
 	if((buffers & COLOR_BUFFER_BIT) && (source_color_buf != COLOR_BUFFER_NONE))
 	{
 		glReadBuffer(GetGLEnum(source_color_buf));
-		OPENGL_ERROR_CHECK
 	}
 
 	id = dest_fbuf ? dyn_cast_ptr<GLFramebuffer*>(dest_fbuf)->GetID() : 0;
 	if(id != _glState.drawFbuf)
 	{
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id);
-		OPENGL_ERROR_CHECK
 		_glState.drawFbuf = id;
 	}
 
@@ -1326,49 +1179,42 @@ void GLRenderContext::BlitFramebuffer(IFramebuffer* source_fbuf, ColorBuffer sou
 		mask |= GL_STENCIL_BUFFER_BIT;
 
 	glBlitFramebuffer(src_x0, src_y0, src_x1, src_y1, dst_x0, dst_y0, dst_x1, dst_y1, mask, GetGLEnum(filter));
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SetVertexShader(IVertexShader* shader)
 {
 	GLuint prog_id = shader ? dyn_cast_ptr<GLShader*>(shader)->GetID() : 0;
 	glUseProgramStages(_pipeline, GL_VERTEX_SHADER_BIT, prog_id);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SetTessControlShader(ITessControlShader* shader)
 {
 	GLuint prog_id = shader ? dyn_cast_ptr<GLShader*>(shader)->GetID() : 0;
 	glUseProgramStages(_pipeline, GL_TESS_CONTROL_SHADER_BIT, prog_id);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SetTessEvaluationShader(ITessEvaluationShader* shader)
 {
 	GLuint prog_id = shader ? dyn_cast_ptr<GLShader*>(shader)->GetID() : 0;
 	glUseProgramStages(_pipeline, GL_TESS_EVALUATION_SHADER_BIT, prog_id);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SetGeometryShader(IGeometryShader* shader)
 {
 	GLuint prog_id = shader ? dyn_cast_ptr<GLShader*>(shader)->GetID() : 0;
 	glUseProgramStages(_pipeline, GL_GEOMETRY_SHADER_BIT, prog_id);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SetFragmentShader(IFragmentShader* shader)
 {
 	GLuint prog_id = shader ? dyn_cast_ptr<GLShader*>(shader)->GetID() : 0;
 	glUseProgramStages(_pipeline, GL_FRAGMENT_SHADER_BIT, prog_id);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SetComputeShader(IComputeShader* shader)
 {
 	GLuint prog_id = shader ? dyn_cast_ptr<GLShader*>(shader)->GetID() : 0;
 	glUseProgramStages(_pipeline, GL_COMPUTE_SHADER_BIT, prog_id);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SetUniformBuffer(uint index, IBuffer* buffer)
@@ -1376,7 +1222,6 @@ void GLRenderContext::SetUniformBuffer(uint index, IBuffer* buffer)
 	GLuint buf_id = dyn_cast_ptr<GLBuffer*>(buffer)->GetID();
 	_glState.uniformBuf = buf_id;
 	glBindBufferBase(GL_UNIFORM_BUFFER, index, buf_id);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SetUniformBuffer(uint index, IBuffer* buffer, size_t offset, size_t size)
@@ -1384,7 +1229,6 @@ void GLRenderContext::SetUniformBuffer(uint index, IBuffer* buffer, size_t offse
 	GLuint buf_id = dyn_cast_ptr<GLBuffer*>(buffer)->GetID();
 	_glState.uniformBuf = buf_id;
 	glBindBufferRange(GL_UNIFORM_BUFFER, index, buf_id, offset, size);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SetAtomicCounterBuffer(uint index, IBuffer* buffer)
@@ -1392,7 +1236,6 @@ void GLRenderContext::SetAtomicCounterBuffer(uint index, IBuffer* buffer)
 	GLuint buf_id = dyn_cast_ptr<GLBuffer*>(buffer)->GetID();
 	_glState.atomicCounterBuf = buf_id;
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, index, buf_id);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SetAtomicCounterBuffer(uint index, IBuffer* buffer, size_t offset, size_t size)
@@ -1400,7 +1243,6 @@ void GLRenderContext::SetAtomicCounterBuffer(uint index, IBuffer* buffer, size_t
 	GLuint buf_id = dyn_cast_ptr<GLBuffer*>(buffer)->GetID();
 	_glState.atomicCounterBuf = buf_id;
 	glBindBufferRange(GL_ATOMIC_COUNTER_BUFFER, index, buf_id, offset, size);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SetStorageBuffer(uint index, IBuffer* buffer)
@@ -1408,7 +1250,6 @@ void GLRenderContext::SetStorageBuffer(uint index, IBuffer* buffer)
 	GLuint id = dyn_cast_ptr<GLBuffer*>(buffer)->GetID();
 	_glState.shaderStorageBuf = id;
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, index, id);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SetStorageBuffer(uint index, IBuffer* buffer, size_t offset, size_t size)
@@ -1416,29 +1257,24 @@ void GLRenderContext::SetStorageBuffer(uint index, IBuffer* buffer, size_t offse
 	GLuint id = dyn_cast_ptr<GLBuffer*>(buffer)->GetID();
 	_glState.shaderStorageBuf = id;
 	glBindBufferRange(GL_SHADER_STORAGE_BUFFER, index, id, offset, size);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::UniformSubroutine(ShaderType shader_type, size_t count, const uint* indices)
 {
 	glUniformSubroutinesuiv(GetGLEnum(shader_type), (GLsizei)count, indices);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SetImageTexture(uint image_unit, ITexture* texture, int level, bool layered, int layer, BufferAccess access, PixelFormat format)
 {
 	glBindImageTexture(image_unit, dyn_cast_ptr<GLTexture*>(texture)->GetID(), level, layered, layer, GetGLEnum(access), GetGLEnum(format));
-	OPENGL_ERROR_CHECK
 }
 
 bool GLRenderContext::ValidateShaderPipeline()
 {
 	glValidateProgramPipeline(_pipeline);
-	OPENGL_ERROR_CHECK
 
 	GLint status;
 	glGetProgramPipelineiv(_pipeline, GL_VALIDATE_STATUS, &status);
-	OPENGL_ERROR_CHECK
 
 	return (status == GL_TRUE);
 }
@@ -1475,7 +1311,6 @@ void GLRenderContext::EnableSeamlessCubeMap(bool enable)
 		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	else
 		glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::Draw(PrimitiveType prim, int first, size_t count)
@@ -1485,7 +1320,6 @@ void GLRenderContext::Draw(PrimitiveType prim, int first, size_t count)
 
 	SetupDrawingState();
 	glDrawArrays(GetGLEnum(prim), first, (GLsizei)count);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::DrawInstanced(PrimitiveType prim, int first, size_t count, uint base_inst, size_t inst_count)
@@ -1496,7 +1330,6 @@ void GLRenderContext::DrawInstanced(PrimitiveType prim, int first, size_t count,
 	SetupDrawingState();
 
 	glDrawArraysInstancedBaseInstance(GetGLEnum(prim), first, (GLsizei)count, (GLsizei)inst_count, base_inst);
-	OPENGL_ERROR_CHECK
 }
 
 // Same as DrawInstanced(), but parameters are sourced from the buffer (struct DrawIndirectData).
@@ -1511,12 +1344,10 @@ void GLRenderContext::DrawIndirect(PrimitiveType prim, IBuffer* buffer, size_t o
 	if(buf_id != _glState.drawIndirectBuf)
 	{
 		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, buf_id);
-		OPENGL_ERROR_CHECK
 		_glState.drawIndirectBuf = buf_id;
 	}
 
 	glDrawArraysIndirect(GetGLEnum(prim), BUFFER_OFFSET(offset));
-	OPENGL_ERROR_CHECK
 }
 
 // Same as DrawIndirect, but buffer contains count DrawIndirectData structures.
@@ -1534,12 +1365,10 @@ void GLRenderContext::MultiDrawIndirect(PrimitiveType prim, IBuffer* buffer, siz
 	if(buf_id != _glState.drawIndirectBuf)
 	{
 		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, buf_id);
-		OPENGL_ERROR_CHECK
 		_glState.drawIndirectBuf = buf_id;
 	}
 
 	glMultiDrawArraysIndirect(GetGLEnum(prim), BUFFER_OFFSET(offset), (GLsizei)count, (GLsizei)stride);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::DrawIndexed(PrimitiveType prim, size_t index_start, int base_vertex, size_t count)
@@ -1552,12 +1381,10 @@ void GLRenderContext::DrawIndexed(PrimitiveType prim, size_t index_start, int ba
 	if(_indexBuffer->GetID() != _glState.indexBuf)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer->GetID());
-		OPENGL_ERROR_CHECK
 		_glState.indexBuf = _indexBuffer->GetID();
 	}
 
 	glDrawElementsBaseVertex(GetGLEnum(prim), (GLsizei)count, GetGLEnum(_indexType), BUFFER_OFFSET(index_start), base_vertex);
-	OPENGL_ERROR_CHECK
 }
 
 /*
@@ -1573,12 +1400,10 @@ void GLRenderContext::DrawIndexed(PrimitiveType prim, size_t start, size_t end, 
 	if(_indexBuffer->GetID() != _glState.indexBuf)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer->GetID());
-		OPENGL_ERROR_CHECK
 		_glState.indexBuf = _indexBuffer->GetID();
 	}
 
 	glDrawRangeElementsBaseVertex(GetGLEnum(prim), (GLuint)start, (GLuint)end, (GLsizei)count, GetGLEnum(_indexType), BUFFER_OFFSET(index_start), base_vertex);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::DrawIndexedInstanced(PrimitiveType prim, size_t index_start, int base_vertex, size_t count, uint base_inst, size_t inst_count)
@@ -1591,12 +1416,10 @@ void GLRenderContext::DrawIndexedInstanced(PrimitiveType prim, size_t index_star
 	if(_indexBuffer->GetID() != _glState.indexBuf)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer->GetID());
-		OPENGL_ERROR_CHECK
 		_glState.indexBuf = _indexBuffer->GetID();
 	}
 
 	glDrawElementsInstancedBaseVertexBaseInstance(GetGLEnum(prim), (GLsizei)count, GetGLEnum(_indexType), BUFFER_OFFSET(index_start), (GLsizei)inst_count, base_vertex, base_inst);
-	OPENGL_ERROR_CHECK
 }
 
 // Same as DrawIndexedInstanced(), but parameters are sourced from the buffer (struct DrawIndexedIndirectData).
@@ -1610,7 +1433,6 @@ void GLRenderContext::DrawIndexedIndirect(PrimitiveType prim, IBuffer* buffer, s
 	if(_indexBuffer->GetID() != _glState.indexBuf)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer->GetID());
-		OPENGL_ERROR_CHECK
 		_glState.indexBuf = _indexBuffer->GetID();
 	}
 
@@ -1618,12 +1440,10 @@ void GLRenderContext::DrawIndexedIndirect(PrimitiveType prim, IBuffer* buffer, s
 	if(buf_id != _glState.drawIndirectBuf)
 	{
 		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, buf_id);
-		OPENGL_ERROR_CHECK
 		_glState.drawIndirectBuf = buf_id;
 	}
 
 	glDrawElementsIndirect(GetGLEnum(prim), GetGLEnum(_indexType), BUFFER_OFFSET(offset));
-	OPENGL_ERROR_CHECK
 }
 
 // Same as DrawIndexedIndirect, but buffer contains count DrawIndexedIndirectData structures.
@@ -1640,7 +1460,6 @@ void GLRenderContext::MultiDrawIndexedIndirect(PrimitiveType prim, IBuffer* buff
 	if(_indexBuffer->GetID() != _glState.indexBuf)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer->GetID());
-		OPENGL_ERROR_CHECK
 		_glState.indexBuf = _indexBuffer->GetID();
 	}
 
@@ -1648,12 +1467,10 @@ void GLRenderContext::MultiDrawIndexedIndirect(PrimitiveType prim, IBuffer* buff
 	if(buf_id != _glState.drawIndirectBuf)
 	{
 		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, buf_id);
-		OPENGL_ERROR_CHECK
 		_glState.drawIndirectBuf = buf_id;
 	}
 
 	glMultiDrawElementsIndirect(GetGLEnum(prim), GetGLEnum(_indexType), BUFFER_OFFSET(offset), (GLsizei)count, (GLsizei)stride);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::DrawTransformFeedback(PrimitiveType prim, ITransformFeedback* transform_feedback, uint stream)
@@ -1667,12 +1484,10 @@ void GLRenderContext::DrawTransformFeedback(PrimitiveType prim, ITransformFeedba
 	if(tf_id != _glState.transformFeedback)
 	{
 		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, tf_id);
-		OPENGL_ERROR_CHECK
 		_glState.transformFeedback = tf_id;
 	}
 
 	glDrawTransformFeedbackStream(GetGLEnum(prim), tf_id, stream);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::DrawTransformFeedbackInstanced(PrimitiveType prim, ITransformFeedback* transform_feedback, uint stream, size_t inst_count)
@@ -1686,18 +1501,15 @@ void GLRenderContext::DrawTransformFeedbackInstanced(PrimitiveType prim, ITransf
 	if(tf_id != _glState.transformFeedback)
 	{
 		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, tf_id);
-		OPENGL_ERROR_CHECK
 		_glState.transformFeedback = tf_id;
 	}
 
 	glDrawTransformFeedbackStreamInstanced(GetGLEnum(prim), tf_id, stream, (GLsizei)inst_count);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::DispatchCompute(uint num_groups_x, uint num_groups_y, uint num_groups_z)
 {
 	glDispatchCompute(num_groups_x, num_groups_y, num_groups_z);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::DispatchComputeIndirect(IBuffer* buffer, size_t offset)
@@ -1706,31 +1518,26 @@ void GLRenderContext::DispatchComputeIndirect(IBuffer* buffer, size_t offset)
 	if(buf_id != _glState.dispatchIndirectBuf)
 	{
 		glBindBuffer(GL_DISPATCH_INDIRECT_BUFFER, buf_id);
-		OPENGL_ERROR_CHECK
 		_glState.dispatchIndirectBuf = buf_id;
 	}
 
 	glDispatchComputeIndirect(offset);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::Flush()
 {
 	glFlush();
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::Finish()
 {
 	glFinish();
-	OPENGL_ERROR_CHECK
 }
 
 // Flags are not used for now
 SyncObject GLRenderContext::InsertFenceSync(FenceSyncCondition condition, uint flags)
 {
 	SyncObject sync = (SyncObject)glFenceSync(GetGLEnum(condition), 0);
-	OPENGL_ERROR_CHECK
 
 	return sync;
 }
@@ -1738,7 +1545,6 @@ SyncObject GLRenderContext::InsertFenceSync(FenceSyncCondition condition, uint f
 void GLRenderContext::DeleteSync(SyncObject sync)
 {
 	glDeleteSync((GLsync)sync);
-	OPENGL_ERROR_CHECK
 }
 
 SyncWaitStatus GLRenderContext::ClientWaitSync(SyncObject sync, uint flags, uint64 timeout)
@@ -1747,7 +1553,6 @@ SyncWaitStatus GLRenderContext::ClientWaitSync(SyncObject sync, uint flags, uint
 	if(flags & SYNC_FLUSH_COMMANDS_BIT)
 		bits |= GL_SYNC_FLUSH_COMMANDS_BIT;
 	GLenum status = glClientWaitSync((GLsync)sync, bits, timeout);
-	OPENGL_ERROR_CHECK
 
 	return GetFromGLEnum<SyncWaitStatus>(status);
 }
@@ -1756,7 +1561,6 @@ SyncWaitStatus GLRenderContext::ClientWaitSync(SyncObject sync, uint flags, uint
 void GLRenderContext::Wait(SyncObject sync, uint flags, uint64 timeout)
 {
 	glWaitSync((GLsync)sync, 0, GL_TIMEOUT_IGNORED);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::MemoryBarrier(uint flags)
@@ -1797,17 +1601,13 @@ void GLRenderContext::MemoryBarrier(uint flags)
 	}
 
 	glMemoryBarrier(bits);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::CopyBufferData(IBuffer* source, size_t source_offset, IBuffer* dest, size_t dest_offset, size_t size)
 {
 	glBindBuffer(GL_COPY_READ_BUFFER, dyn_cast_ptr<GLBuffer*>(source)->GetID());
-	OPENGL_ERROR_CHECK
 	glBindBuffer(GL_COPY_WRITE_BUFFER, dyn_cast_ptr<GLBuffer*>(dest)->GetID());
-	OPENGL_ERROR_CHECK
 	glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, source_offset, dest_offset, size);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::CopyTextureData(
@@ -1824,7 +1624,6 @@ void GLRenderContext::CopyTextureData(
 		src_tex->GetID(), src_tex->GetTarget(), source_level, source_x, source_y, source_z,
 		dst_tex->GetID(), dst_tex->GetTarget(), dest_level, dest_x, dest_y, dest_z,
 		width, height, depth);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::CopyRenderbufferData(IRenderbuffer* source, int source_x, int source_y, int width, int height, IRenderbuffer* dest, int dest_x, int dest_y)
@@ -1836,7 +1635,6 @@ void GLRenderContext::CopyRenderbufferData(IRenderbuffer* source, int source_x, 
 		src_rbuf->GetID(), GL_RENDERBUFFER, 0, source_x, source_y, 0,
 		dst_rbuf->GetID(), GL_RENDERBUFFER, 0, dest_x, dest_y, 0,
 		width, height, 0);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SetupDrawingState()
@@ -1846,11 +1644,10 @@ void GLRenderContext::SetupDrawingState()
 	if(fbuf_id != _glState.drawFbuf)
 	{
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbuf_id);
-		OPENGL_ERROR_CHECK
 		_glState.drawFbuf = fbuf_id;
 	}
 
-	if(_info.extVertexAttribBinding)
+	if(_info.featuresGL.ARB_vertex_attrib_binding)
 	{
 		for(int i = 0; i < _vertexFormat->_count; ++i)
 		{
@@ -1863,7 +1660,6 @@ void GLRenderContext::SetupDrawingState()
 				vstream.offset != vattrib.bufferBase )
 			{
 				glBindVertexBuffer(i, vstream.buffer->GetID(), vstream.offset, (GLsizei)vstream.stride);
-				OPENGL_ERROR_CHECK
 
 				vattrib.buffer = vstream.buffer;
 				vattrib.stride = vstream.stride;
@@ -1878,7 +1674,6 @@ void GLRenderContext::SetupDrawingState()
 		while(*vert_attrib_index != -1)
 		{
 			glDisableVertexAttribArray(*vert_attrib_index);
-			OPENGL_ERROR_CHECK
 			_vertexAttribs[*vert_attrib_index].enabled = false;
 			++vert_attrib_index;
 		}
@@ -1910,7 +1705,6 @@ void GLRenderContext::SetupDrawingState()
 					if(vstream.buffer->GetID() != _glState.vertexBuf)
 					{
 						glBindBuffer(GL_ARRAY_BUFFER, vstream.buffer->GetID());
-						OPENGL_ERROR_CHECK
 						_glState.vertexBuf = vstream.buffer->GetID();
 					}
 
@@ -1925,7 +1719,6 @@ void GLRenderContext::SetupDrawingState()
 						else
 							glVertexAttribPointer(desc.attribute, desc.numComponents, GetGLEnum(desc.type), desc.normalized, (GLsizei)vstream.stride, BUFFER_OFFSET(vstream.offset + desc.offset));
 					}
-					OPENGL_ERROR_CHECK
 
 					vattrib.buffer = vstream.buffer;
 					vattrib.stride = vstream.stride;
@@ -1940,7 +1733,6 @@ void GLRenderContext::SetupDrawingState()
 				if(desc.divisor != vattrib.divisor)
 				{
 					glVertexAttribDivisor(desc.attribute, desc.divisor);
-					OPENGL_ERROR_CHECK
 					vattrib.divisor = desc.divisor;
 				}
 
@@ -1949,7 +1741,6 @@ void GLRenderContext::SetupDrawingState()
 				*vert_attrib_index = desc.attribute;
 				++vert_attrib_index;
 				glEnableVertexAttribArray(desc.attribute);
-				OPENGL_ERROR_CHECK
 			}
 		}
 
@@ -1965,17 +1756,13 @@ void GLRenderContext::SetupDrawingState()
 		if(img_unit.texture && img_unit.texture->GetID() != _glState.imageUnits[i].texture)
 		{
 			glActiveTexture(GL_TEXTURE0 + i);
-			OPENGL_ERROR_CHECK
 			glBindTexture(img_unit.texture->GetTarget(), img_unit.texture->GetID());
-			OPENGL_ERROR_CHECK
 			_glState.imageUnits[i].texture = img_unit.texture->GetID();
 		}
 		else if(img_unit.texRemoved)
 		{
 			glActiveTexture(GL_TEXTURE0 + i);
-			OPENGL_ERROR_CHECK
 			glBindTexture(img_unit.removedTexTarget, 0);
-			OPENGL_ERROR_CHECK
 			_glState.imageUnits[i].texture = 0;
 			img_unit.texRemoved = false;
 		}
@@ -1985,12 +1772,10 @@ void GLRenderContext::SetupDrawingState()
 		if(sampler_id != _glState.imageUnits[i].sampler)
 		{
 			glBindSampler(i, sampler_id);
-			OPENGL_ERROR_CHECK
 			_glState.imageUnits[i].sampler = sampler_id;
 		}
 	}
 	glActiveTexture(GL_TEXTURE0);
-	OPENGL_ERROR_CHECK
 }
 
 bool GLRenderContext::GetInternalFormatInfo(GLenum type, GLenum internal_format, InternalFormatInfo& info)
@@ -2199,7 +1984,6 @@ bool GLRenderContext::GetInternalFormatInfo(GLenum type, GLenum internal_format,
 	glGetInternalformativ(type, internal_format, GL_VIEW_COMPATIBILITY_CLASS, 1, &temp);
 	info.viewCompatibilityClass = GetFromGLEnum<ViewClass>((GLenum)temp);
 
-	OPENGL_ERROR_CHECK
 
 	return true;
 }
@@ -2227,26 +2011,22 @@ void GLRenderContext::DebugMessage(DebugMessageSource source, DebugMessageType t
 void GLRenderContext::GetViewport(int viewport[4])
 {
 	glGetIntegerv(GL_VIEWPORT, viewport);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::GetViewport(float viewport[4])
 {
 	glGetFloatv(GL_VIEWPORT, viewport);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::GetViewportIndexed(uint index, float viewport[4])
 {
 	glGetFloati_v(GL_VIEWPORT, index, viewport);
-	OPENGL_ERROR_CHECK
 }
 
 int64 GLRenderContext::GetGPUTimestamp()
 {
 	GLint64 timestamp;
 	glGetInteger64v(GL_TIMESTAMP, &timestamp);
-	OPENGL_ERROR_CHECK
 	return timestamp;
 }
 
@@ -2798,10 +2578,9 @@ void GLRenderContext::DestroyBuffer(IBuffer* buffer)
 			if(_vertexStreams[i].buffer == gl_buf)
 			{
 				_vertexStreams[i].buffer = 0;
-				if(_info.extVertexAttribBinding)
+				if(_info.featuresGL.ARB_vertex_attrib_binding)
 				{
 					glBindVertexBuffer(i, 0, 0, 0);
-					OPENGL_ERROR_CHECK
 				}
 			}
 		}
@@ -2815,7 +2594,6 @@ void GLRenderContext::DestroyBuffer(IBuffer* buffer)
 				{
 					_vertexAttribs[i].enabled = false;
 					glDisableVertexAttribArray(i);
-					OPENGL_ERROR_CHECK
 				}
 			}
 		}
@@ -3094,22 +2872,18 @@ void GLRenderContext::EnableDebugOutput(bool enable, bool synchronous)
 			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		else
 			glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-		OPENGL_ERROR_CHECK
 
 		glDebugMessageCallback((GLDEBUGPROC)DebugMessageProc, _logger);
-		OPENGL_ERROR_CHECK
 	}
 	else
 	{
 		glDisable(GL_DEBUG_OUTPUT);
-		OPENGL_ERROR_CHECK
 	}
 }
 
 void GLRenderContext::EnableDebugMessages(DebugMessageSource source, DebugMessageType type, DebugMessageSeverity severity, bool enable)
 {
 	glDebugMessageControl(GetGLEnum(source), GetGLEnum(type), GetGLEnum(severity), 0, nullptr, enable);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::EnableDebugMessages(DebugMessageSource source, DebugMessageType type, uint id_count, uint* ids, bool enable)
@@ -3117,7 +2891,6 @@ void GLRenderContext::EnableDebugMessages(DebugMessageSource source, DebugMessag
 	if(source != DEBUG_SOURCE_ALL && type != DEBUG_TYPE_ALL)
 	{
 		glDebugMessageControl(GetGLEnum(source), GetGLEnum(type), GL_DONT_CARE, id_count, ids, enable);
-		OPENGL_ERROR_CHECK
 	}
 }
 
@@ -3126,7 +2899,6 @@ void GLRenderContext::EnableDebugMessage(DebugMessageSource source, DebugMessage
 	if(source != DEBUG_SOURCE_ALL && type != DEBUG_TYPE_ALL)
 	{
 		glDebugMessageControl(GetGLEnum(source), GetGLEnum(type), GL_DONT_CARE, 1, &id, enable);
-		OPENGL_ERROR_CHECK
 	}
 }
 
@@ -3136,7 +2908,6 @@ void GLRenderContext::InsertDebugMessage(DebugMessageSource source, DebugMessage
 		&& ((int)strlen(message) < _info.maxDebugMessageLength) )
 	{
 		glDebugMessageInsert(GetGLEnum(source), GetGLEnum(type), id, GetGLEnum(severity), -1, message);
-		OPENGL_ERROR_CHECK
 	}
 }
 
@@ -3146,32 +2917,27 @@ void GLRenderContext::PushDebugGroup(DebugMessageSource source, uint id, const c
 		&& ((int)strlen(message) < _info.maxDebugMessageLength) )
 	{
 		glPushDebugGroup(GetGLEnum(source), id, -1, message);
-		OPENGL_ERROR_CHECK
 	}
 }
 
 void GLRenderContext::PopDebugGroup()
 {
 	glPopDebugGroup();
-	OPENGL_ERROR_CHECK
 }
 
 int GLRenderContext::GetDebugGroupStackDepth()
 {
 	int depth;
 	glGetIntegerv(GL_DEBUG_GROUP_STACK_DEPTH, &depth);
-	OPENGL_ERROR_CHECK
 	return depth;
 }
 
 void GLRenderContext::ResourceDebugLabel(IResource* resource, const char* label)
 {
 	glObjectLabel(GetGLEnum(resource->GetType()), dyn_cast_ptr<GLResource*>(resource)->GetID(), -1, label);
-	OPENGL_ERROR_CHECK
 }
 
 void GLRenderContext::SyncObjectDebugLabel(SyncObject sync_object, const char* label)
 {
 	glObjectPtrLabel(sync_object, -1, label);
-	OPENGL_ERROR_CHECK
 }

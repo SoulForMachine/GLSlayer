@@ -1,27 +1,38 @@
 
+// WGL_ARB_multisample
+
+bool glextLoad_WGL_ARB_multisample(GLContextInfo& info);
+
+
 // WGL_ARB_extensions_string
 
-EXTPTR bool glextLoad_WGL_ARB_extensions_string();
+bool glextLoad_WGL_ARB_extensions_string(GLContextInfo& info);
 
-EXTPTR PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB;
 
 // WGL_ARB_pixel_format
 
-EXTPTR bool glextLoad_WGL_ARB_pixel_format();
+bool glextLoad_WGL_ARB_pixel_format(GLContextInfo& info);
 
-EXTPTR PFNWGLGETPIXELFORMATATTRIBIVARBPROC wglGetPixelFormatAttribivARB;
-EXTPTR PFNWGLGETPIXELFORMATATTRIBFVARBPROC wglGetPixelFormatAttribfvARB;
-EXTPTR PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB;
+EXTPTR PFNWGLCHOOSEPIXELFORMATARBPROC ptr_wglChoosePixelFormatARB;
+
+// WGL_ARB_pixel_format_float
+
+bool glextLoad_WGL_ARB_pixel_format_float(GLContextInfo& info);
+
 
 // WGL_ARB_create_context
 
-EXTPTR bool glextLoad_WGL_ARB_create_context();
+bool glextLoad_WGL_ARB_create_context(GLContextInfo& info);
 
-EXTPTR PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB;
+EXTPTR PFNWGLCREATECONTEXTATTRIBSARBPROC ptr_wglCreateContextAttribsARB;
 
 // WGL_EXT_swap_control
 
-EXTPTR bool glextLoad_WGL_EXT_swap_control();
+bool glextLoad_WGL_EXT_swap_control(GLContextInfo& info);
 
-EXTPTR PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
-EXTPTR PFNWGLGETSWAPINTERVALEXTPROC wglGetSwapIntervalEXT;
+EXTPTR PFNWGLSWAPINTERVALEXTPROC ptr_wglSwapIntervalEXT;
+
+// WGL_EXT_framebuffer_sRGB
+
+bool glextLoad_WGL_EXT_framebuffer_sRGB(GLContextInfo& info);
+

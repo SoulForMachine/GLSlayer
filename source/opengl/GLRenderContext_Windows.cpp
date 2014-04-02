@@ -185,7 +185,7 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 		return false;
 	}
 
-	if(!glextLoad_WGL_ARB_pixel_format())
+	if(!glextLoad_WGL_ARB_pixel_format(_info))
 	{
 		DebugMessage(
 			DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version,
@@ -238,8 +238,8 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 
 	HGLRC hglrc = 0;
 	if(	IsExtSupported("WGL_ARB_create_context") &&
-		glextLoad_WGL_ARB_create_context() &&
-		wglCreateContextAttribsARB )
+		glextLoad_WGL_ARB_create_context(_info) &&
+		wglCreateContextAttribsARB != 0 )
 	{
 		int context_flags = (version >= 300) ? WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB : 0;
 		if(debug_context)
@@ -295,13 +295,13 @@ bool GLRenderContext::LoadPlatformOpenGLExtensions()
 	bool result = true;
 
 	// wgl extensions
-	LOAD_EXTENSION_REQ(WGL_ARB_extensions_string, pextExtensionsString);
-	LOAD_EXTENSION_REQ(WGL_ARB_pixel_format, pextPixelFormat);
-	CHECK_EXTENSION(WGL_ARB_pixel_format_float, pextPixelFormatFloat);
-	CHECK_EXTENSION_REQ(WGL_ARB_multisample, pextMultisample);
-	LOAD_EXTENSION_REQ(WGL_EXT_swap_control, pextSwapControl);
-	CHECK_EXTENSION(WGL_EXT_framebuffer_sRGB, pextFramebufferSRGB);
-	LOAD_EXTENSION(WGL_ARB_create_context, pextCreateContext);
+	LOAD_EXTENSION_REQ(WGL_ARB_extensions_string);
+	LOAD_EXTENSION_REQ(WGL_ARB_pixel_format);
+	LOAD_EXTENSION(WGL_ARB_pixel_format_float);
+	LOAD_EXTENSION_REQ(WGL_ARB_multisample);
+	LOAD_EXTENSION_REQ(WGL_EXT_swap_control);
+	LOAD_EXTENSION(WGL_EXT_framebuffer_sRGB);
+	LOAD_EXTENSION(WGL_ARB_create_context);
 
 	return result;
 }
@@ -311,24 +311,24 @@ bool GLRenderContext::IsExtSupported(const char* extension)
 	if(!extension || !extension[0])
 		return false;
 
-	glGetStringi = (PFNGLGETSTRINGIPROC)wglGetProcAddress("glGetStringi");
-	if(glGetStringi)
+	PFNGLGETSTRINGIPROC ptr_glGetStringi = (PFNGLGETSTRINGIPROC)wglGetProcAddress("glGetStringi");
+	if(ptr_glGetStringi)
 	{
 		GLint count = 0;
 		glGetIntegerv(GL_NUM_EXTENSIONS, &count);
 		for(int i = 0; i < count; ++i)
 		{
-			const char* ext_string = (const char*)glGetStringi(GL_EXTENSIONS, i);
+			const char* ext_string = (const char*)ptr_glGetStringi(GL_EXTENSIONS, i);
 
 			if(ext_string && !strcmp(ext_string, extension))
 				return true;
 		}
 	}
 
-	wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
-	if(wglGetExtensionsStringARB)
+	PFNWGLGETEXTENSIONSSTRINGARBPROC ptr_wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
+	if(ptr_wglGetExtensionsStringARB)
 	{
-		const char* ext_string = (const char*)wglGetExtensionsStringARB(wglGetCurrentDC());
+		const char* ext_string = (const char*)ptr_wglGetExtensionsStringARB(wglGetCurrentDC());
 		if(ext_string && strstr(ext_string, extension))
 			return true;
 	}
@@ -351,5 +351,4 @@ void GLRenderContext::SwapBuffers()
 void GLRenderContext::SwapInterval(int interval)
 {
 	wglSwapIntervalEXT(interval);
-	OPENGL_ERROR_CHECK
 }
