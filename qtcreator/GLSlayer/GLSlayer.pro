@@ -84,14 +84,5 @@ OTHER_FILES += \
 
 
 unix {
-	CONFIG(debug, debug|release) {
-		OBJECTS_DIR = $$PWD/../$$TARGET-debug
-		DESTDIR = $$PWD/../bin/debug/
-	}
-	CONFIG(release, debug|release) {
-		OBJECTS_DIR = $$PWD/../$$TARGET-release
-		DESTDIR = $$PWD/../bin/release/
-	}
-
 	LIBS += -lX11 -lGL
 }
