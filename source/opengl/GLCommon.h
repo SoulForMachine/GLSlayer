@@ -151,6 +151,7 @@ struct GLState
 	GLuint dispatchIndirectBuf;
 	GLuint atomicCounterBuf;
 	GLuint shaderStorageBuf;
+	GLuint queryBuffer;
 
 	// textures
 	struct SamplerState

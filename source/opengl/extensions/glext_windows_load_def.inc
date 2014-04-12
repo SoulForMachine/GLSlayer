@@ -963,8 +963,13 @@ bool GLRenderContext::glextLoad_GL_ARB_buffer_storage()
 
 bool GLRenderContext::glextLoad_GL_ARB_clear_texture()
 {
-	_info.featuresGL.ARB_clear_texture = IsExtSupported("GL_ARB_clear_texture");
-	return _info.featuresGL.ARB_clear_texture;
+	bool result = IsExtSupported("GL_ARB_clear_texture");
+	if(!result)
+		return false;
+	INIT_FUNC_PTR(glClearTexImage);
+	INIT_FUNC_PTR(glClearTexSubImage);
+	_info.featuresGL.ARB_clear_texture = result;
+	return result;
 }
 
 bool GLRenderContext::glextLoad_GL_ARB_enhanced_layouts()

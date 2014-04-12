@@ -21,7 +21,9 @@ public:
 	void QueryCounter(gls::QueryType type);
 	bool ResultAvailable();
 	gls::uint GetResultUI();
+	gls::uint GetResultNoWaitUI();
 	gls::uint64 GetResultUI64();
+	gls::uint64 GetResultNoWaitUI64();
 	gls::QueryType GetQueryType();
 
 	GLenum GetTarget() const	{ return _target; }

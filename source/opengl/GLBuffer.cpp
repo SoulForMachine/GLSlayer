@@ -22,7 +22,7 @@ GLBuffer::GLBuffer()
 
 bool GLBuffer::Create(GLState* gl_state, BufferType type, size_t size, const void* data, BufferUsage usage)
 {
-	if(_id)
+	if(_id || size == 0)
 		return false;
 
 	_glState = gl_state;
@@ -62,6 +62,9 @@ bool GLBuffer::Create(GLState* gl_state, BufferType type, size_t size, const voi
 	case SHADER_STORAGE_BUFFER:
 		_currentId = &_glState->shaderStorageBuf;
 		break;
+	case QUERY_BUFFER:
+		_currentId = &_glState->queryBuffer;
+		break;
 	default:
 		assert(false);
 	}
@@ -80,15 +83,12 @@ bool GLBuffer::Create(GLState* gl_state, BufferType type, size_t size, const voi
 	glBindBuffer(_target, _id);
 	*_currentId = _id;
 
-	if(size > 0)
-	{
-		glBufferData(_target, size, data, GetGLEnum(usage));
+	glBufferData(_target, size, data, GetGLEnum(usage));
 
-		if(glGetError() != GL_NO_ERROR)
-		{
-			Destroy();
-			return false;
-		}
+	if(glGetError() != GL_NO_ERROR)
+	{
+		Destroy();
+		return false;
 	}
 
 	return true;

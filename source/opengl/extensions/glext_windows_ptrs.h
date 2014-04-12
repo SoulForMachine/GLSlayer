@@ -462,6 +462,8 @@ EXTPTR PFNGLVERTEXBINDINGDIVISORPROC ptr_glVertexBindingDivisor;
 
 // GL_ARB_clear_texture
 
+EXTPTR PFNGLCLEARTEXIMAGEPROC ptr_glClearTexImage;
+EXTPTR PFNGLCLEARTEXSUBIMAGEPROC ptr_glClearTexSubImage;
 
 // GL_ARB_enhanced_layouts
 

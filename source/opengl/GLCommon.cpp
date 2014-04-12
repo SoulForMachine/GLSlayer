@@ -26,6 +26,7 @@ const GLenum __bufferTypeTable[] =
 	GL_DISPATCH_INDIRECT_BUFFER,
 	GL_ATOMIC_COUNTER_BUFFER,
 	GL_SHADER_STORAGE_BUFFER,
+	GL_QUERY_BUFFER,
 };
 
 const GLenum __shaderTypeTable[] =
@@ -100,6 +101,7 @@ const GLenum __imageFormatTable[] =
 	GL_NONE,
 	GL_DEPTH_COMPONENT,
 	GL_DEPTH_STENCIL,
+	GL_STENCIL_INDEX,
 	GL_RED,
 	GL_GREEN,
 	GL_BLUE,
@@ -463,6 +465,7 @@ const GLenum __texAddressingModeTable[] =
 	GL_CLAMP_TO_EDGE,
 	GL_REPEAT,
 	GL_MIRRORED_REPEAT,
+	GL_MIRROR_CLAMP_TO_EDGE,
 };
 
 const GLenum __texFilterTable[] =

@@ -61,10 +61,24 @@ uint GLQuery::GetResultUI()
 	return (uint)result;
 }
 
+uint GLQuery::GetResultNoWaitUI()
+{
+	GLuint result;
+	glGetQueryObjectuiv(_id, GL_QUERY_RESULT_NO_WAIT, &result);
+	return (uint)result;
+}
+
 uint64 GLQuery::GetResultUI64()
 {
 	GLuint64 result;
 	glGetQueryObjectui64v(_id, GL_QUERY_RESULT, &result);
+	return (uint64)result;
+}
+
+uint64 GLQuery::GetResultNoWaitUI64()
+{
+	GLuint64 result;
+	glGetQueryObjectui64v(_id, GL_QUERY_RESULT_NO_WAIT, &result);
 	return (uint64)result;
 }
 

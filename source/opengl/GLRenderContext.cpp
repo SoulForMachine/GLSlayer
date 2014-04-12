@@ -1598,6 +1598,8 @@ void GLRenderContext::MemoryBarrier(uint flags)
 			bits |= GL_ATOMIC_COUNTER_BARRIER_BIT;
 		if(flags & BARRIER_SHADER_STORAGE_BIT)
 			bits |= GL_SHADER_STORAGE_BARRIER_BIT;
+		if(flags & BARRIER_QUERY_BUFFER_BIT)
+			bits |= GL_QUERY_BUFFER_BARRIER_BIT;
 	}
 
 	glMemoryBarrier(bits);

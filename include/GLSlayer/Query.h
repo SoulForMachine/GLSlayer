@@ -18,7 +18,9 @@ namespace gls
 		virtual void QueryCounter(QueryType type) = 0;
 		virtual bool ResultAvailable() = 0;
 		virtual uint GetResultUI() = 0;
+		virtual uint GetResultNoWaitUI() = 0;
 		virtual uint64 GetResultUI64() = 0;
+		virtual uint64 GetResultNoWaitUI64() = 0;
 		virtual QueryType GetQueryType() = 0;
 	};
 
