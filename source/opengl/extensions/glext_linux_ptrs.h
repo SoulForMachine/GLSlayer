@@ -72,7 +72,6 @@ EXTPTR PFNGLCLEARBUFFERIVPROC ptr_glClearBufferiv;
 EXTPTR PFNGLCLEARBUFFERUIVPROC ptr_glClearBufferuiv;
 EXTPTR PFNGLCLEARBUFFERFVPROC ptr_glClearBufferfv;
 EXTPTR PFNGLCLEARBUFFERFIPROC ptr_glClearBufferfi;
-EXTPTR PFNGLGETSTRINGIPROC ptr_glGetStringi;
 
 // GL_ARB_depth_buffer_float
 
@@ -449,6 +448,8 @@ EXTPTR PFNGLVERTEXBINDINGDIVISORPROC ptr_glVertexBindingDivisor;
 
 // GL_ARB_clear_texture
 
+EXTPTR PFNGLCLEARTEXIMAGEPROC ptr_glClearTexImage;
+EXTPTR PFNGLCLEARTEXSUBIMAGEPROC ptr_glClearTexSubImage;
 
 // GL_ARB_enhanced_layouts
 

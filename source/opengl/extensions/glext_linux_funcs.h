@@ -467,16 +467,6 @@ inline void glClearBufferfi(GLenum buffer, GLint drawbuffer, GLfloat depth, GLin
 	assert((error = glGetError()) == GL_NO_ERROR);
 }
 
-inline const GLubyte *glGetStringi(GLenum name, GLuint index)
-{
-	GLenum error;
-	assert(ptr_glGetStringi);
-	const GLubyte *result;
-	result = ptr_glGetStringi(name, index);
-	assert((error = glGetError()) == GL_NO_ERROR);
-	return result;
-}
-
 // GL_ARB_framebuffer_object
 
 inline void glBindRenderbuffer(GLenum target, GLuint renderbuffer)
@@ -1474,3 +1464,21 @@ inline void glVertexBindingDivisor(GLuint bindingindex, GLuint divisor)
 }
 
 // GL_VERSION_4_4
+
+// GL_ARB_clear_texture
+
+inline void glClearTexImage(GLuint texture, GLint level, GLenum format, GLenum type, const void *data)
+{
+	GLenum error;
+	assert(ptr_glClearTexImage);
+	ptr_glClearTexImage(texture, level, format, type, data);
+	assert((error = glGetError()) == GL_NO_ERROR);
+}
+
+inline void glClearTexSubImage(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void *data)
+{
+	GLenum error;
+	assert(ptr_glClearTexSubImage);
+	ptr_glClearTexSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, data);
+	assert((error = glGetError()) == GL_NO_ERROR);
+}

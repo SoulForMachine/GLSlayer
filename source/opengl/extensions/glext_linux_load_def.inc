@@ -96,7 +96,6 @@ bool GLRenderContext::glextLoad_GL_VERSION_3_0()
 	INIT_FUNC_PTR(glClearBufferuiv);
 	INIT_FUNC_PTR(glClearBufferfv);
 	INIT_FUNC_PTR(glClearBufferfi);
-	INIT_FUNC_PTR(glGetStringi);
 	result = glextLoad_GL_ARB_depth_buffer_float() && result;
 	result = glextLoad_GL_ARB_framebuffer_object() && result;
 	result = glextLoad_GL_ARB_framebuffer_sRGB() && result;
@@ -942,8 +941,13 @@ bool GLRenderContext::glextLoad_GL_ARB_buffer_storage()
 
 bool GLRenderContext::glextLoad_GL_ARB_clear_texture()
 {
-	_info.featuresGL.ARB_clear_texture = IsExtSupported("GL_ARB_clear_texture");
-	return _info.featuresGL.ARB_clear_texture;
+	bool result = IsExtSupported("GL_ARB_clear_texture");
+	if(!result)
+		return false;
+	INIT_FUNC_PTR(glClearTexImage);
+	INIT_FUNC_PTR(glClearTexSubImage);
+	_info.featuresGL.ARB_clear_texture = result;
+	return result;
 }
 
 bool GLRenderContext::glextLoad_GL_ARB_enhanced_layouts()
