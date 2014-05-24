@@ -6,7 +6,10 @@ inline BOOL wglChoosePixelFormatARB(HDC hdc, const int *piAttribIList, const FLO
 	assert(ptr_wglChoosePixelFormatARB);
 	BOOL result;
 	result = ptr_wglChoosePixelFormatARB(hdc, piAttribIList, pfAttribFList, nMaxFormats, piFormats, nNumFormats);
-	assert((GLenum error = glGetError()) == GL_NO_ERROR);
+#ifdef _DEBUG
+	GLenum error;
+	assert((error = glGetError()) == GL_NO_ERROR);
+#endif
 	return result;
 }
 
@@ -17,7 +20,10 @@ inline HGLRC wglCreateContextAttribsARB(HDC hDC, HGLRC hShareContext, const int 
 	assert(ptr_wglCreateContextAttribsARB);
 	HGLRC result;
 	result = ptr_wglCreateContextAttribsARB(hDC, hShareContext, attribList);
-	assert((GLenum error = glGetError()) == GL_NO_ERROR);
+#ifdef _DEBUG
+	GLenum error;
+	assert((error = glGetError()) == GL_NO_ERROR);
+#endif
 	return result;
 }
 
@@ -28,6 +34,9 @@ inline BOOL wglSwapIntervalEXT(int interval)
 	assert(ptr_wglSwapIntervalEXT);
 	BOOL result;
 	result = ptr_wglSwapIntervalEXT(interval);
-	assert((GLenum error = glGetError()) == GL_NO_ERROR);
+#ifdef _DEBUG
+	GLenum error;
+	assert((error = glGetError()) == GL_NO_ERROR);
+#endif
 	return result;
 }

@@ -386,11 +386,17 @@ def writeFunc(glFunc, outFuncsFile)
 	args = glFunc.params.collect{ |p| "#{p[1]}" }.join(", ")
 	if glFunc.retType == "void "
 		outFuncsFile << "\tptr_#{glFunc.name}(#{args});\n"
-		outFuncsFile << "\tassert((GLenum error = glGetError()) == GL_NO_ERROR);\n}\n"
+		outFuncsFile << "#ifdef _DEBUG\n"
+		outFuncsFile << "\tGLenum error;\n"
+		outFuncsFile << "\tassert((error = glGetError()) == GL_NO_ERROR);\n"
+		outFuncsFile << "#endif\n}\n"
 	else
 		outFuncsFile << "\t#{glFunc.retType}result;\n"
 		outFuncsFile << "\tresult = ptr_#{glFunc.name}(#{args});\n"
-		outFuncsFile << "\tassert((GLenum error = glGetError()) == GL_NO_ERROR);\n"
+		outFuncsFile << "#ifdef _DEBUG\n"
+		outFuncsFile << "\tGLenum error;\n"
+		outFuncsFile << "\tassert((error = glGetError()) == GL_NO_ERROR);\n"
+		outFuncsFile << "#endif\n"
 		outFuncsFile << "\treturn result;\n}\n"
 	end
 end
