@@ -17,7 +17,7 @@ string GetFullPath(const char* file_name)
 	char path[MAX_PATH];
 	GetModuleFileNameA(NULL, path, MAX_PATH);
 	const char* bslash = strrchr(path, '\\');
-	return bslash ? string(path, bslash + 1) + file_name : string(file_name);
+	return bslash ? string(path, bslash - path + 1) + file_name : string(file_name);
 }
 #elif defined (__linux__)
 string GetFullPath(const char* file_name)

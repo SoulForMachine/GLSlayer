@@ -58,12 +58,12 @@ def parseCmdLine
 		puts "Error: expecting at least xml file name."
 		return false
 	end
-	
+
 	index = 0
 	$useLocalFile = false
 	$onlyUsedInSource = false
 	$filterFileName = ""
-	
+
 	while index < ARGV.length && ARGV[index][0] == "-"
 		if ARGV[index] == "-l"
 			$useLocalFile = true
@@ -92,7 +92,7 @@ def parseCmdLine
 		end
 		index += 1
 	end
-	
+
 	if index < ARGV.length
 		$xmlFile = ARGV[index]
 		index += 1
@@ -100,9 +100,9 @@ def parseCmdLine
 		puts "Error: expecting xml file name."
 		return false
 	end
-	
+
 	$extPrefix = File.basename($xmlFile, ".*").upcase
-	
+
 	if index < ARGV.length
 		$outputFileName = ARGV[index]
 		index += 1
@@ -114,7 +114,7 @@ def parseCmdLine
 		puts "Error: too many arguments."
 		return false
 	end
-	
+
 	return true
 end
 
@@ -132,7 +132,7 @@ def downloadRegistryXML(xmlName)
 		puts "Failed to download #{xmlName} from the registry."
 		puts ex.message
 	end
-	
+
 	return nil
 end
 
@@ -150,7 +150,7 @@ def parseRegistryXML(xmlStr)
 	begin
 		puts "Parsing #{$xmlFile}..."
 		doc = REXML::Document.new(xmlStr)
-		
+
 		# Parse function prototypes
 		$glFunctions = {}
 		doc.elements.each('registry/commands/command') do |cmdElement|
@@ -166,7 +166,7 @@ def parseRegistryXML(xmlStr)
 					end
 				end
 			end
-			
+
 			cmdElement.each_element('param') do |paramElement|
 				paramType = ""
 				paramName = ""
@@ -183,7 +183,7 @@ def parseRegistryXML(xmlStr)
 				end
 				func.params.push([paramType, paramName])
 			end
-			
+
 			$glFunctions[func.name] = func
 		end
 
@@ -206,13 +206,21 @@ def parseRegistryXML(xmlStr)
 								func = cmdElement.attributes["name"]
 								ext.functions.push(func) if checkIfUsedInSource(func)
 							end
-							# Add extension if not already added;
-							# If it's already added concatenate functions
-							index = glVer.extensions.index{ |e| ext.name == e.name }
-							if index.nil?
-								glVer.extensions.push(ext)
+							if extName == "GL_ARB_imaging"
+								# Make exeption for GL_ARB_imaging, do not check for extension
+								# just add it's functions to current GL version.
+								ext.functions.each do |func|
+									glVer.functions.push(func) if checkIfUsedInSource(func)
+								end
 							else
-								glVer.extensions[index].functions.concat(ext.functions)
+								# Add extension if not already added;
+								# If it's already added concatenate functions
+								index = glVer.extensions.index{ |e| ext.name == e.name }
+								if index.nil?
+									glVer.extensions.push(ext)
+								else
+									glVer.extensions[index].functions.concat(ext.functions)
+								end
 							end
 						end
 					else
@@ -224,7 +232,7 @@ def parseRegistryXML(xmlStr)
 					end
 				end
 				$glVersions.push(glVer)
-				
+
 				# Remove functions under <remove> tag
 				featElement.each_element('remove/command') do |cmdElement|
 					cmdName = cmdElement.attributes["name"]
@@ -234,7 +242,16 @@ def parseRegistryXML(xmlStr)
 				end
 			end
 		end
-		
+
+		# Remove duplicate functions.
+		$glVersions.each do |ver|
+			ver.functions.each do |func|
+				$glVersions.each do |ver2|
+					ver2.extensions.each { |ext| ext.functions.delete(func) }
+				end
+			end
+		end
+
 		# Parse extensions
 		$glExtensions = []
 		doc.elements.each('registry/extensions/extension') do |extElement|
@@ -243,19 +260,28 @@ def parseRegistryXML(xmlStr)
 				ext = GLExtension.new(extName)
 				extElement.each_element('require/command') do |cmdElement|
 					func = cmdElement.attributes["name"]
-					ext.functions.push(func) if checkIfUsedInSource(func)
+					# Check if the function already exists in one of GL versions.
+					alreadyExists = false
+					$glVersions.each do |ver|
+						if ver.functions.include?(func)
+							alreadyExists = true
+							break
+						end
+					end
+					# Add function to list if it does not exist and it's used in source.
+					ext.functions.push(func) if not alreadyExists and checkIfUsedInSource(func)
 				end
 				$glExtensions.push(ext)
 			end
 		end
-		
+
 		return true
 	rescue Exception => ex
 		puts "Failed to parse registry xml."
 		puts ex.message
 		puts ex.backtrace
 	end
-	
+
 	return false
 end
 
@@ -265,14 +291,14 @@ def parseFilterFile
 	begin
 		in_file = File.new($filterFileName, "r");
 		$extensionsToProcess = Array.new
-		
+
 		while line = in_file.gets
 			line.strip!
 			if not line.empty? and line[0] != ?#
 				$extensionsToProcess.push line
 			end
 		end
-		
+
 		$extensionsToProcess.uniq!
 		puts "Loaded filter file: #{$filterFileName}"
 	rescue
@@ -293,20 +319,20 @@ end
 def generatePtrsDeclFile(outPtrsDeclFile)
 	$glVersions.each do |ver|
 		outPtrsDeclFile << "\n// #{ver.name}\n\n"
-		
+
 		ver.functions.each do |func|
 			outPtrsDeclFile << "EXTPTR PFN#{func.upcase}PROC ptr_#{func};\n"
 		end
 
 		ver.extensions.each do |ext|
 			outPtrsDeclFile << "\n// #{ext.name}\n\n"
-			
+
 			ext.functions.each do |func|
 				outPtrsDeclFile << "EXTPTR PFN#{func.upcase}PROC ptr_#{func};\n"
 			end
 		end
 	end
-	
+
 	$glExtensions.each do |ext|
 		outPtrsDeclFile << "\n// #{ext.name}\n\n"
 
@@ -356,7 +382,7 @@ def generateLoadDefFile(outLoadDefFile)
 	$glVersions.each do |ver|
 		outLoadDefFile << "\nbool GLRenderContext::glextLoad_#{ver.name}()\n{\n"
 		outLoadDefFile << "\tbool result = true;\n"
-		
+
 		ver.functions.each do |func|
 			outLoadDefFile << "\tINIT_FUNC_PTR(#{func});\n"
 		end
@@ -365,12 +391,12 @@ def generateLoadDefFile(outLoadDefFile)
 			outLoadDefFile << "\tresult = glextLoad_#{ext.name}() && result;\n"
 		end
 		outLoadDefFile << "\t_info.features#{$extPrefix}.#{ver.flagName} = result;\n\treturn result;\n}\n"
-		
+
 		ver.extensions.each do |ext|
 			writeExtLoadFunc(ext, outLoadDefFile)
 		end
 	end
-	
+
 	$glExtensions.each do |ext|
 		writeExtLoadFunc(ext, outLoadDefFile)
 	end
@@ -417,7 +443,7 @@ def generateFuncsFile(outFuncsFile)
 			end
 		end
 	end
-	
+
 	$glExtensions.each do |ext|
 		unless ext.empty?
 			outFuncsFile << "\n// #{ext.name}\n"
@@ -435,17 +461,17 @@ def generateFeatureFlagsFile(outFeatureFlagsFile)
 	outFeatureFlagsFile << "\nstruct Features#{$extPrefix}\n{\n"
 	$glVersions.each do |ver|
 		outFeatureFlagsFile << "\tbool #{ver.flagName} : 1;\n"
-		
+
 		ver.extensions.each do |ext|
 			outFeatureFlagsFile << "\tbool #{ext.flagName} : 1;\n"
 		end
 	end
-	
+
 	$glExtensions.each do |ext|
 		outFeatureFlagsFile << "\tbool #{ext.flagName} : 1;\n"
 	end
 	outFeatureFlagsFile << "};\n"
-	
+
 	outFeatureFlagsFile.flush
 	puts "Wrote #{outFeatureFlagsFile.path}"
 end
@@ -458,7 +484,7 @@ def generateSourceFiles
 		outLoadDefFile = File.new("#{$outputFileName}_load_def.inc", "w")
 		outFuncsFile = File.new("#{$outputFileName}_funcs.h", "w")
 		outFeatureFlagsFile = File.new("#{$outputFileName}_flags.h", "w")
-		
+
 		generatePtrsDeclFile(outPtrsDeclFile)
 		generateLoadDeclFile(outLoadDeclFile)
 		generateLoadDefFile(outLoadDefFile)

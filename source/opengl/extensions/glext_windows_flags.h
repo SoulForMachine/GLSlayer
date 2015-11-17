@@ -4,7 +4,6 @@ struct FeaturesGL
 	bool VERSION_1_2 : 1;
 	bool VERSION_1_3 : 1;
 	bool VERSION_1_4 : 1;
-	bool ARB_imaging : 1;
 	bool VERSION_1_5 : 1;
 	bool VERSION_2_0 : 1;
 	bool VERSION_2_1 : 1;

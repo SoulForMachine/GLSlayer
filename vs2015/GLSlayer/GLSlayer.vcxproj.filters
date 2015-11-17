@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="OpenGL">
+      <UniqueIdentifier>{f9eb4925-5dd7-4ba0-858a-9f025c720757}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL\Extensions">
+      <UniqueIdentifier>{86f7d646-4eb3-494b-9ed3-b2b73be7c35e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{8dd8207c-aeb6-46ed-b328-49df68e571fc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\GLSlayer\Buffer.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GLSlayer\Common.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GLSlayer\Framebuffer.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GLSlayer\Query.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GLSlayer\RenderContext.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GLSlayer\Resource.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GLSlayer\SamplerState.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GLSlayer\Shader.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GLSlayer\Texture.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GLSlayer\TransformFeedback.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GLSlayer\VertexFormat.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\glext.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\h_glext.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\wglext.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\wglext_ptrs.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\GLBuffer.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\GLCommon.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\GLContextInfo.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\GLFramebuffer.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\GLQuery.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\GLRenderContext.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\GLResource.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\GLSamplerState.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\GLShader.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\GLTexture.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\GLTransformFeedback.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\GLVertexFormat.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GLSlayer\RenderContextInit.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\GLSlayerMessages.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\glext_windows_ptrs.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\glext_windows_funcs.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\wglext_funcs.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\glext_windows_flags.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\glext_windows_load_decl.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\wglext_load_decl.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\opengl\extensions\wglext_flags.h">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\source\opengl\extensions\make_exts.bat">
+      <Filter>OpenGL\Extensions</Filter>
+    </None>
+    <None Include="..\..\source\opengl\extensions\wgl_extensions.txt">
+      <Filter>OpenGL\Extensions</Filter>
+    </None>
+    <None Include="..\..\source\opengl\extensions\glelcg-xml.rb">
+      <Filter>OpenGL\Extensions</Filter>
+    </None>
+    <None Include="..\..\source\opengl\extensions\glext_windows_load_def.inc">
+      <Filter>OpenGL\Extensions</Filter>
+    </None>
+    <None Include="..\..\source\opengl\extensions\wglext_load_def.inc">
+      <Filter>OpenGL\Extensions</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\opengl\extensions\h_glext.cpp">
+      <Filter>OpenGL\Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\opengl\GLBuffer.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\opengl\GLCommon.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\opengl\GLFramebuffer.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\opengl\GLQuery.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\opengl\GLRenderContext.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\opengl\GLRenderContext_Windows.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\opengl\GLSamplerState.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\opengl\GLShader.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\opengl\GLTexture.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\opengl\GLTransformFeedback.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\opengl\GLVertexFormat.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\opengl\GLSlayerMessages.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\source\opengl\extensions\extensions_windows.txt">
+      <Filter>OpenGL\Extensions</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

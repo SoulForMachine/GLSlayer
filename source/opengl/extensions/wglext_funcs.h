@@ -1,18 +1,4 @@
 
-// WGL_ARB_pixel_format
-
-inline BOOL wglChoosePixelFormatARB(HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int *piFormats, UINT *nNumFormats)
-{
-	assert(ptr_wglChoosePixelFormatARB);
-	BOOL result;
-	result = ptr_wglChoosePixelFormatARB(hdc, piAttribIList, pfAttribFList, nMaxFormats, piFormats, nNumFormats);
-#ifdef _DEBUG
-	GLenum error;
-	assert((error = glGetError()) == GL_NO_ERROR);
-#endif
-	return result;
-}
-
 // WGL_ARB_create_context
 
 inline HGLRC wglCreateContextAttribsARB(HDC hDC, HGLRC hShareContext, const int *attribList)
@@ -20,6 +6,20 @@ inline HGLRC wglCreateContextAttribsARB(HDC hDC, HGLRC hShareContext, const int 
 	assert(ptr_wglCreateContextAttribsARB);
 	HGLRC result;
 	result = ptr_wglCreateContextAttribsARB(hDC, hShareContext, attribList);
+#ifdef _DEBUG
+	GLenum error;
+	assert((error = glGetError()) == GL_NO_ERROR);
+#endif
+	return result;
+}
+
+// WGL_ARB_pixel_format
+
+inline BOOL wglChoosePixelFormatARB(HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int *piFormats, UINT *nNumFormats)
+{
+	assert(ptr_wglChoosePixelFormatARB);
+	BOOL result;
+	result = ptr_wglChoosePixelFormatARB(hdc, piAttribIList, pfAttribFList, nMaxFormats, piFormats, nNumFormats);
 #ifdef _DEBUG
 	GLenum error;
 	assert((error = glGetError()) == GL_NO_ERROR);

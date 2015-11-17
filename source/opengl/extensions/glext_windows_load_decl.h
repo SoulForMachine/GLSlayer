@@ -1,7 +1,6 @@
 bool glextLoad_GL_VERSION_1_2();
 bool glextLoad_GL_VERSION_1_3();
 bool glextLoad_GL_VERSION_1_4();
-bool glextLoad_GL_ARB_imaging();
 bool glextLoad_GL_VERSION_1_5();
 bool glextLoad_GL_VERSION_2_0();
 bool glextLoad_GL_VERSION_2_1();

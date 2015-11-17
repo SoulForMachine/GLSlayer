@@ -204,8 +204,8 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 		WGL_DRAW_TO_WINDOW_ARB, TRUE,
 		WGL_SUPPORT_OPENGL_ARB, TRUE,
 		WGL_DOUBLE_BUFFER_ARB, format.doubleBuffer? 1 : 0,
-		WGL_SWAP_METHOD_ARB, GetGLEnum(format.swapMethod),
-		WGL_PIXEL_TYPE_ARB, GetGLEnum(format.colorBufferType),
+		WGL_SWAP_METHOD_ARB, (int)GetGLEnum(format.swapMethod),
+		WGL_PIXEL_TYPE_ARB, (int)GetGLEnum(format.colorBufferType),
 		WGL_COLOR_BITS_ARB, format.colorBits,
 		WGL_DEPTH_BITS_ARB, format.depthBits,
 		WGL_STENCIL_BITS_ARB, format.stencilBits,
@@ -246,8 +246,8 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 			context_flags |= WGL_CONTEXT_DEBUG_BIT_ARB;
 		int attribs[] =
 		{
-			WGL_CONTEXT_MAJOR_VERSION_ARB, version / 100,
-			WGL_CONTEXT_MINOR_VERSION_ARB, version % 100 / 10,
+			WGL_CONTEXT_MAJOR_VERSION_ARB, (int)version / 100,
+			WGL_CONTEXT_MINOR_VERSION_ARB, (int)version % 100 / 10,
 			WGL_CONTEXT_FLAGS_ARB, context_flags,
 			0
 		};

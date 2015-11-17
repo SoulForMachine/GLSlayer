@@ -95,8 +95,6 @@ inline void glBlendFuncSeparate(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfa
 #endif
 }
 
-// GL_ARB_imaging
-
 inline void glBlendColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
 {
 	assert(ptr_glBlendColor);

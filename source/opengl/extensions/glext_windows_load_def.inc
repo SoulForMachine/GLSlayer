@@ -25,19 +25,9 @@ bool GLRenderContext::glextLoad_GL_VERSION_1_4()
 {
 	bool result = true;
 	INIT_FUNC_PTR(glBlendFuncSeparate);
-	result = glextLoad_GL_ARB_imaging() && result;
-	_info.featuresGL.VERSION_1_4 = result;
-	return result;
-}
-
-bool GLRenderContext::glextLoad_GL_ARB_imaging()
-{
-	bool result = IsExtSupported("GL_ARB_imaging");
-	if(!result)
-		return false;
 	INIT_FUNC_PTR(glBlendColor);
 	INIT_FUNC_PTR(glBlendEquation);
-	_info.featuresGL.ARB_imaging = result;
+	_info.featuresGL.VERSION_1_4 = result;
 	return result;
 }
 
