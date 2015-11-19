@@ -251,9 +251,9 @@ DeferredSample::DeferredSample()
 		return false;
 	}
 
-	_vertexBuffer = _renderContext->CreateBuffer(VERTEX_BUFFER, ldr.GetVertexCount() * 2 * 3 * 4, ldr.GetVertices(), USAGE_STATIC_DRAW);
+	_vertexBuffer = _renderContext->CreateBuffer(VERTEX_BUFFER, ldr.GetVertexCount() * 2 * 3 * 4, ldr.GetVertices(), 0);
 
-	_indexBuffer = _renderContext->CreateBuffer(INDEX_BUFFER, ldr.GetIndexCount() * 2, ldr.GetIndices(), USAGE_STATIC_DRAW);
+	_indexBuffer = _renderContext->CreateBuffer(INDEX_BUFFER, ldr.GetIndexCount() * 2, ldr.GetIndices(), 0);
 
 	_skullIndexCount = ldr.GetIndexCount();
 	ldr.GetBounds(_modelBoundsMin, _modelBoundsMax);
@@ -265,11 +265,11 @@ DeferredSample::DeferredSample()
 	_lightBoundsMax = _modelBoundsMax + (_modelBoundsMax - _modelBoundsMin) * 0.3f;
 	CreateRandomLights(MAX_LIGHTS, _lightBoundsMin, _lightBoundsMax);
 
-	_lightMatrixBuf = _renderContext->CreateBuffer(TEXTURE_BUFFER, MAX_LIGHTS * sizeof(mat4f), 0, USAGE_STREAM_DRAW);
+	_lightMatrixBuf = _renderContext->CreateBuffer(TEXTURE_BUFFER, MAX_LIGHTS * sizeof(mat4f), 0, BUFFER_DYNAMIC_STORAGE_BIT);
 	_lightMatrixTex = _renderContext->CreateTextureBuffer();
 	_lightMatrixTex->TexBuffer(PIXEL_FORMAT_RGBA32F, _lightMatrixBuf);
 
-	_lightInfoBuf = _renderContext->CreateBuffer(TEXTURE_BUFFER, MAX_LIGHTS * sizeof(vec4f) * 2, 0, USAGE_STREAM_DRAW);
+	_lightInfoBuf = _renderContext->CreateBuffer(TEXTURE_BUFFER, MAX_LIGHTS * sizeof(vec4f) * 2, 0, BUFFER_DYNAMIC_STORAGE_BIT);
 	_lightInfoTex = _renderContext->CreateTextureBuffer();
 	_lightInfoTex->TexBuffer(PIXEL_FORMAT_RGBA32F, _lightInfoBuf);
 
@@ -293,13 +293,13 @@ DeferredSample::DeferredSample()
 
 	// uniform buffers
 
-	_ubufVertShaderGBuffer = _renderContext->CreateBuffer(UNIFORM_BUFFER, sizeof(GBufferTransformData), nullptr, USAGE_DYNAMIC_DRAW);
-	_ubufFragShaderGBuffer = _renderContext->CreateBuffer(UNIFORM_BUFFER, sizeof(GBufferFragData), nullptr, USAGE_DYNAMIC_DRAW);
+	_ubufVertShaderGBuffer = _renderContext->CreateBuffer(UNIFORM_BUFFER, sizeof(GBufferTransformData), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
+	_ubufFragShaderGBuffer = _renderContext->CreateBuffer(UNIFORM_BUFFER, sizeof(GBufferFragData), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
 
-	_ubufVertShaderSSpace = _renderContext->CreateBuffer(UNIFORM_BUFFER, sizeof(VSScreenSpaceData), nullptr, USAGE_DYNAMIC_DRAW);
-	_ubufFragShaderLighting = _renderContext->CreateBuffer(UNIFORM_BUFFER, sizeof(vec4f), nullptr, USAGE_DYNAMIC_DRAW);
+	_ubufVertShaderSSpace = _renderContext->CreateBuffer(UNIFORM_BUFFER, sizeof(VSScreenSpaceData), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
+	_ubufFragShaderLighting = _renderContext->CreateBuffer(UNIFORM_BUFFER, sizeof(vec4f), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
 
-	_rectVertBuf = _renderContext->CreateBuffer(VERTEX_BUFFER, 2 * 2 * 6 * sizeof(SSRectVertex), nullptr, USAGE_DYNAMIC_DRAW);
+	_rectVertBuf = _renderContext->CreateBuffer(VERTEX_BUFFER, 2 * 2 * 6 * sizeof(SSRectVertex), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
 
 	// samplers
 
@@ -716,9 +716,9 @@ void DeferredSample::CreateSphere(float radius, int slices, int stacks)
 	int num_tris = slices * 2 * (stacks - 1);
 	_sphereIndexCount = num_tris * 3;
 
-	_sphereVertBuf = _renderContext->CreateBuffer(VERTEX_BUFFER, _sphereVertCount * sizeof(vec3f), 0, USAGE_STATIC_DRAW);
+	_sphereVertBuf = _renderContext->CreateBuffer(VERTEX_BUFFER, _sphereVertCount * sizeof(vec3f), 0, BUFFER_WRITE_BIT);
 	vec3f* vertices =  (vec3f*)_sphereVertBuf->Map(ACCESS_WRITE_ONLY, false);
-	_sphereIndexBuf = _renderContext->CreateBuffer(INDEX_BUFFER, _sphereIndexCount * sizeof(ushort), 0, USAGE_STATIC_DRAW);
+	_sphereIndexBuf = _renderContext->CreateBuffer(INDEX_BUFFER, _sphereIndexCount * sizeof(ushort), 0, BUFFER_WRITE_BIT);
 	ushort* indices = (ushort*)_sphereIndexBuf->Map(ACCESS_WRITE_ONLY, false);
 
 	int i;

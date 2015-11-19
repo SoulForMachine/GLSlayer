@@ -19,14 +19,14 @@ public:
 
 	GLBuffer();
 
-	bool Create(GLState* gl_state, gls::BufferType type, size_t size, const void* data, gls::BufferUsage usage);
+	bool Create(GLState* gl_state, gls::BufferType type, size_t size, const void* data, gls::uint flags);
 	void Destroy();
 
 	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_BUFFER) ? this : GLResource::DynamicCast(type_id); }
 	gls::BufferType GetBufferType();
 	void BufferSubData(size_t offset, size_t size, const void* data);
 	void GetBufferSubData(size_t offset, size_t size, void* data);
-	void* Map(gls::BufferAccess access, bool discard);
+	void* Map(gls::BufferAccess access, bool invalidate);
 	void* MapRange(size_t offset, size_t length, gls::uint map_flags);
 	void FlushMappedRange(size_t offset, size_t length);
 	bool Unmap();
@@ -43,7 +43,6 @@ private:
 	GLState* _glState;
 	GLuint* _currentId;
 	size_t _size; // size of buffer in bytes
-	gls::BufferUsage _usage;
 	gls::BufferType _bufferType;
 	bool _mapped;
 

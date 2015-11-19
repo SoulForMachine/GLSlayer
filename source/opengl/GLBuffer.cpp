@@ -20,7 +20,7 @@ GLBuffer::GLBuffer()
 	_mapped = false;
 }
 
-bool GLBuffer::Create(GLState* gl_state, BufferType type, size_t size, const void* data, BufferUsage usage)
+bool GLBuffer::Create(GLState* gl_state, BufferType type, size_t size, const void* data, uint flags)
 {
 	if(_id || size == 0)
 		return false;
@@ -73,7 +73,6 @@ bool GLBuffer::Create(GLState* gl_state, BufferType type, size_t size, const voi
 	_target = GetGLEnum(type);
 	_bufferType = type;
 	_size = size;
-	_usage = usage;
 
 	glGenBuffers(1, &_id);
 
@@ -83,7 +82,7 @@ bool GLBuffer::Create(GLState* gl_state, BufferType type, size_t size, const voi
 	glBindBuffer(_target, _id);
 	*_currentId = _id;
 
-	glBufferData(_target, size, data, GetGLEnum(usage));
+	glBufferStorage(_target, size, data, flags);
 
 	if(glGetError() != GL_NO_ERROR)
 	{
@@ -136,14 +135,14 @@ void GLBuffer::GetBufferSubData(size_t offset, size_t size, void* data)
 	If you want to respecify the size and usage, call BufferData() with 0 for data before
 	calling Map().
 */
-void* GLBuffer::Map(BufferAccess access, bool discard)
+void* GLBuffer::Map(BufferAccess access, bool invalidate)
 {
 	assert(_id);
 	assert(!_mapped);
 	STATE_MACHINE_HACK
-	if(discard)
+	if(invalidate)
 	{
-		glBufferData(_target, _size, 0, GetGLEnum(_usage));	// or glInvalidateBufferData
+		glInvalidateBufferData(_id);
 	}
 	void* ptr = glMapBuffer(_target, GetGLEnum(access));
 	_mapped = true;

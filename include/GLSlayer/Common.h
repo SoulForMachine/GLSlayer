@@ -282,17 +282,15 @@ namespace gls
 		CUBE_FACE_NEGATIVE_Z,
 	};
 
-	enum BufferUsage
+	// Buffer storage flags
+	enum
 	{
-		USAGE_STREAM_DRAW,
-        USAGE_STREAM_READ,
-        USAGE_STREAM_COPY,
-        USAGE_STATIC_DRAW,
-        USAGE_STATIC_READ,
-        USAGE_STATIC_COPY,
-        USAGE_DYNAMIC_DRAW,
-        USAGE_DYNAMIC_READ,
-        USAGE_DYNAMIC_COPY,
+		BUFFER_READ_BIT = 0x0001,				// Allows reading from buffer when mapped.
+		BUFFER_WRITE_BIT = 0x0002,				// Allows writing to buffer when mapped.
+		BUFFER_PERSISTENT_BIT = 0x0040,			// Allows buffer to be used while mapped. Requires at least one of BUFFER_READ_BIT or BUFFER_WRITE_BIT.
+		BUFFER_COHERENT_BIT = 0x0080,			// Allows reads and writes to be coherent without explicit barier. Requires BUFFER_PERSISTENT_BIT.
+		BUFFER_DYNAMIC_STORAGE_BIT = 0x0100,	// Required for BufferSubData.
+		BUFFER_CLIENT_STORAGE_BIT = 0x0200,		// Hint that suggests that storage for the buffer should reside in client memory.
 	};
 
 	enum BufferAccess

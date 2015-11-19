@@ -207,16 +207,6 @@ inline void glGenBuffers(GLsizei n, GLuint *buffers)
 #endif
 }
 
-inline void glBufferData(GLenum target, GLsizeiptr size, const void *data, GLenum usage)
-{
-	assert(ptr_glBufferData);
-	ptr_glBufferData(target, size, data, usage);
-#ifdef _DEBUG
-	GLenum error;
-	assert((error = glGetError()) == GL_NO_ERROR);
-#endif
-}
-
 inline void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const void *data)
 {
 	assert(ptr_glBufferSubData);
@@ -1882,6 +1872,18 @@ inline void glVertexBindingDivisor(GLuint bindingindex, GLuint divisor)
 }
 
 // GL_VERSION_4_4
+
+// GL_ARB_buffer_storage
+
+inline void glBufferStorage(GLenum target, GLsizeiptr size, const void *data, GLbitfield flags)
+{
+	assert(ptr_glBufferStorage);
+	ptr_glBufferStorage(target, size, data, flags);
+#ifdef _DEBUG
+	GLenum error;
+	assert((error = glGetError()) == GL_NO_ERROR);
+#endif
+}
 
 // GL_ARB_clear_texture
 

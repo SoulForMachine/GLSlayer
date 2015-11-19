@@ -256,19 +256,6 @@ const GLenum __cubeFaceTable[] =
 	GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
 };
 
-const GLenum __bufferUsageTable[] =
-{
-	GL_STREAM_DRAW,
-	GL_STREAM_READ,
-	GL_STREAM_COPY,
-	GL_STATIC_DRAW,
-	GL_STATIC_READ,
-	GL_STATIC_COPY,
-	GL_DYNAMIC_DRAW,
-	GL_DYNAMIC_READ,
-	GL_DYNAMIC_COPY,
-};
-
 const GLenum __bufferAccessTable[] =
 {
 	GL_READ_ONLY,
@@ -716,7 +703,6 @@ FROM_GL_ENUM_TABLE_LOOKUP(DataType, __dataTypeTable)
 FROM_GL_ENUM_TABLE_LOOKUP(ImageFormat, __imageFormatTable)
 FROM_GL_ENUM_TABLE_LOOKUP(PixelFormat, __pixelFormatTable)
 FROM_GL_ENUM_TABLE_LOOKUP(CubeFace, __cubeFaceTable)
-FROM_GL_ENUM_TABLE_LOOKUP(BufferUsage, __bufferUsageTable)
 FROM_GL_ENUM_TABLE_LOOKUP(BufferAccess, __bufferAccessTable)
 FROM_GL_ENUM_TABLE_LOOKUP(ColorBuffer, __colorBufferTable)
 FROM_GL_ENUM_TABLE_LOOKUP(AttachmentBuffer, __attachmentBufferTable)

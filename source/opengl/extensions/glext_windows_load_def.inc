@@ -43,7 +43,6 @@ bool GLRenderContext::glextLoad_GL_VERSION_1_5()
 	INIT_FUNC_PTR(glBindBuffer);
 	INIT_FUNC_PTR(glDeleteBuffers);
 	INIT_FUNC_PTR(glGenBuffers);
-	INIT_FUNC_PTR(glBufferData);
 	INIT_FUNC_PTR(glBufferSubData);
 	INIT_FUNC_PTR(glGetBufferSubData);
 	INIT_FUNC_PTR(glMapBuffer);
@@ -947,8 +946,12 @@ bool GLRenderContext::glextLoad_GL_VERSION_4_4()
 
 bool GLRenderContext::glextLoad_GL_ARB_buffer_storage()
 {
-	_info.featuresGL.ARB_buffer_storage = IsExtSupported("GL_ARB_buffer_storage");
-	return _info.featuresGL.ARB_buffer_storage;
+	bool result = IsExtSupported("GL_ARB_buffer_storage");
+	if(!result)
+		return false;
+	INIT_FUNC_PTR(glBufferStorage);
+	_info.featuresGL.ARB_buffer_storage = result;
+	return result;
 }
 
 bool GLRenderContext::glextLoad_GL_ARB_clear_texture()

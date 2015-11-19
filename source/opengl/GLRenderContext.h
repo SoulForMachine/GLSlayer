@@ -269,7 +269,7 @@ public:
 
 	void DestroyTexture(gls::ITexture* texture);
 
-	gls::IBuffer* CreateBuffer(gls::BufferType type, size_t size, const void* data, gls::BufferUsage usage);
+	gls::IBuffer* CreateBuffer(gls::BufferType type, size_t size, const void* data, gls::uint flags);
 	void DestroyBuffer(gls::IBuffer* buffer);
 
 	gls::IFramebuffer* CreateFramebuffer();

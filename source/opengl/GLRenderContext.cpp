@@ -494,6 +494,10 @@ bool GLRenderContext::LoadOpenGLExtensions(uint version)
 	{
 		LOAD_EXTENSION_REQ(GL_VERSION_4_4);
 	}
+	else
+	{
+		LOAD_EXTENSION_REQ(GL_ARB_buffer_storage);
+	}
 
 	result = LoadPlatformOpenGLExtensions() && result;
 
@@ -2554,10 +2558,10 @@ void GLRenderContext::DestroyTexture(ITexture* texture)
 	}
 }
 
-IBuffer* GLRenderContext::CreateBuffer(BufferType type, size_t size, const void* data, BufferUsage usage)
+IBuffer* GLRenderContext::CreateBuffer(BufferType type, size_t size, const void* data, uint flags)
 {
 	GLBuffer* buf = new GLBuffer;
-	bool result = buf->Create(&_glState, type, size, data, usage);
+	bool result = buf->Create(&_glState, type, size, data, flags);
 	if(!result)
 	{
 		delete buf;

@@ -471,7 +471,7 @@ namespace gls
 
 		virtual void DestroyTexture(ITexture* texture) = 0;
 
-		virtual IBuffer* CreateBuffer(BufferType type, size_t size, const void* data, BufferUsage usage) = 0;
+		virtual IBuffer* CreateBuffer(BufferType type, size_t size, const void* data, uint flags) = 0;
 		virtual void DestroyBuffer(IBuffer* buffer) = 0;
 
 		virtual IFramebuffer* CreateFramebuffer() = 0;
