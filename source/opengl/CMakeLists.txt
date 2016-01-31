@@ -13,7 +13,6 @@ SET(LIBRARY_OUTPUT_PATH "${GLSlayer_BINARY_DIR}/bin" CACHE INTERNAL "")
 
 IF(UNIX)
     FILE(GLOB EXCLUDED_SOURCES *windows* *Windows* ./extensions/*windows* ./extensions/*Windows*)
-    TARGET_LINK_LIBRARIES(GLSlayer X11 GL)
 ELSEIF(WIN32)
     FILE(GLOB EXCLUDED_SOURCES *linux* *Linux* ./extensions/*linux* ./extensions/*Linux*)
 ENDIF()
@@ -22,3 +21,8 @@ FILE(GLOB GLSlayer_SOURCES *.cpp ./extensions/*.cpp)
 LIST(REMOVE_ITEM GLSlayer_SOURCES ${EXCLUDED_SOURCES})
 
 ADD_LIBRARY(GLSlayer SHARED ${GLSlayer_SOURCES})
+
+IF(UNIX)
+    TARGET_LINK_LIBRARIES(GLSlayer X11 GL)
+ENDIF()
+
