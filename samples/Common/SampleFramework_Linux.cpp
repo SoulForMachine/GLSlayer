@@ -81,7 +81,7 @@ int SampleFramework::Run(ISample* sample)
     _sample->OnResize(800, 600);
 
     timespec t;
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t);
+    clock_gettime(CLOCK_MONOTONIC, &t);
     double prev_time = t.tv_sec * 1000.0 + t.tv_nsec / 1.0e6;
     XEvent event;
 
@@ -93,7 +93,7 @@ int SampleFramework::Run(ISample* sample)
             ProcessEvent(&event);
         }
 
-        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t);
+        clock_gettime(CLOCK_MONOTONIC, &t);
         double cur_time = t.tv_sec * 1000.0 + t.tv_nsec / 1.0e6;
         double frame_time = cur_time - prev_time;
         prev_time = cur_time;

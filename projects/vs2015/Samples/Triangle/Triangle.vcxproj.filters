@@ -9,44 +9,44 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\samples\Common\Console.h">
+    <ClInclude Include="..\..\..\..\samples\Common\Console.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\samples\Common\ISample.h">
+    <ClInclude Include="..\..\..\..\samples\Common\ISample.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\samples\Common\ObjLoader.h">
+    <ClInclude Include="..\..\..\..\samples\Common\ObjLoader.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\samples\Common\SampleFramework_Windows.h">
+    <ClInclude Include="..\..\..\..\samples\Common\SampleFramework_Windows.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\samples\Common\Utils.h">
+    <ClInclude Include="..\..\..\..\samples\Common\Utils.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\samples\Triangle\TriangleSample.h" />
-    <ClInclude Include="..\..\..\samples\Common\SampleFramework.h">
+    <ClInclude Include="..\..\..\..\samples\Triangle\TriangleSample.h" />
+    <ClInclude Include="..\..\..\..\samples\Common\SampleFramework.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\samples\Common\ObjLoader.cpp">
+    <ClCompile Include="..\..\..\..\samples\Common\ObjLoader.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\samples\Common\SampleFramework_Windows.cpp">
+    <ClCompile Include="..\..\..\..\samples\Common\SampleFramework_Windows.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\samples\Common\Utils.cpp">
+    <ClCompile Include="..\..\..\..\samples\Common\Utils.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\samples\Triangle\Main.cpp" />
-    <ClCompile Include="..\..\..\samples\Triangle\TriangleSample.cpp" />
+    <ClCompile Include="..\..\..\..\samples\Triangle\Main.cpp" />
+    <ClCompile Include="..\..\..\..\samples\Triangle\TriangleSample.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\..\samples\Triangle\Shaders\Simple.frag">
+    <CustomBuild Include="..\..\..\..\samples\Triangle\Shaders\Simple.frag">
       <Filter>Shaders</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\..\samples\Triangle\Shaders\Simple.vert">
+    <CustomBuild Include="..\..\..\..\samples\Triangle\Shaders\Simple.vert">
       <Filter>Shaders</Filter>
     </CustomBuild>
   </ItemGroup>

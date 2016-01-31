@@ -1,16 +1,4 @@
 
-bool GLRenderContext::glextLoad_GLX_ARB_multisample()
-{
-	_info.featuresGLX.ARB_multisample = IsExtSupported("GLX_ARB_multisample");
-	return _info.featuresGLX.ARB_multisample;
-}
-
-bool GLRenderContext::glextLoad_GLX_ARB_fbconfig_float()
-{
-	_info.featuresGLX.ARB_fbconfig_float = IsExtSupported("GLX_ARB_fbconfig_float");
-	return _info.featuresGLX.ARB_fbconfig_float;
-}
-
 bool GLRenderContext::glextLoad_GLX_ARB_create_context()
 {
 	bool result = IsExtSupported("GLX_ARB_create_context");
@@ -21,10 +9,16 @@ bool GLRenderContext::glextLoad_GLX_ARB_create_context()
 	return result;
 }
 
-bool GLRenderContext::glextLoad_GLX_OML_swap_method()
+bool GLRenderContext::glextLoad_GLX_ARB_fbconfig_float()
 {
-	_info.featuresGLX.OML_swap_method = IsExtSupported("GLX_OML_swap_method");
-	return _info.featuresGLX.OML_swap_method;
+	_info.featuresGLX.ARB_fbconfig_float = IsExtSupported("GLX_ARB_fbconfig_float");
+	return _info.featuresGLX.ARB_fbconfig_float;
+}
+
+bool GLRenderContext::glextLoad_GLX_ARB_multisample()
+{
+	_info.featuresGLX.ARB_multisample = IsExtSupported("GLX_ARB_multisample");
+	return _info.featuresGLX.ARB_multisample;
 }
 
 bool GLRenderContext::glextLoad_GLX_EXT_framebuffer_sRGB()
@@ -41,4 +35,10 @@ bool GLRenderContext::glextLoad_GLX_EXT_swap_control()
 	INIT_FUNC_PTR(glXSwapIntervalEXT);
 	_info.featuresGLX.EXT_swap_control = result;
 	return result;
+}
+
+bool GLRenderContext::glextLoad_GLX_OML_swap_method()
+{
+	_info.featuresGLX.OML_swap_method = IsExtSupported("GLX_OML_swap_method");
+	return _info.featuresGLX.OML_swap_method;
 }

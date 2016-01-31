@@ -4,7 +4,6 @@
 	#define NOMINMAX
 	#include <windows.h>
 #elif defined(__linux__)
-	#define GL_GLEXT_LEGACY 1
 	#include <GL/glx.h>
 #endif
 

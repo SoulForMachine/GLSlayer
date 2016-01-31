@@ -19,67 +19,67 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\GLSlayer\Buffer.h" />
-    <ClInclude Include="..\..\include\GLSlayer\Common.h" />
-    <ClInclude Include="..\..\include\GLSlayer\Framebuffer.h" />
-    <ClInclude Include="..\..\include\GLSlayer\Query.h" />
-    <ClInclude Include="..\..\include\GLSlayer\RenderContext.h" />
-    <ClInclude Include="..\..\include\GLSlayer\RenderContextInit.h" />
-    <ClInclude Include="..\..\include\GLSlayer\Resource.h" />
-    <ClInclude Include="..\..\include\GLSlayer\SamplerState.h" />
-    <ClInclude Include="..\..\include\GLSlayer\Shader.h" />
-    <ClInclude Include="..\..\include\GLSlayer\Texture.h" />
-    <ClInclude Include="..\..\include\GLSlayer\TransformFeedback.h" />
-    <ClInclude Include="..\..\include\GLSlayer\VertexFormat.h" />
-    <ClInclude Include="..\..\source\opengl\extensions\glext.h" />
-    <ClInclude Include="..\..\source\opengl\extensions\glext_windows_flags.h" />
-    <ClInclude Include="..\..\source\opengl\extensions\glext_windows_funcs.h" />
-    <ClInclude Include="..\..\source\opengl\extensions\glext_windows_load_decl.h" />
-    <ClInclude Include="..\..\source\opengl\extensions\glext_windows_ptrs.h" />
-    <ClInclude Include="..\..\source\opengl\extensions\h_glext.h" />
-    <ClInclude Include="..\..\source\opengl\extensions\wglext.h" />
-    <ClInclude Include="..\..\source\opengl\extensions\wglext_flags.h" />
-    <ClInclude Include="..\..\source\opengl\extensions\wglext_funcs.h" />
-    <ClInclude Include="..\..\source\opengl\extensions\wglext_load_decl.h" />
-    <ClInclude Include="..\..\source\opengl\extensions\wglext_ptrs.h" />
-    <ClInclude Include="..\..\source\opengl\GLBuffer.h" />
-    <ClInclude Include="..\..\source\opengl\GLCommon.h" />
-    <ClInclude Include="..\..\source\opengl\GLContextInfo.h" />
-    <ClInclude Include="..\..\source\opengl\GLFramebuffer.h" />
-    <ClInclude Include="..\..\source\opengl\GLQuery.h" />
-    <ClInclude Include="..\..\source\opengl\GLRenderContext.h" />
-    <ClInclude Include="..\..\source\opengl\GLResource.h" />
-    <ClInclude Include="..\..\source\opengl\GLSamplerState.h" />
-    <ClInclude Include="..\..\source\opengl\GLShader.h" />
-    <ClInclude Include="..\..\source\opengl\GLSlayerMessages.h" />
-    <ClInclude Include="..\..\source\opengl\GLTexture.h" />
-    <ClInclude Include="..\..\source\opengl\GLTransformFeedback.h" />
-    <ClInclude Include="..\..\source\opengl\GLVertexFormat.h" />
+    <ClInclude Include="..\..\..\include\GLSlayer\Buffer.h" />
+    <ClInclude Include="..\..\..\include\GLSlayer\Common.h" />
+    <ClInclude Include="..\..\..\include\GLSlayer\Framebuffer.h" />
+    <ClInclude Include="..\..\..\include\GLSlayer\Query.h" />
+    <ClInclude Include="..\..\..\include\GLSlayer\RenderContext.h" />
+    <ClInclude Include="..\..\..\include\GLSlayer\RenderContextInit.h" />
+    <ClInclude Include="..\..\..\include\GLSlayer\Resource.h" />
+    <ClInclude Include="..\..\..\include\GLSlayer\SamplerState.h" />
+    <ClInclude Include="..\..\..\include\GLSlayer\Shader.h" />
+    <ClInclude Include="..\..\..\include\GLSlayer\Texture.h" />
+    <ClInclude Include="..\..\..\include\GLSlayer\TransformFeedback.h" />
+    <ClInclude Include="..\..\..\include\GLSlayer\VertexFormat.h" />
+    <ClInclude Include="..\..\..\source\opengl\extensions\glext.h" />
+    <ClInclude Include="..\..\..\source\opengl\extensions\glext_windows_flags.h" />
+    <ClInclude Include="..\..\..\source\opengl\extensions\glext_windows_funcs.h" />
+    <ClInclude Include="..\..\..\source\opengl\extensions\glext_windows_load_decl.h" />
+    <ClInclude Include="..\..\..\source\opengl\extensions\glext_windows_ptrs.h" />
+    <ClInclude Include="..\..\..\source\opengl\extensions\h_glext.h" />
+    <ClInclude Include="..\..\..\source\opengl\extensions\wglext.h" />
+    <ClInclude Include="..\..\..\source\opengl\extensions\wglext_flags.h" />
+    <ClInclude Include="..\..\..\source\opengl\extensions\wglext_funcs.h" />
+    <ClInclude Include="..\..\..\source\opengl\extensions\wglext_load_decl.h" />
+    <ClInclude Include="..\..\..\source\opengl\extensions\wglext_ptrs.h" />
+    <ClInclude Include="..\..\..\source\opengl\GLBuffer.h" />
+    <ClInclude Include="..\..\..\source\opengl\GLCommon.h" />
+    <ClInclude Include="..\..\..\source\opengl\GLContextInfo.h" />
+    <ClInclude Include="..\..\..\source\opengl\GLFramebuffer.h" />
+    <ClInclude Include="..\..\..\source\opengl\GLQuery.h" />
+    <ClInclude Include="..\..\..\source\opengl\GLRenderContext.h" />
+    <ClInclude Include="..\..\..\source\opengl\GLResource.h" />
+    <ClInclude Include="..\..\..\source\opengl\GLSamplerState.h" />
+    <ClInclude Include="..\..\..\source\opengl\GLShader.h" />
+    <ClInclude Include="..\..\..\source\opengl\GLSlayerMessages.h" />
+    <ClInclude Include="..\..\..\source\opengl\GLTexture.h" />
+    <ClInclude Include="..\..\..\source\opengl\GLTransformFeedback.h" />
+    <ClInclude Include="..\..\..\source\opengl\GLVertexFormat.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\source\opengl\extensions\glelcg-xml.rb" />
-    <None Include="..\..\source\opengl\extensions\glext_windows_load_def.inc" />
-    <None Include="..\..\source\opengl\extensions\make_exts.bat" />
-    <None Include="..\..\source\opengl\extensions\wglext_load_def.inc" />
-    <None Include="..\..\source\opengl\extensions\wgl_extensions.txt" />
+    <None Include="..\..\..\source\opengl\extensions\glelcg-xml.rb" />
+    <None Include="..\..\..\source\opengl\extensions\glext_windows_load_def.inc" />
+    <None Include="..\..\..\source\opengl\extensions\make_exts.bat" />
+    <None Include="..\..\..\source\opengl\extensions\wglext_load_def.inc" />
+    <None Include="..\..\..\source\opengl\extensions\wgl_extensions.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\source\opengl\extensions\h_glext.cpp" />
-    <ClCompile Include="..\..\source\opengl\GLBuffer.cpp" />
-    <ClCompile Include="..\..\source\opengl\GLCommon.cpp" />
-    <ClCompile Include="..\..\source\opengl\GLFramebuffer.cpp" />
-    <ClCompile Include="..\..\source\opengl\GLQuery.cpp" />
-    <ClCompile Include="..\..\source\opengl\GLRenderContext.cpp" />
-    <ClCompile Include="..\..\source\opengl\GLRenderContext_Windows.cpp" />
-    <ClCompile Include="..\..\source\opengl\GLSamplerState.cpp" />
-    <ClCompile Include="..\..\source\opengl\GLShader.cpp" />
-    <ClCompile Include="..\..\source\opengl\GLSlayerMessages.cpp" />
-    <ClCompile Include="..\..\source\opengl\GLTexture.cpp" />
-    <ClCompile Include="..\..\source\opengl\GLTransformFeedback.cpp" />
-    <ClCompile Include="..\..\source\opengl\GLVertexFormat.cpp" />
+    <ClCompile Include="..\..\..\source\opengl\extensions\h_glext.cpp" />
+    <ClCompile Include="..\..\..\source\opengl\GLBuffer.cpp" />
+    <ClCompile Include="..\..\..\source\opengl\GLCommon.cpp" />
+    <ClCompile Include="..\..\..\source\opengl\GLFramebuffer.cpp" />
+    <ClCompile Include="..\..\..\source\opengl\GLQuery.cpp" />
+    <ClCompile Include="..\..\..\source\opengl\GLRenderContext.cpp" />
+    <ClCompile Include="..\..\..\source\opengl\GLRenderContext_Windows.cpp" />
+    <ClCompile Include="..\..\..\source\opengl\GLSamplerState.cpp" />
+    <ClCompile Include="..\..\..\source\opengl\GLShader.cpp" />
+    <ClCompile Include="..\..\..\source\opengl\GLSlayerMessages.cpp" />
+    <ClCompile Include="..\..\..\source\opengl\GLTexture.cpp" />
+    <ClCompile Include="..\..\..\source\opengl\GLTransformFeedback.cpp" />
+    <ClCompile Include="..\..\..\source\opengl\GLVertexFormat.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\source\opengl\extensions\extensions_windows.txt" />
+    <Text Include="..\..\..\source\opengl\extensions\extensions_windows.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B32C8840-CA15-4D44-B887-BC923D2F80A5}</ProjectGuid>
@@ -150,7 +150,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;GLSLAYER_EXPORTS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -164,7 +164,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;GLSLAYER_EXPORTS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -180,7 +180,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;GLSLAYER_EXPORTS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -198,7 +198,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;GLSLAYER_EXPORTS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnablePREfast>false</EnablePREfast>
     </ClCompile>
     <Link>

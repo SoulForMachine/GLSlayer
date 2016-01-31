@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -27,26 +27,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -86,7 +86,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\include;$(SolutionDir)..\libs\include;$(SolutionDir)..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;$(SolutionDir)..\..\libs\include;$(SolutionDir)..\..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -106,7 +106,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\include;$(SolutionDir)..\libs\include;$(SolutionDir)..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;$(SolutionDir)..\..\libs\include;$(SolutionDir)..\..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,7 +128,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\include;$(SolutionDir)..\libs\include;$(SolutionDir)..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;$(SolutionDir)..\..\libs\include;$(SolutionDir)..\..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,7 +152,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\include;$(SolutionDir)..\libs\include;$(SolutionDir)..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;$(SolutionDir)..\..\libs\include;$(SolutionDir)..\..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -167,23 +167,23 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\samples\Common\Console.h" />
-    <ClInclude Include="..\..\..\samples\Common\ISample.h" />
-    <ClInclude Include="..\..\..\samples\Common\ObjLoader.h" />
-    <ClInclude Include="..\..\..\samples\Common\SampleFramework.h" />
-    <ClInclude Include="..\..\..\samples\Common\SampleFramework_Windows.h" />
-    <ClInclude Include="..\..\..\samples\Common\Utils.h" />
-    <ClInclude Include="..\..\..\samples\Triangle\TriangleSample.h" />
+    <ClInclude Include="..\..\..\..\samples\Common\Console.h" />
+    <ClInclude Include="..\..\..\..\samples\Common\ISample.h" />
+    <ClInclude Include="..\..\..\..\samples\Common\ObjLoader.h" />
+    <ClInclude Include="..\..\..\..\samples\Common\SampleFramework.h" />
+    <ClInclude Include="..\..\..\..\samples\Common\SampleFramework_Windows.h" />
+    <ClInclude Include="..\..\..\..\samples\Common\Utils.h" />
+    <ClInclude Include="..\..\..\..\samples\Triangle\TriangleSample.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\samples\Common\ObjLoader.cpp" />
-    <ClCompile Include="..\..\..\samples\Common\SampleFramework_Windows.cpp" />
-    <ClCompile Include="..\..\..\samples\Common\Utils.cpp" />
-    <ClCompile Include="..\..\..\samples\Triangle\Main.cpp" />
-    <ClCompile Include="..\..\..\samples\Triangle\TriangleSample.cpp" />
+    <ClCompile Include="..\..\..\..\samples\Common\ObjLoader.cpp" />
+    <ClCompile Include="..\..\..\..\samples\Common\SampleFramework_Windows.cpp" />
+    <ClCompile Include="..\..\..\..\samples\Common\Utils.cpp" />
+    <ClCompile Include="..\..\..\..\samples\Triangle\Main.cpp" />
+    <ClCompile Include="..\..\..\..\samples\Triangle\TriangleSample.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\..\samples\Triangle\Shaders\Simple.frag">
+    <CustomBuild Include="..\..\..\..\samples\Triangle\Shaders\Simple.frag">
       <FileType>Document</FileType>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
@@ -198,7 +198,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
     </CustomBuild>
-    <CustomBuild Include="..\..\..\samples\Triangle\Shaders\Simple.vert">
+    <CustomBuild Include="..\..\..\..\samples\Triangle\Shaders\Simple.vert">
       <FileType>Document</FileType>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>

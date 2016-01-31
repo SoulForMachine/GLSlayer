@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,40 +19,24 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\samples\Common\Console.h" />
-    <ClInclude Include="..\..\..\samples\Common\ISample.h" />
-    <ClInclude Include="..\..\..\samples\Common\ObjLoader.h" />
-    <ClInclude Include="..\..\..\samples\Common\SampleFramework.h" />
-    <ClInclude Include="..\..\..\samples\Common\SampleFramework_Windows.h" />
-    <ClInclude Include="..\..\..\samples\Common\Utils.h" />
-    <ClInclude Include="..\..\..\samples\DeferredShading\DeferredSample.h" />
-    <ClInclude Include="..\..\..\samples\DeferredShading\Light.h" />
+    <ClInclude Include="..\..\..\..\samples\Common\Console.h" />
+    <ClInclude Include="..\..\..\..\samples\Common\ISample.h" />
+    <ClInclude Include="..\..\..\..\samples\Common\ObjLoader.h" />
+    <ClInclude Include="..\..\..\..\samples\Common\SampleFramework.h" />
+    <ClInclude Include="..\..\..\..\samples\Common\SampleFramework_Windows.h" />
+    <ClInclude Include="..\..\..\..\samples\Common\Utils.h" />
+    <ClInclude Include="..\..\..\..\samples\DeferredShading\DeferredSample.h" />
+    <ClInclude Include="..\..\..\..\samples\DeferredShading\Light.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\samples\Common\ObjLoader.cpp" />
-    <ClCompile Include="..\..\..\samples\Common\SampleFramework_Windows.cpp" />
-    <ClCompile Include="..\..\..\samples\Common\Utils.cpp" />
-    <ClCompile Include="..\..\..\samples\DeferredShading\DeferredSample.cpp" />
-    <ClCompile Include="..\..\..\samples\DeferredShading\Main.cpp" />
+    <ClCompile Include="..\..\..\..\samples\Common\ObjLoader.cpp" />
+    <ClCompile Include="..\..\..\..\samples\Common\SampleFramework_Windows.cpp" />
+    <ClCompile Include="..\..\..\..\samples\Common\Utils.cpp" />
+    <ClCompile Include="..\..\..\..\samples\DeferredShading\DeferredSample.cpp" />
+    <ClCompile Include="..\..\..\..\samples\DeferredShading\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\..\samples\DeferredShading\Shaders\GBuffer.frag">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Copying shader %(Filename)%(Extension)</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Copying shader %(Filename)%(Extension)</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Copying shader %(Filename)%(Extension)</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Copying shader %(Filename)%(Extension)</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
-      <DeploymentContent>false</DeploymentContent>
-    </CustomBuild>
-    <CustomBuild Include="..\..\..\samples\DeferredShading\Shaders\GBuffer.vert">
+    <CustomBuild Include="..\..\..\..\samples\DeferredShading\Shaders\GBuffer.frag">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
@@ -67,7 +51,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
     </CustomBuild>
-    <CustomBuild Include="..\..\..\samples\DeferredShading\Shaders\Lighting.frag">
+    <CustomBuild Include="..\..\..\..\samples\DeferredShading\Shaders\GBuffer.vert">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
@@ -82,7 +66,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
     </CustomBuild>
-    <CustomBuild Include="..\..\..\samples\DeferredShading\Shaders\Lighting.vert">
+    <CustomBuild Include="..\..\..\..\samples\DeferredShading\Shaders\Lighting.frag">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
@@ -97,7 +81,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
     </CustomBuild>
-    <CustomBuild Include="..\..\..\samples\DeferredShading\Shaders\ScreenSpace.vert">
+    <CustomBuild Include="..\..\..\..\samples\DeferredShading\Shaders\Lighting.vert">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
@@ -112,7 +96,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
     </CustomBuild>
-    <CustomBuild Include="..\..\..\samples\DeferredShading\Shaders\SimpleTexture.frag">
+    <CustomBuild Include="..\..\..\..\samples\DeferredShading\Shaders\ScreenSpace.vert">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
@@ -126,6 +110,42 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\samples\DeferredShading\Shaders\SimpleTexture.frag">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">xcopy /Y "%(FullPath)" "$(OutputPath)Shaders\$(ProjectName)\"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Copying shader %(Filename)%(Extension)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Copying shader %(Filename)%(Extension)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Copying shader %(Filename)%(Extension)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Copying shader %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutputPath)Shaders\$(ProjectName)\%(Filename)%(Extension)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\..\samples\Common\Models\skull.obj">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Models\"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Copying model %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutputPath)Models\%(Filename)%(Extension)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Models\"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Copying model %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutputPath)Models\%(Filename)%(Extension)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">xcopy /Y "%(FullPath)" "$(OutputPath)Models\"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Copying model %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutputPath)Models\%(Filename)%(Extension)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">xcopy /Y "%(FullPath)" "$(OutputPath)Models\"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Copying model %(Filename)%(Extension)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutputPath)Models\%(Filename)%(Extension)</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -137,23 +157,27 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -171,23 +195,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>$(Configuration)\</IntDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>$(Configuration)\</IntDir>
-  </PropertyGroup>
+  <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\include;$(SolutionDir)..\libs\include;$(SolutionDir)..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;$(SolutionDir)..\..\libs\include;$(SolutionDir)..\..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -195,14 +208,15 @@
       <AdditionalLibraryDirectories>$(OutputPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)..\samples\Common\Models\skull.obj" "$(OutputPath)Models\" /s /y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\include;$(SolutionDir)..\libs\include;$(SolutionDir)..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;$(SolutionDir)..\..\libs\include;$(SolutionDir)..\..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -210,7 +224,8 @@
       <AdditionalLibraryDirectories>$(OutputPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)..\samples\Common\Models\skull.obj" "$(OutputPath)Models\" /s /y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -219,7 +234,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\include;$(SolutionDir)..\libs\include;$(SolutionDir)..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;$(SolutionDir)..\..\libs\include;$(SolutionDir)..\..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -229,7 +244,8 @@
       <AdditionalLibraryDirectories>$(OutputPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)..\samples\Common\Models\skull.obj" "$(OutputPath)Models\" /s /y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -238,7 +254,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\include;$(SolutionDir)..\libs\include;$(SolutionDir)..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;$(SolutionDir)..\..\libs\include;$(SolutionDir)..\..\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -248,7 +264,8 @@
       <AdditionalLibraryDirectories>$(OutputPath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)..\samples\Common\Models\skull.obj" "$(OutputPath)Models\" /s /y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

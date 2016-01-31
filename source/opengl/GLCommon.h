@@ -9,7 +9,6 @@
 	#include <tchar.h>
 	#pragma comment(lib, "opengl32.lib")
 #elif defined(__linux__)
-	#define GL_GLEXT_LEGACY 1
 	#include <X11/Xlib.h>
 	#include <X11/Xutil.h>
 	#include <GL/glx.h>

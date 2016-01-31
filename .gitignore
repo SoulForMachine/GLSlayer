@@ -1,9 +1,10 @@
 
 # VS files
-*.user
+*.user*
 *.sdf
 *.suo
 *.opensdf
+*.opendb
 
 # Build directories
 **/Debug*/
