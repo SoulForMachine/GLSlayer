@@ -82,28 +82,13 @@ DeferredSample::DeferredSample()
 	_swapInterval = 1;
 }
 
-#if defined (_WIN32)
-	bool DeferredSample::Init(HWND hwnd, HINSTANCE hinstance)
-#elif defined (__linux__)
-	bool DeferredSample::Init(Display* display, Window window, const FramebufferFormat& fbufFormat)
-#endif
+bool DeferredSample::Init(CreateContextInfo& info)
 {
+	info.version = 330;
+	info.debugContext = false;
+	info.logger = &_console;
 
-#if defined (_WIN32)
-	FramebufferFormat fbufFormat;
-	fbufFormat.colorBits = 32;
-	fbufFormat.colorBufferType = COLOR_BUFFER_TYPE_RGBA;
-	fbufFormat.depthBits = 24;
-	fbufFormat.stencilBits = 0;
-	fbufFormat.doubleBuffer = true;
-	fbufFormat.multisampleSamples = 0;
-	fbufFormat.sRGB = false;
-	fbufFormat.swapMethod = SWAP_EXCHANGE;
-
-	_renderContext = CreateRenderContext(330, hinstance, hwnd, &fbufFormat, false, &_console);
-#elif defined (__linux__)
-	_renderContext = CreateRenderContext(330, display, window, &fbufFormat, false, &_console);
-#endif
+	_renderContext = CreateRenderContext(info);
 
 	if(!_renderContext)
 		return false;
@@ -357,6 +342,18 @@ void DeferredSample::Deinit()
 		DestroyRenderContext(_renderContext);
 		_renderContext = nullptr;
 	}
+}
+
+void DeferredSample::GetFramebufferFormat(gls::FramebufferFormat& fbufFormat)
+{
+	fbufFormat.colorBits = 32;
+	fbufFormat.colorBufferType = COLOR_BUFFER_TYPE_RGBA;
+	fbufFormat.depthBits = 24;
+	fbufFormat.stencilBits = 0;
+	fbufFormat.doubleBuffer = true;
+	fbufFormat.multisampleSamples = 0;
+	fbufFormat.sRGB = false;
+	fbufFormat.swapMethod = SWAP_EXCHANGE;
 }
 
 void DeferredSample::CreateFramebuffers(int width, int height)

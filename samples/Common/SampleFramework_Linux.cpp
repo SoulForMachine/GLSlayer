@@ -39,17 +39,10 @@ int SampleFramework::Run(ISample* sample)
     _sample = sample;
 
     gls::FramebufferFormat fbufFormat;
-    fbufFormat.colorBits = 32;
-    fbufFormat.colorBufferType = gls::COLOR_BUFFER_TYPE_RGBA;
-    fbufFormat.depthBits = 24;
-    fbufFormat.stencilBits = 0;
-    fbufFormat.doubleBuffer = true;
-    fbufFormat.multisampleSamples = 0;
-    fbufFormat.sRGB = true;
-    fbufFormat.swapMethod = gls::SWAP_EXCHANGE;
+	_sample->GetFramebufferFormat(fbuffFormat);
 
     XVisualInfo visual_info;
-    if(!gls::GetVisualInfo(_display, fbufFormat, visual_info))
+    if(!gls::XGetVisualInfo(_display, fbufFormat, visual_info))
         return 1;
     Window root_window = XRootWindow(_display, visual_info.screen);
 
@@ -70,7 +63,15 @@ int SampleFramework::Run(ISample* sample)
     XStoreName(_display, window, "Deferred shading");
     XMapWindow(_display, window);
 
-    if(!_sample->Init(_display, window, fbufFormat))
+	gls::CreateContextInfo info;
+	info.debugContext = false;
+	info.format = &fbufFormat;
+	info.display = _display;
+	info.window = window;
+	info.logger = nullptr;
+	info.version = 330;
+
+    if(!_sample->Init(info))
     {
         XDestroyWindow(_display, window);
         XFreeColormap(_display, swa.colormap);

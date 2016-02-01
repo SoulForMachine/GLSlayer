@@ -16,23 +16,38 @@ namespace gls
 {
 	class IRenderContext;
 
+	struct CreateContextInfo
+	{
+		uint version;
+
+	#if defined (_WIN32)
+		HINSTANCE instanceHandle;
+		HWND windowHandle;
+	#elif defined (__linux__)
+		Display* display;
+		Window window;
+	#endif
+		const FramebufferFormat* format;
+		bool debugContext;
+		IDebugLogger* logger;
+	};
 
 	extern "C"
 	{
 	#if defined (_WIN32)
-		GLSLAYER_API IRenderContext* CreateRenderContext(uint version, HINSTANCE instance_handle, HWND window_handle, const FramebufferFormat* format, bool debug_context, IDebugLogger* logger);
+		GLSLAYER_API IRenderContext* CreateRenderContext(const CreateContextInfo& info);
 	#elif defined (__linux__)
-		GLSLAYER_API IRenderContext* CreateRenderContext(uint version, Display* display, Window window, const FramebufferFormat* format, bool debug_context, IDebugLogger* logger);
-		GLSLAYER_API bool GetVisualInfo(Display* display, const FramebufferFormat& format, XVisualInfo& visual_info);
+		GLSLAYER_API IRenderContext* CreateRenderContext(const CreateContextInfo& info);
+		GLSLAYER_API bool XGetVisualInfo(Display* display, const FramebufferFormat& format, XVisualInfo& visual_info);
 	#endif
 		GLSLAYER_API void DestroyRenderContext(IRenderContext* render_context);
 	}
 
 	#if defined (_WIN32)
-		typedef IRenderContext* (*CreateRenderContextFuncPtr)(uint version, HINSTANCE instance_handle, HWND window_handle, const FramebufferFormat* format, bool debug_context, IDebugLogger* logger);
+		typedef IRenderContext* (*CreateRenderContextFuncPtr)(const CreateContextInfo& info);
 	#elif defined (__linux__)
-		typedef IRenderContext* (*CreateRenderContextFuncPtr)(uint version, Display* display, Window window, const FramebufferFormat* format, bool debug_context, IDebugLogger* logger);
-		typedef bool (*GetVisualInfoFuncPtr)(Display* display, const FramebufferFormat& format, XVisualInfo& visual_info);
+		typedef IRenderContext* (*CreateRenderContextFuncPtr)(const CreateContextInfo& info);
+		typedef bool (*XGetVisualInfoFuncPtr)(Display* display, const FramebufferFormat& format, XVisualInfo& visual_info);
 	#endif
 	typedef void (*DestroyRenderContextFuncPtr)(IRenderContext* render_context);
 }

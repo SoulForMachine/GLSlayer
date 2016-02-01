@@ -14,14 +14,11 @@ public:
 	TriangleSample();
 	~TriangleSample();
 
-#if defined (_WIN32)
-	virtual bool Init(HWND hwnd, HINSTANCE hinstance);
-#elif defined (__linux__)
-	virtual bool Init(Display* display, Window window, const gls::FramebufferFormat& fbufFormat);
-#endif
-	virtual void Deinit();
-	virtual void Render(int frame_time);
-	virtual void OnResize(int width, int height);
+	virtual bool Init(gls::CreateContextInfo& info) override;
+	virtual void Deinit() override;
+	virtual void GetFramebufferFormat(gls::FramebufferFormat& fbufFormat) override;
+	virtual void Render(int frame_time) override;
+	virtual void OnResize(int width, int height) override;
 
 private:
 	gls::IRenderContext* _renderContext;

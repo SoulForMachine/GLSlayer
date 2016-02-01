@@ -14,16 +14,14 @@ class DeferredSample : public ISample
 {
 public:
 	DeferredSample();
-#if defined (_WIN32)
-	virtual bool Init(HWND hwnd, HINSTANCE hinstance);
-#elif defined (__linux__)
-	virtual bool Init(Display* display, Window window, const gls::FramebufferFormat& fbufFormat);
-#endif
-	virtual void Deinit();
-	virtual void Render(int frame_time);
-	virtual void OnResize(int width, int height);
-	virtual void OnKeyDown(int key);
-	virtual void OnMouseDrag(int dx, int dy);
+
+	virtual bool Init(gls::CreateContextInfo& info) override;
+	virtual void Deinit() override;
+	virtual void GetFramebufferFormat(gls::FramebufferFormat& fbufFormat) override;
+	virtual void Render(int frame_time) override;
+	virtual void OnResize(int width, int height) override;
+	virtual void OnKeyDown(int key) override;
+	virtual void OnMouseDrag(int dx, int dy) override;
 
 private:
 	void CreateFramebuffers(int width, int height);

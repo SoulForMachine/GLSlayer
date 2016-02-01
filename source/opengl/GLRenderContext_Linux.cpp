@@ -98,10 +98,10 @@ GLXFBConfig GetFBConfig(Display* display, const FramebufferFormat& format)
 }
 
 
-IRenderContext* gls::CreateRenderContext(uint version, Display* display, Window window, const FramebufferFormat* format, bool debug_context, IDebugLogger* logger)
+IRenderContext* gls::CreateRenderContext(const CreateContextInfo& info)
 {
 	GLRenderContext* render_context = new GLRenderContext(logger);
-	bool result = render_context->Create(version, display, window, *format, debug_context);
+	bool result = render_context->Create(info.version, info.display, info.window, *info.format, info.debugContext);
 	if(!result)
 	{
 		delete render_context;
@@ -110,7 +110,7 @@ IRenderContext* gls::CreateRenderContext(uint version, Display* display, Window 
 	return render_context;
 }
 
-bool gls::GetVisualInfo(Display* display, const FramebufferFormat& format, XVisualInfo& visual_info)
+bool gls::XGetVisualInfo(Display* display, const FramebufferFormat& format, XVisualInfo& visual_info)
 {
 	GLXFBConfig fbc = GetFBConfig(display, format);
 	if(!fbc)

@@ -6,15 +6,13 @@
 #include <cstdarg>
 #include "GLSlayer/RenderContext.h"
 
-using namespace gls;
 
-
-class Console : public IDebugLogger
+class Console : public gls::IDebugLogger
 {
 public:
-	void DebugMessage(DebugMessageSource source, DebugMessageType type, uint id, DebugMessageSeverity severity, const char* message)
+	void DebugMessage(gls::DebugMessageSource source, gls::DebugMessageType type, gls::uint id, gls::DebugMessageSeverity severity, const char* message)
 	{
-		if(type != DEBUG_TYPE_OTHER)
+		if(type != gls::DEBUG_TYPE_OTHER)
 			printf("%s\n", message);
 	}
 

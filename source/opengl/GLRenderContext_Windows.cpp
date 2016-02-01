@@ -22,10 +22,10 @@ LRESULT CALLBACK TmpWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 }
 
 
-IRenderContext* gls::CreateRenderContext(uint version, HINSTANCE instance_handle, HWND window_handle, const FramebufferFormat* format, bool debug_context, IDebugLogger* logger)
+IRenderContext* gls::CreateRenderContext(const CreateContextInfo& info)
 {
-	GLRenderContext* render_context = new GLRenderContext(logger);
-	bool result = render_context->Create(version, instance_handle, window_handle, *format, debug_context);
+	GLRenderContext* render_context = new GLRenderContext(info.logger);
+	bool result = render_context->Create(info.version, info.instanceHandle, info.windowHandle, *info.format, info.debugContext);
 	if(!result)
 	{
 		delete render_context;

@@ -1,6 +1,7 @@
 
-#include <cassert>
 #include "SampleFramework_Windows.h"
+#include <cassert>
+#include "GLSlayer/RenderContextInit.h"
 #include "ISample.h"
 
 #pragma comment(lib, "winmm.lib")
@@ -164,7 +165,17 @@ bool SampleFramework::MyCreateWindow()
 		_hwnd = CreateWindow(  wndClass, _appName.c_str(), WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 			rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, 0, 0, _hinstance, 0);
 
-		if(!_sample->Init(_hwnd, _hinstance))
+		gls::FramebufferFormat format;
+		_sample->GetFramebufferFormat(format);
+		gls::CreateContextInfo info;
+		info.debugContext = false;
+		info.format = &format;
+		info.instanceHandle = _hinstance;
+		info.windowHandle = _hwnd;
+		info.logger = nullptr;
+		info.version = 330;
+
+		if(!_sample->Init(info))
 		{
 			getc(stdin);
 			return false;

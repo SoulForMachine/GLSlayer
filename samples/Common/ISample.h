@@ -10,18 +10,20 @@
 	#include <X11/Xutil.h>
 #endif
 
+namespace gls
+{
+struct CreateContextInfo;
+struct FramebufferFormat;
+}
 
 class ISample
 {
 public:
 	virtual ~ISample() = 0;
 
-#if defined (_WIN32)
-	virtual bool Init(HWND hwnd, HINSTANCE hinstance) = 0;
-#elif defined (__linux__)
-	virtual bool Init(Display* display, Window window, const gls::FramebufferFormat& fbufFormat) = 0;
-#endif
+	virtual bool Init(gls::CreateContextInfo& info) = 0;
 	virtual void Deinit() = 0;
+	virtual void GetFramebufferFormat(gls::FramebufferFormat& fbufFormat) = 0;
 	virtual void Render(int frame_time) = 0;
 	virtual void OnResize(int width, int height) = 0;
 	virtual void OnKeyDown(int key)				{ }

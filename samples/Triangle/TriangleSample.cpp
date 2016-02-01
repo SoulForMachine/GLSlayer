@@ -32,27 +32,13 @@ TriangleSample::~TriangleSample()
 
 }
 
-#if defined (_WIN32)
-bool TriangleSample::Init(HWND hwnd, HINSTANCE hinstance)
-#elif defined (__linux__)
-bool TriangleSample::Init(Display* display, Window window, const gls::FramebufferFormat& fbufFormat)
-#endif
+bool TriangleSample::Init(gls::CreateContextInfo& info)
 {
-#if defined (_WIN32)
-	FramebufferFormat fbufFormat;
-	fbufFormat.colorBits = 32;
-	fbufFormat.colorBufferType = gls::COLOR_BUFFER_TYPE_RGBA;
-	fbufFormat.depthBits = 0;
-	fbufFormat.stencilBits = 0;
-	fbufFormat.doubleBuffer = true;
-	fbufFormat.multisampleSamples = 0;
-	fbufFormat.sRGB = false;
-	fbufFormat.swapMethod = gls::SWAP_EXCHANGE;
+	info.version = 330;
+	info.debugContext = false;
+	info.logger = &_console;
 
-	_renderContext = gls::CreateRenderContext(330, hinstance, hwnd, &fbufFormat, false, &_console);
-#elif defined (__linux__)
-	_renderContext = gls::CreateRenderContext(330, display, window, &fbufFormat, false, &_console);
-#endif
+	_renderContext = gls::CreateRenderContext(info);
 
 	if(!_renderContext)
 		return false;
@@ -137,6 +123,18 @@ void TriangleSample::Deinit()
 		gls::DestroyRenderContext(_renderContext);
 		_renderContext = nullptr;
 	}
+}
+
+void TriangleSample::GetFramebufferFormat(gls::FramebufferFormat& fbufFormat)
+{
+	fbufFormat.colorBits = 32;
+	fbufFormat.colorBufferType = gls::COLOR_BUFFER_TYPE_RGBA;
+	fbufFormat.depthBits = 0;
+	fbufFormat.stencilBits = 0;
+	fbufFormat.doubleBuffer = true;
+	fbufFormat.multisampleSamples = 0;
+	fbufFormat.sRGB = false;
+	fbufFormat.swapMethod = gls::SWAP_EXCHANGE;
 }
 
 void TriangleSample::Render(int frame_time)
