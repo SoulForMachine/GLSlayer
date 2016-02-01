@@ -100,7 +100,7 @@ GLXFBConfig GetFBConfig(Display* display, const FramebufferFormat& format)
 
 IRenderContext* gls::CreateRenderContext(const CreateContextInfo& info)
 {
-	GLRenderContext* render_context = new GLRenderContext(logger);
+	GLRenderContext* render_context = new GLRenderContext(info.logger);
 	bool result = render_context->Create(info.version, info.display, info.window, *info.format, info.debugContext);
 	if(!result)
 	{

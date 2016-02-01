@@ -5,6 +5,7 @@ INCLUDE_DIRECTORIES(../../samples/)
 
 IF(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -std=c++0x -Wall -Wno-unused-parameter -Wno-missing-field-initializers -Wno-unused-result")
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lm")
     FILE(COPY ./Shaders/ DESTINATION "${GLSlayer_BINARY_DIR}/bin/Shaders/DeferredShading")
 ELSEIF(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)

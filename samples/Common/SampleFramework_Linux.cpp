@@ -39,7 +39,7 @@ int SampleFramework::Run(ISample* sample)
     _sample = sample;
 
     gls::FramebufferFormat fbufFormat;
-	_sample->GetFramebufferFormat(fbuffFormat);
+	_sample->GetFramebufferFormat(fbufFormat);
 
     XVisualInfo visual_info;
     if(!gls::XGetVisualInfo(_display, fbufFormat, visual_info))
