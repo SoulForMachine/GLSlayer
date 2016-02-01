@@ -12,7 +12,7 @@ class Console : public gls::IDebugLogger
 public:
 	void DebugMessage(gls::DebugMessageSource source, gls::DebugMessageType type, gls::uint id, gls::DebugMessageSeverity severity, const char* message)
 	{
-		if(type != gls::DEBUG_TYPE_OTHER)
+		//if(type != gls::DEBUG_TYPE_OTHER)
 			printf("%s\n", message);
 	}
 

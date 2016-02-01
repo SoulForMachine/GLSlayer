@@ -98,8 +98,8 @@ bool DeferredSample::Init(CreateContextInfo& info)
 	_renderContext->FrontFace(ORIENT_CCW);
 	_renderContext->EnableFaceCulling(true);
 	_renderContext->SwapInterval(_swapInterval);
-	/*_renderContext->EnableDebugOutput(true, true);
-	_renderContext->EnableDebugMessages(DEBUG_SOURCE_ALL, DEBUG_TYPE_ALL, DEBUG_SEVERITY_ALL, true);*/
+	_renderContext->EnableDebugOutput(true, true);
+	_renderContext->EnableDebugMessages(DEBUG_SOURCE_ALL, DEBUG_TYPE_ALL, DEBUG_SEVERITY_ALL, true);
 
 	// create shaders
 

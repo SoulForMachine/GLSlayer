@@ -2857,9 +2857,9 @@ void GLRenderContext::DestroyTransformFeedback(ITransformFeedback* transform_fee
 	}
 }
 
-static void DebugMessageProc(
+static void APIENTRY DebugMessageProc(
 	GLenum source, GLenum type, GLuint id, GLenum severity,
-	GLsizei length, const char* message, void* user_param)
+	GLsizei length, const char* message, const void* user_param)
 {
 	IDebugLogger* logger = (IDebugLogger*)user_param;
 	if(logger)
@@ -2879,7 +2879,7 @@ void GLRenderContext::EnableDebugOutput(bool enable, bool synchronous)
 		else
 			glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
-		glDebugMessageCallback((GLDEBUGPROC)DebugMessageProc, _logger);
+		glDebugMessageCallback(DebugMessageProc, _logger);
 	}
 	else
 	{
