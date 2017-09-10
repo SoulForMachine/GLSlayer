@@ -174,6 +174,7 @@ bool SampleFramework::MyCreateWindow()
 		info.windowHandle = _hwnd;
 		info.logger = nullptr;
 		info.version = 330;
+		info.shareContext = nullptr;
 
 		if(!_sample->Init(info))
 		{

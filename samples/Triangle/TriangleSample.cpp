@@ -92,9 +92,9 @@ bool TriangleSample::Init(gls::CreateContextInfo& info)
 		{ vec3f(-1.0f, -1.0f, 0.0f), vec4f(0.0f, 1.0f, 0.0f, 1.0f), },
 		{ vec3f(1.0f, 0.0f, 0.0f), vec4f(0.0f, 0.0f, 1.0f, 1.0f), },
 	};
-	_vertexBuffer = _renderContext->CreateBuffer(gls::VERTEX_BUFFER, sizeof(vertices), vertices, 0);
+	_vertexBuffer = _renderContext->CreateBuffer(sizeof(vertices), vertices, 0);
 
-	_vertShaderUniforms = _renderContext->CreateBuffer(gls::UNIFORM_BUFFER, sizeof(mat4f), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
+	_vertShaderUniforms = _renderContext->CreateBuffer(sizeof(mat4f), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
 
 	VertexAttribDesc vert_desc[] = {
 		{ 0, 0, 3, gls::TYPE_FLOAT, false, false, 0, 0 },

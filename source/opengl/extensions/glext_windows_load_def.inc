@@ -1,4 +1,56 @@
 
+bool GLRenderContext::glextLoad_GL_VERSION_1_0()
+{
+	bool result = true;
+	INIT_FUNC_PTR(glCullFace);
+	INIT_FUNC_PTR(glFrontFace);
+	INIT_FUNC_PTR(glLineWidth);
+	INIT_FUNC_PTR(glPolygonMode);
+	INIT_FUNC_PTR(glScissor);
+	INIT_FUNC_PTR(glTexParameteri);
+	INIT_FUNC_PTR(glTexParameteriv);
+	INIT_FUNC_PTR(glColorMask);
+	INIT_FUNC_PTR(glDepthMask);
+	INIT_FUNC_PTR(glDisable);
+	INIT_FUNC_PTR(glEnable);
+	INIT_FUNC_PTR(glFinish);
+	INIT_FUNC_PTR(glFlush);
+	INIT_FUNC_PTR(glBlendFunc);
+	INIT_FUNC_PTR(glLogicOp);
+	INIT_FUNC_PTR(glDepthFunc);
+	INIT_FUNC_PTR(glPixelStorei);
+	INIT_FUNC_PTR(glReadBuffer);
+	INIT_FUNC_PTR(glReadPixels);
+	INIT_FUNC_PTR(glGetError);
+	INIT_FUNC_PTR(glGetFloatv);
+	INIT_FUNC_PTR(glGetIntegerv);
+	INIT_FUNC_PTR(glGetString);
+	INIT_FUNC_PTR(glGetTexImage);
+	INIT_FUNC_PTR(glGetTexLevelParameteriv);
+	INIT_FUNC_PTR(glDepthRange);
+	INIT_FUNC_PTR(glViewport);
+	_info.featuresGL.VERSION_1_0 = result;
+	return result;
+}
+
+bool GLRenderContext::glextLoad_GL_VERSION_1_1()
+{
+	bool result = true;
+	INIT_FUNC_PTR(glDrawArrays);
+	INIT_FUNC_PTR(glPolygonOffset);
+	INIT_FUNC_PTR(glCopyTexImage1D);
+	INIT_FUNC_PTR(glCopyTexImage2D);
+	INIT_FUNC_PTR(glCopyTexSubImage1D);
+	INIT_FUNC_PTR(glCopyTexSubImage2D);
+	INIT_FUNC_PTR(glTexSubImage1D);
+	INIT_FUNC_PTR(glTexSubImage2D);
+	INIT_FUNC_PTR(glBindTexture);
+	INIT_FUNC_PTR(glDeleteTextures);
+	INIT_FUNC_PTR(glGenTextures);
+	_info.featuresGL.VERSION_1_1 = result;
+	return result;
+}
+
 bool GLRenderContext::glextLoad_GL_VERSION_1_2()
 {
 	bool result = true;
@@ -45,7 +97,6 @@ bool GLRenderContext::glextLoad_GL_VERSION_1_5()
 	INIT_FUNC_PTR(glGenBuffers);
 	INIT_FUNC_PTR(glBufferSubData);
 	INIT_FUNC_PTR(glGetBufferSubData);
-	INIT_FUNC_PTR(glMapBuffer);
 	INIT_FUNC_PTR(glUnmapBuffer);
 	_info.featuresGL.VERSION_1_5 = result;
 	return result;
@@ -216,8 +267,15 @@ bool GLRenderContext::glextLoad_GL_ARB_copy_buffer()
 
 bool GLRenderContext::glextLoad_GL_ARB_uniform_buffer_object()
 {
-	_info.featuresGL.ARB_uniform_buffer_object = IsExtSupported("GL_ARB_uniform_buffer_object");
-	return _info.featuresGL.ARB_uniform_buffer_object;
+	bool result = IsExtSupported("GL_ARB_uniform_buffer_object");
+	if(!result)
+		return false;
+	INIT_FUNC_PTR(glGetActiveUniformsiv);
+	INIT_FUNC_PTR(glGetActiveUniformName);
+	INIT_FUNC_PTR(glGetUniformBlockIndex);
+	INIT_FUNC_PTR(glGetActiveUniformBlockiv);
+	_info.featuresGL.ARB_uniform_buffer_object = result;
+	return result;
 }
 
 bool GLRenderContext::glextLoad_GL_VERSION_3_2()
@@ -999,6 +1057,93 @@ bool GLRenderContext::glextLoad_GL_ARB_vertex_type_10f_11f_11f_rev()
 {
 	_info.featuresGL.ARB_vertex_type_10f_11f_11f_rev = IsExtSupported("GL_ARB_vertex_type_10f_11f_11f_rev");
 	return _info.featuresGL.ARB_vertex_type_10f_11f_11f_rev;
+}
+
+bool GLRenderContext::glextLoad_GL_VERSION_4_5()
+{
+	bool result = true;
+	result = glextLoad_GL_ARB_clip_control() && result;
+	result = glextLoad_GL_ARB_conditional_render_inverted() && result;
+	result = glextLoad_GL_ARB_cull_distance() && result;
+	result = glextLoad_GL_ARB_direct_state_access() && result;
+	result = glextLoad_GL_ARB_ES3_1_compatibility() && result;
+	result = glextLoad_GL_ARB_get_texture_sub_image() && result;
+	result = glextLoad_GL_ARB_robustness() && result;
+	result = glextLoad_GL_ARB_texture_barrier() && result;
+	result = glextLoad_GL_KHR_context_flush_control() && result;
+	_info.featuresGL.VERSION_4_5 = result;
+	return result;
+}
+
+bool GLRenderContext::glextLoad_GL_ARB_clip_control()
+{
+	bool result = IsExtSupported("GL_ARB_clip_control");
+	if(!result)
+		return false;
+	INIT_FUNC_PTR(glClipControl);
+	_info.featuresGL.ARB_clip_control = result;
+	return result;
+}
+
+bool GLRenderContext::glextLoad_GL_ARB_conditional_render_inverted()
+{
+	_info.featuresGL.ARB_conditional_render_inverted = IsExtSupported("GL_ARB_conditional_render_inverted");
+	return _info.featuresGL.ARB_conditional_render_inverted;
+}
+
+bool GLRenderContext::glextLoad_GL_ARB_cull_distance()
+{
+	_info.featuresGL.ARB_cull_distance = IsExtSupported("GL_ARB_cull_distance");
+	return _info.featuresGL.ARB_cull_distance;
+}
+
+bool GLRenderContext::glextLoad_GL_ARB_direct_state_access()
+{
+	_info.featuresGL.ARB_direct_state_access = IsExtSupported("GL_ARB_direct_state_access");
+	return _info.featuresGL.ARB_direct_state_access;
+}
+
+bool GLRenderContext::glextLoad_GL_ARB_ES3_1_compatibility()
+{
+	bool result = IsExtSupported("GL_ARB_ES3_1_compatibility");
+	if(!result)
+		return false;
+	INIT_FUNC_PTR(glMemoryBarrierByRegion);
+	_info.featuresGL.ARB_ES3_1_compatibility = result;
+	return result;
+}
+
+bool GLRenderContext::glextLoad_GL_ARB_get_texture_sub_image()
+{
+	bool result = IsExtSupported("GL_ARB_get_texture_sub_image");
+	if(!result)
+		return false;
+	INIT_FUNC_PTR(glGetTextureSubImage);
+	INIT_FUNC_PTR(glGetCompressedTextureSubImage);
+	_info.featuresGL.ARB_get_texture_sub_image = result;
+	return result;
+}
+
+bool GLRenderContext::glextLoad_GL_ARB_robustness()
+{
+	_info.featuresGL.ARB_robustness = IsExtSupported("GL_ARB_robustness");
+	return _info.featuresGL.ARB_robustness;
+}
+
+bool GLRenderContext::glextLoad_GL_ARB_texture_barrier()
+{
+	bool result = IsExtSupported("GL_ARB_texture_barrier");
+	if(!result)
+		return false;
+	INIT_FUNC_PTR(glTextureBarrier);
+	_info.featuresGL.ARB_texture_barrier = result;
+	return result;
+}
+
+bool GLRenderContext::glextLoad_GL_KHR_context_flush_control()
+{
+	_info.featuresGL.KHR_context_flush_control = IsExtSupported("GL_KHR_context_flush_control");
+	return _info.featuresGL.KHR_context_flush_control;
 }
 
 bool GLRenderContext::glextLoad_GL_EXT_texture_filter_anisotropic()

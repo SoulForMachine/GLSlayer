@@ -143,6 +143,8 @@ namespace gls
 		int maxDebugGroupStackDepth;
 		int maxLabelLength;
 		int maxVertexAttribBindings;
+		int maxCullDistances;
+		int maxCombinedClipAndCullDistances;
 	};
 
 
@@ -245,6 +247,7 @@ namespace gls
 	public:
 		virtual ~IRenderContext() {}
 		virtual bool SetCurrentContext() = 0;
+		virtual void UnsetCurrentContext() = 0;
 		virtual const ContextInfo& GetInfo() const = 0;
 
 		// vertex stream
@@ -258,8 +261,8 @@ namespace gls
 
 		// tessellation
 		virtual void PatchVertexCount(int count) = 0;
-		virtual void PatchDefaultOuterLevels(float values[4]) = 0;
-		virtual void PatchDefaultInnerLevels(float values[2]) = 0;
+		virtual void PatchDefaultOuterLevels(const float values[4]) = 0;
+		virtual void PatchDefaultInnerLevels(const float values[2]) = 0;
 
 		// conditional render
 		virtual void BeginConditionalRender(IQuery* query, ConditionalRenderMode mode) = 0;
@@ -274,6 +277,7 @@ namespace gls
 		// viewport transform
 		virtual void Viewport(int x, int y, int width, int height) = 0;
 		virtual void ViewportIndexed(uint index, float x, float y, float width, float height) = 0;
+		virtual void ClipControl(ClipOrigin origin, ClipDepth depth) = 0;
 
 		// back face culling
 		virtual void EnableFaceCulling(bool enable) = 0;
@@ -283,6 +287,8 @@ namespace gls
 		// rasterization
 		virtual void RasterizationMode(RasterMode mode) = 0;
 		virtual void EnableRasterizerDiscard(bool enable) = 0;
+		virtual void LineWidth(float width) = 0;
+		virtual void EnableLineAntialiasing(bool enable) = 0;
 
 		// multisampling
 		virtual void EnableMultisampling(bool enable) = 0;
@@ -317,7 +323,7 @@ namespace gls
 		// blending
 		virtual void EnableBlending(bool enable) = 0;
 		virtual void EnableBlending(uint buffer, bool enable) = 0;
-		virtual void BlendingColor(float color[4]) = 0;
+		virtual void BlendingColor(const float color[4]) = 0;
 		virtual void BlendingFunc(BlendFunc src_factor, BlendFunc dest_factor) = 0;
 		virtual void BlendingFunc(BlendFunc src_rgb_factor, BlendFunc dest_rgb_factor, BlendFunc src_alpha_factor, BlendFunc dest_alpha_factor) = 0;
 		virtual void BlendingFunc(uint buffer, BlendFunc src_factor, BlendFunc dest_factor) = 0;
@@ -339,9 +345,9 @@ namespace gls
 		virtual void EnableColorWrite(uint buffer, bool r, bool g, bool b, bool a) = 0;
 		virtual void EnableDepthWrite(bool enable) = 0;
 		virtual void EnableStencilWrite(PolygonFace face, uint mask) = 0;
-		virtual void ClearColorBuffer(IFramebuffer* fbuf, uint buffer, float color[4]) = 0;
-		virtual void ClearColorBuffer(IFramebuffer* fbuf, uint buffer, int color[4]) = 0;
-		virtual void ClearColorBuffer(IFramebuffer* fbuf, uint buffer, uint color[4]) = 0;
+		virtual void ClearColorBuffer(IFramebuffer* fbuf, uint buffer, const float color[4]) = 0;
+		virtual void ClearColorBuffer(IFramebuffer* fbuf, uint buffer, const int color[4]) = 0;
+		virtual void ClearColorBuffer(IFramebuffer* fbuf, uint buffer, const uint color[4]) = 0;
 		virtual void ClearDepthBuffer(IFramebuffer* fbuf, float depth) = 0;
 		virtual void ClearStencilBuffer(IFramebuffer* fbuf, int stencil) = 0;
 		virtual void ClearDepthStencilBuffer(IFramebuffer* fbuf, float depth, int stencil) = 0;
@@ -398,6 +404,8 @@ namespace gls
 		virtual SyncWaitStatus ClientWaitSync(SyncObject sync, uint flags, uint64 timeout) = 0;
 		virtual void Wait(SyncObject sync, uint flags, uint64 timeout) = 0;
 		virtual void MemoryBarrier(uint flags) = 0;
+		virtual void MemoryBarrierByRegion(uint flags) = 0;
+		virtual void TextureBarrier() = 0;
 
 		// buffer and image copying
 		virtual void CopyBufferData(IBuffer* source, size_t source_offset, IBuffer* dest, size_t dest_offset, size_t size) = 0;
@@ -471,13 +479,13 @@ namespace gls
 
 		virtual void DestroyTexture(ITexture* texture) = 0;
 
-		virtual IBuffer* CreateBuffer(BufferType type, size_t size, const void* data, uint flags) = 0;
+		virtual IBuffer* CreateBuffer(size_t size, const void* data, uint flags) = 0;
 		virtual void DestroyBuffer(IBuffer* buffer) = 0;
 
 		virtual IFramebuffer* CreateFramebuffer() = 0;
 		virtual IFramebuffer* CreateFramebufferWithoutAttachments(const FramebufferParams& params) = 0;
 		virtual void DestroyFramebuffer(IFramebuffer* framebuffer) = 0;
-		virtual IRenderbuffer* CreateRenderbuffer() = 0;
+		virtual IRenderbuffer* CreateRenderbuffer(size_t samples, gls::PixelFormat internal_format, size_t width, size_t height) = 0;
 		virtual void DestroyRenderbuffer(IRenderbuffer* renderbuffer) = 0;
 
 		virtual IQuery* CreateQuery() = 0;

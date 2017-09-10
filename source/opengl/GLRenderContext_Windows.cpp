@@ -25,7 +25,7 @@ LRESULT CALLBACK TmpWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 IRenderContext* gls::CreateRenderContext(const CreateContextInfo& info)
 {
 	GLRenderContext* render_context = new GLRenderContext(info.logger);
-	bool result = render_context->Create(info.version, info.instanceHandle, info.windowHandle, *info.format, info.debugContext);
+	bool result = render_context->Create(info.version, info.instanceHandle, info.windowHandle, *info.format, info.debugContext, info.shareContext);
 	if(!result)
 	{
 		delete render_context;
@@ -43,8 +43,83 @@ void gls::DestroyRenderContext(IRenderContext* render_context)
 	}
 }
 
+bool gls::SetWindowCompatiblePixelFormat(IRenderContext* render_context, HWND windowHandle)
+{
+	auto rcImpl = static_cast<GLRenderContext*>(render_context);
+	return rcImpl->SetWindowCompatiblePixelFormat(windowHandle);
+}
 
-bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND window_handle, const FramebufferFormat& format, bool debug_context)
+HWND gls::SetContextWindow(IRenderContext* render_context, HWND windowHandle)
+{
+	auto rcImpl = static_cast<GLRenderContext*>(render_context);
+	return rcImpl->SetContextWindow(windowHandle);
+}
+
+bool GLRenderContext::SetWindowCompatiblePixelFormat(HWND windowHandle)
+{
+	if (!_initialized)
+		return false;
+
+	// check if WGL_EXT_framebuffer_sRGB is supported
+	bool sRGB = IsExtSupported("WGL_EXT_framebuffer_sRGB");
+
+	const FramebufferFormat& format = _info.framebufferFormat;
+	UINT num_formats;
+	int pixel_format;
+	int int_atribs[] =
+	{
+		WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
+		WGL_DRAW_TO_WINDOW_ARB, TRUE,
+		WGL_SUPPORT_OPENGL_ARB, TRUE,
+		WGL_DOUBLE_BUFFER_ARB, format.doubleBuffer ? 1 : 0,
+		WGL_SWAP_METHOD_ARB, (int)GetGLEnum(format.swapMethod),
+		WGL_PIXEL_TYPE_ARB, (int)GetGLEnum(format.colorBufferType),
+		WGL_COLOR_BITS_ARB, format.colorBits,
+		WGL_DEPTH_BITS_ARB, format.depthBits,
+		WGL_STENCIL_BITS_ARB, format.stencilBits,
+		WGL_SAMPLE_BUFFERS_ARB, format.multisampleSamples ? 1 : 0,
+		WGL_SAMPLES_ARB, format.multisampleSamples,
+		(sRGB ? WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT : 0), (sRGB ? (format.sRGB ? GL_TRUE : GL_FALSE) : 0),
+		0, 0
+	};
+	HDC hdc = GetDC(windowHandle);
+	BOOL result = wglChoosePixelFormatARB(hdc, int_atribs, 0, 1, &pixel_format, &num_formats);
+	if (!result || num_formats < 1)
+	{
+		return false;
+	}
+
+	PIXELFORMATDESCRIPTOR pfd;
+	result = DescribePixelFormat(hdc, pixel_format, sizeof(pfd), &pfd);
+	if (!result)
+	{
+		return false;
+	}
+
+	result = SetPixelFormat(hdc, pixel_format, &pfd);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+HWND GLRenderContext::SetContextWindow(HWND windowHandle)
+{
+	if (!_initialized)
+		return (HWND)0;
+
+	HWND old = _hwnd;
+	if (windowHandle != old)
+	{
+		_hwnd = windowHandle;
+		_hdc = GetDC(_hwnd);
+	}
+	return old;
+}
+
+bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND window_handle, const FramebufferFormat& format, bool debug_context, IRenderContext* shareContext)
 {
 	if(_initialized)
 		return false;
@@ -52,6 +127,18 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	if(version < 330)
 	{
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_UNSUPPORTED_VERSION);
+		return false;
+	}
+
+	if (instance_handle == 0)
+	{
+		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "instance handle is 0.");
+		return false;
+	}
+
+	if (window_handle == 0)
+	{
+		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "window handle is 0.");
 		return false;
 	}
 
@@ -144,7 +231,7 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 		return false;
 	}
 
-	result = CreateContext(version, format, debug_context);
+	result = CreateContext(version, format, debug_context, shareContext);
 
 	// destroy temporary rendering context and window
 	wglMakeCurrent(0, 0);
@@ -168,13 +255,20 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	return InitCommon(version);
 }
 
-bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& format, bool debug_context)
+bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& format, bool debug_context, IRenderContext* shareContext)
 {
 	BOOL result;
 	HDC hdc = GetDC(_hwnd);
 	if(!hdc)
 	{
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "could not get window DC");
+		return false;
+	}
+
+	// Initialize base GL version for some basic functions.
+	if (!glextLoad_GL_VERSION_1_0())
+	{
+		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "could not load version 1.0");
 		return false;
 	}
 
@@ -214,7 +308,7 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 		(sRGB? WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT: 0), (sRGB? (format.sRGB? GL_TRUE: GL_FALSE): 0),
 		0, 0
 	};
-	result = wglChoosePixelFormatARB(hdc, int_atribs, 0, 1, &pixel_format, &num_formats);
+	result = ptr_wglChoosePixelFormatARB(hdc, int_atribs, 0, 1, &pixel_format, &num_formats);
 	if(!result || num_formats < 1)
 	{
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "wglChoosePixelFormatARB");
@@ -239,7 +333,7 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 	HGLRC hglrc = 0;
 	if(	IsExtSupported("WGL_ARB_create_context") &&
 		glextLoad_WGL_ARB_create_context() &&
-		wglCreateContextAttribsARB != 0 )
+		ptr_wglCreateContextAttribsARB != 0 )
 	{
 		int context_flags = (version >= 300) ? WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB : 0;
 		if(debug_context)
@@ -251,7 +345,9 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 			WGL_CONTEXT_FLAGS_ARB, context_flags,
 			0
 		};
-		hglrc = wglCreateContextAttribsARB(hdc, 0, attribs);
+
+		HGLRC hrcShared = shareContext ? reinterpret_cast<GLRenderContext*>(shareContext)->_hglrc : 0;
+		hglrc = wglCreateContextAttribsARB(hdc, hrcShared, attribs);
 	}
 	else
 	{
@@ -312,6 +408,7 @@ bool GLRenderContext::IsExtSupported(const char* extension)
 		return false;
 
 	PFNGLGETSTRINGIPROC ptr_glGetStringi = (PFNGLGETSTRINGIPROC)wglGetProcAddress("glGetStringi");
+
 	if(ptr_glGetStringi)
 	{
 		GLint count = 0;
@@ -340,6 +437,11 @@ bool GLRenderContext::SetCurrentContext()
 {
 	BOOL result = wglMakeCurrent(_hdc, _hglrc);
 	return (result == TRUE);
+}
+
+void GLRenderContext::UnsetCurrentContext()
+{
+	wglMakeCurrent(0, 0);
 }
 
 void GLRenderContext::SwapBuffers()

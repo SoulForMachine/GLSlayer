@@ -7,6 +7,35 @@
 namespace gls
 {
 
+	struct ShaderBlockInfo
+	{
+	public:
+		struct VariableInfo
+		{
+			char* name;
+			ShaderDataType type;
+			uint index;
+			uint offset;
+			uint arraySize;
+			int arrayStride;
+			int matrixStride;
+			bool isRowMajor;
+		};
+
+		char* name;
+		size_t dataSize;
+		size_t variableCount;
+		VariableInfo* variables;
+
+		template <typename _T>
+		_T& GetVariableInBuffer(void* bufferPtr, size_t posIndex)
+		{
+			return *reinterpret_cast<_T*>(
+				reinterpret_cast<uint8_t*>(bufferPtr) + variables[posIndex]->offset);
+		}
+	};
+
+
 	class IShader : public IResource
 	{
 	public:
@@ -19,6 +48,8 @@ namespace gls
 		virtual uint GetSubroutineIndex(const char* name) = 0;
 		virtual bool GetBinary(uint& format, size_t buffer_size, void* buffer) = 0;
 		virtual int GetBinarySize() = 0;
+		virtual const ShaderBlockInfo* GetUniformBlockInfo(const char* blockName) = 0;
+		virtual const ShaderBlockInfo* GetStorageBlockInfo(const char* blockName) = 0;
 	};
 
 

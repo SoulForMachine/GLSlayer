@@ -181,6 +181,16 @@ def parseRegistryXML(xmlStr)
 						end
 					end
 				end
+
+				# These parameter names are defined as macros so we need to change them.
+				if paramName == "near"
+					paramName = "nearVal"
+				end
+
+				if paramName == "far"
+					paramName = "farVal"
+				end
+
 				func.params.push([paramType, paramName])
 			end
 
@@ -250,6 +260,13 @@ def parseRegistryXML(xmlStr)
 					ver2.extensions.each { |ext| ext.functions.delete(func) }
 				end
 			end
+			ver.extensions.each do |ext|
+				ext.functions.each do |func|
+					$glVersions.each do |ver2|
+						ver2.extensions.each { |ext2| ext2.functions.delete(func) if ext != ext2 }
+					end
+				end
+			end
 		end
 
 		# Parse extensions
@@ -264,6 +281,13 @@ def parseRegistryXML(xmlStr)
 					alreadyExists = false
 					$glVersions.each do |ver|
 						if ver.functions.include?(func)
+							alreadyExists = true
+							break
+						end
+					end
+					# Check if the function already exists in any other extension.
+					$glExtensions.each do |otherExt|
+						if otherExt.functions.include?(func)
 							alreadyExists = true
 							break
 						end
@@ -410,24 +434,36 @@ def writeFunc(glFunc, outFuncsFile)
 	outFuncsFile << "\ninline #{glFunc.retType}#{glFunc.name}(#{params})\n{\n"
 	outFuncsFile << "\tassert(ptr_#{glFunc.name});\n"
 	args = glFunc.params.collect{ |p| "#{p[1]}" }.join(", ")
+
 	if glFunc.retType == "void "
 		outFuncsFile << "\tptr_#{glFunc.name}(#{args});\n"
-		outFuncsFile << "#ifdef _DEBUG\n"
-		outFuncsFile << "\tGLenum error;\n"
-		outFuncsFile << "\tassert((error = glGetError()) == GL_NO_ERROR);\n"
-		outFuncsFile << "#endif\n}\n"
+
+		if glFunc.name != "glGetError"
+			outFuncsFile << "#if defined(DEBUG_GL_CHECK_FOR_ERROR)\n"
+			outFuncsFile << "\tGLenum error;\n"
+			outFuncsFile << "\tassert((error = glGetError()) == GL_NO_ERROR);\n"
+			outFuncsFile << "#endif\n"
+		end
+
+		outFuncsFile << "}\n"
 	else
 		outFuncsFile << "\t#{glFunc.retType}result;\n"
 		outFuncsFile << "\tresult = ptr_#{glFunc.name}(#{args});\n"
-		outFuncsFile << "#ifdef _DEBUG\n"
-		outFuncsFile << "\tGLenum error;\n"
-		outFuncsFile << "\tassert((error = glGetError()) == GL_NO_ERROR);\n"
-		outFuncsFile << "#endif\n"
+
+		if glFunc.name != "glGetError"
+			outFuncsFile << "#if defined(DEBUG_GL_CHECK_FOR_ERROR)\n"
+			outFuncsFile << "\tGLenum error;\n"
+			outFuncsFile << "\tassert((error = glGetError()) == GL_NO_ERROR);\n"
+			outFuncsFile << "#endif\n"
+		end
+
 		outFuncsFile << "\treturn result;\n}\n"
 	end
 end
 
 def generateFuncsFile(outFuncsFile)
+	outFuncsFile << "\nGLenum glGetError();\n"
+
 	$glVersions.each do |ver|
 		outFuncsFile << "\n// #{ver.name}\n"
 		ver.functions.each do |func|

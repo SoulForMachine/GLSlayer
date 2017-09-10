@@ -14,9 +14,7 @@ namespace gls
 	class IRenderbuffer: public IResource
 	{
 	public:
-		virtual ~IRenderbuffer() {}
-
-		virtual void Storage(size_t samples, PixelFormat internal_format, size_t width, size_t height) = 0;
+		virtual ~IRenderbuffer() = 0 {}
 	};
 
 

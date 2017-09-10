@@ -14,7 +14,9 @@
 	bool Validate() { return GLShader::Validate(); } \
 	gls::uint GetSubroutineIndex(const char* name) { return GLShader::GetSubroutineIndex(name); } \
 	bool GetBinary(gls::uint& format, size_t buffer_size, void* buffer) { return GLShader::GetBinary(format, buffer_size, buffer); } \
-	int GetBinarySize() { return GLShader::GetBinarySize(); }
+	int GetBinarySize() { return GLShader::GetBinarySize(); } \
+	const gls::ShaderBlockInfo* GetUniformBlockInfo(const char* blockName) { return GLShader::GetUniformBlockInfo(blockName); } \
+	const gls::ShaderBlockInfo* GetStorageBlockInfo(const char* blockName) { return GLShader::GetStorageBlockInfo(blockName); }
 
 
 
@@ -42,6 +44,8 @@ public:
 	gls::uint GetSubroutineIndex(const char* name);
 	bool GetBinary(gls::uint& format, size_t buffer_size, void* buffer);
 	int GetBinarySize();
+	const gls::ShaderBlockInfo* GetUniformBlockInfo(const char* blockName);
+	const gls::ShaderBlockInfo* GetStorageBlockInfo(const char* blockName);
 
 protected:
 	gls::ShaderType _shaderType;
@@ -54,6 +58,14 @@ private:
 
 	char* _logInfo;
 	int _logInfoLength;
+
+	size_t _uniformBlockCount;
+	size_t _uniformBlockArraySize;
+	gls::ShaderBlockInfo* _uniformBlockInfos;
+
+	size_t _storageBlockCount;
+	size_t _storageBlockArraySize;
+	gls::ShaderBlockInfo* _storageBlockInfos;
 };
 
 

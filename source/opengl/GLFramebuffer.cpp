@@ -19,7 +19,7 @@ using namespace gls;
 
 
 
-bool GLRenderbuffer::Create(GLState* gl_state)
+bool GLRenderbuffer::Create(GLState* gl_state, size_t samples, PixelFormat internal_format, size_t width, size_t height)
 {
 	if(_id)
 		return false;
@@ -34,6 +34,8 @@ bool GLRenderbuffer::Create(GLState* gl_state)
 	_glState->renderbuffer = _id;
 	_resType = RES_RENDERBUFFER;
 	_target = GL_RENDERBUFFER;
+
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, (GLsizei)samples, GetGLEnum(internal_format), (GLsizei)width, (GLsizei)height);
 
 	return true;
 }
@@ -50,13 +52,6 @@ void GLRenderbuffer::Destroy()
 		glDeleteRenderbuffers(1, &_id);
 		_id = 0;
 	}
-}
-
-void GLRenderbuffer::Storage(size_t samples, PixelFormat internal_format, size_t width, size_t height)
-{
-	assert(_id);
-	STATE_MACHINE_HACK
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, (GLsizei)samples, GetGLEnum(internal_format), (GLsizei)width, (GLsizei)height);
 }
 
 // =================== Framebuffer ==================
@@ -174,6 +169,12 @@ void GLFramebuffer::InvalidateFramebuffer(int num_attachments, const AttachmentB
 	assert(_id);
 	STATE_MACHINE_HACK
 
+	if (num_attachments < 1 || num_attachments > 16)
+	{
+		assert(false);
+		return;
+	}
+
 	GLenum* attach_enums = (GLenum*)alloca(sizeof(GLenum) * num_attachments);
 	for(int i = 0; i < num_attachments; ++i)
 		attach_enums[i] = GetGLEnum(attachments[i]);
@@ -185,6 +186,12 @@ void GLFramebuffer::InvalidateSubFramebuffer(int num_attachments, const Attachme
 {
 	assert(_id);
 	STATE_MACHINE_HACK
+
+	if (num_attachments < 1 || num_attachments > 16)
+	{
+		assert(false);
+		return;
+	}
 
 	GLenum* attach_enums = (GLenum*)alloca(sizeof(GLenum) * num_attachments);
 	for(int i = 0; i < num_attachments; ++i)

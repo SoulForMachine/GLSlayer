@@ -7,15 +7,48 @@ using namespace std;
 using namespace gls;
 
 
+
 GLShader::GLShader()
 {
 	_logInfo = 0;
 	_logInfoLength = 0;
+
+	_uniformBlockCount = 0;
+	_uniformBlockArraySize = 0;
+	_uniformBlockInfos = nullptr;
+
+	_storageBlockCount = 0;
+	_storageBlockArraySize = 0;
+	_storageBlockInfos = nullptr;
 }
 
 GLShader::~GLShader()
 {
 	delete[] _logInfo;
+
+	for (size_t i = 0; i < _uniformBlockCount; ++i)
+	{
+		delete[] _uniformBlockInfos[i].name;
+
+		for (size_t u = 0; u < _uniformBlockInfos[i].variableCount; ++u)
+			delete[] _uniformBlockInfos[i].variables[u].name;
+
+		delete[] _uniformBlockInfos[i].variables;
+	}
+
+	delete[] _uniformBlockInfos;
+
+	for (size_t i = 0; i < _storageBlockCount; ++i)
+	{
+		delete[] _storageBlockInfos[i].name;
+
+		for (size_t u = 0; u < _storageBlockInfos[i].variableCount; ++u)
+			delete[] _storageBlockInfos[i].variables[u].name;
+
+		delete[] _storageBlockInfos[i].variables;
+	}
+
+	delete[] _storageBlockInfos;
 }
 
 bool GLShader::Create(size_t count, const char** source)
@@ -173,6 +206,104 @@ int GLShader::GetBinarySize()
 	GLint size;
 	glGetProgramiv(_id, GL_PROGRAM_BINARY_LENGTH, &size);
 	return size;
+}
+
+const ShaderBlockInfo* GLShader::GetUniformBlockInfo(const char* blockName)
+{
+	if (!_id || !blockName || !*blockName)
+		return nullptr;
+
+	for (size_t i = 0; i < _uniformBlockCount; ++i)
+	{
+		if (strcmp(blockName, _uniformBlockInfos[i].name) == 0)
+			return &_uniformBlockInfos[i];
+	}
+
+	GLuint blockIndex = glGetUniformBlockIndex(_id, blockName);
+
+	if (blockIndex == GL_INVALID_INDEX)
+		return nullptr;
+
+	GLint blockDataSize;
+	GLint uniformCount;
+	GLint* uniformIndices;
+
+	glGetActiveUniformBlockiv(_id, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockDataSize);
+	glGetActiveUniformBlockiv(_id, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &uniformCount);
+
+	uniformIndices = new GLint[uniformCount];
+
+	glGetActiveUniformBlockiv(_id, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, uniformIndices);
+
+	GLint* uniformTypes = new GLint[uniformCount];
+	GLint* uniformArraySizes = new GLint[uniformCount];
+	GLint* uniformNameLengths = new GLint[uniformCount];
+	GLint* uniformOffsets = new GLint[uniformCount];
+	GLint* uniformArrayStrides = new GLint[uniformCount];
+	GLint* uniformMatrixStrides = new GLint[uniformCount];
+	GLint* uniformIsRowMaj = new GLint[uniformCount];
+
+	glGetActiveUniformsiv(_id, uniformCount, reinterpret_cast<GLuint*>(uniformIndices), GL_UNIFORM_TYPE, uniformTypes);
+	glGetActiveUniformsiv(_id, uniformCount, reinterpret_cast<GLuint*>(uniformIndices), GL_UNIFORM_SIZE, uniformArraySizes);
+	glGetActiveUniformsiv(_id, uniformCount, reinterpret_cast<GLuint*>(uniformIndices), GL_UNIFORM_NAME_LENGTH, uniformNameLengths);
+	glGetActiveUniformsiv(_id, uniformCount, reinterpret_cast<GLuint*>(uniformIndices), GL_UNIFORM_OFFSET, uniformOffsets);
+	glGetActiveUniformsiv(_id, uniformCount, reinterpret_cast<GLuint*>(uniformIndices), GL_UNIFORM_ARRAY_STRIDE, uniformArrayStrides);
+	glGetActiveUniformsiv(_id, uniformCount, reinterpret_cast<GLuint*>(uniformIndices), GL_UNIFORM_MATRIX_STRIDE, uniformMatrixStrides);
+	glGetActiveUniformsiv(_id, uniformCount, reinterpret_cast<GLuint*>(uniformIndices), GL_UNIFORM_IS_ROW_MAJOR, uniformIsRowMaj);
+
+	ShaderBlockInfo blockInfo;
+
+	blockInfo.name = new char[strlen(blockName) + 1];
+	strcpy(blockInfo.name, blockName);
+
+	blockInfo.dataSize = static_cast<size_t>(blockDataSize);
+	blockInfo.variableCount = static_cast<size_t>(uniformCount);
+	blockInfo.variables = new ShaderBlockInfo::VariableInfo[uniformCount];
+
+	for (size_t i = 0; i < blockInfo.variableCount; ++i)
+	{
+		blockInfo.variables[i].name = new char[uniformNameLengths[i]];
+		glGetActiveUniformName(_id, uniformIndices[i], uniformNameLengths[i], nullptr, blockInfo.variables[i].name);
+
+		blockInfo.variables[i].type = GetFromGLEnum<ShaderDataType>(uniformTypes[i]);
+		blockInfo.variables[i].index = uniformIndices[i];
+		blockInfo.variables[i].offset = uniformOffsets[i];
+		blockInfo.variables[i].arraySize = uniformArraySizes[i];
+		blockInfo.variables[i].arrayStride = uniformArrayStrides[i];
+		blockInfo.variables[i].matrixStride = uniformMatrixStrides[i];
+		blockInfo.variables[i].isRowMajor = (uniformIsRowMaj[i] == GL_TRUE);
+	}
+
+	// Resize the info array if necessary.
+	if (_uniformBlockInfos == nullptr || _uniformBlockCount == _uniformBlockArraySize)
+	{
+		size_t newSize = _uniformBlockArraySize + 5;
+		ShaderBlockInfo* newArr = new ShaderBlockInfo[newSize];
+
+		if (_uniformBlockInfos != nullptr)
+			memcpy(newArr, _uniformBlockInfos, sizeof(ShaderBlockInfo) * _uniformBlockCount);
+
+		_uniformBlockInfos = newArr;
+		_uniformBlockArraySize = newSize;
+	}
+
+	_uniformBlockInfos[_uniformBlockCount++] = blockInfo;
+
+	delete[] uniformIndices;
+	delete[] uniformTypes;
+	delete[] uniformArraySizes;
+	delete[] uniformNameLengths;
+	delete[] uniformOffsets;
+	delete[] uniformArrayStrides;
+	delete[] uniformMatrixStrides;
+	delete[] uniformIsRowMaj;
+
+	return &_uniformBlockInfos[_uniformBlockCount - 1];
+}
+
+const ShaderBlockInfo* GLShader::GetStorageBlockInfo(const char* blockName)
+{
+	return nullptr;
 }
 
 void GLShader::RetrieveLog()

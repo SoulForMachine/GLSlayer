@@ -7,7 +7,6 @@
 	#include <GL/glx.h>
 #endif
 
-#include <GL/gl.h>
 #include <cstring>
 
 #include "h_glext.h"

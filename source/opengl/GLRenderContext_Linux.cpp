@@ -135,6 +135,18 @@ void gls::DestroyRenderContext(IRenderContext* render_context)
 	}
 }
 
+Window gls::SetContextWindow(IRenderContext* render_context, Window window)
+{
+	auto rcImpl = static_cast<GLRenderContext*>(render_context);
+	return rcImpl->SetContextWindow(window);
+}
+
+Window GLRenderContext::SetContextWindow(Window window)
+{
+	Window old = _window;
+	_window = window;
+	return old;
+}
 
 bool GLRenderContext::Create(uint version, Display* display, Window window, const FramebufferFormat& format, bool debug_context)
 {

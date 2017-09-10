@@ -46,8 +46,12 @@ namespace gls
 		virtual void ClearTexSubImage(int level, int xoffset, int width, ImageFormat format, DataType type, const void* data) = 0;
 		virtual void GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) const = 0;
 		virtual void GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const = 0;
+		virtual void GetTexSubImage(int level, int xoffset, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const = 0;
+		virtual void GetTexSubImage(int level, int xoffset, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const = 0;
 		virtual void GetCompressedTexImage(int level, void* pixels) const = 0;
 		virtual void GetCompressedTexImage(int level, IBuffer* buffer, size_t buffer_offset) const = 0;
+		virtual void GetCompressedTexSubImage(int level, int xoffset, int width, void* pixels, size_t bufferSize) const = 0;
+		virtual void GetCompressedTexSubImage(int level, int xoffset, int width, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const = 0;
 
 		virtual int GetWidth() const = 0;
 	};
@@ -66,8 +70,12 @@ namespace gls
 		virtual void ClearTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const void* data) = 0;
 		virtual void GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) const = 0;
 		virtual void GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const = 0;
+		virtual void GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const = 0;
+		virtual void GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const = 0;
 		virtual void GetCompressedTexImage(int level, void* pixels) const = 0;
 		virtual void GetCompressedTexImage(int level, IBuffer* buffer, size_t buffer_offset) const = 0;
+		virtual void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, void* pixels, size_t bufferSize) const = 0;
+		virtual void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const = 0;
 
 		virtual int GetWidth() const = 0;
 		virtual int GetHeight() const = 0;
@@ -98,8 +106,12 @@ namespace gls
 		virtual void ClearTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const void* data) = 0;
 		virtual void GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) const = 0;
 		virtual void GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const = 0;
+		virtual void GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const = 0;
+		virtual void GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const = 0;
 		virtual void GetCompressedTexImage(int level, void* pixels) const = 0;
 		virtual void GetCompressedTexImage(int level, IBuffer* buffer, size_t buffer_offset) const = 0;
+		virtual void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, void* pixels, size_t bufferSize) const = 0;
+		virtual void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const = 0;
 
 		virtual int GetWidth() const = 0;
 		virtual int GetHeight() const = 0;
@@ -120,8 +132,12 @@ namespace gls
 		virtual void ClearTexSubImage(CubeFace face, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const void* data) = 0;
 		virtual void GetTexImage(CubeFace face, int level, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) const = 0;
 		virtual void GetTexImage(CubeFace face, int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const = 0;
+		virtual void GetTexSubImage(CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const = 0;
+		virtual void GetTexSubImage(CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const = 0;
 		virtual void GetCompressedTexImage(CubeFace face, int level, void* pixels) const = 0;
 		virtual void GetCompressedTexImage(CubeFace face, int level, IBuffer* buffer, size_t buffer_offset) const = 0;
+		virtual void GetCompressedTexSubImage(CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, void* pixels, size_t bufferSize) const = 0;
+		virtual void GetCompressedTexSubImage(CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const = 0;
 
 		virtual int GetWidth() const = 0;
 	};
@@ -140,8 +156,12 @@ namespace gls
 		virtual void ClearTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const void* data) = 0;
 		virtual void GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) const = 0;
 		virtual void GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const = 0;
+		virtual void GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const = 0;
+		virtual void GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const = 0;
 		virtual void GetCompressedTexImage(int level, void* pixels) const = 0;
 		virtual void GetCompressedTexImage(int level, IBuffer* buffer, size_t buffer_offset) const = 0;
+		virtual void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, void* pixels, size_t bufferSize) const = 0;
+		virtual void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const = 0;
 
 		virtual int GetWidth() const = 0;
 		virtual int GetHeight() const = 0;
@@ -160,8 +180,12 @@ namespace gls
 		virtual void ClearTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const void* data) = 0;
 		virtual void GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) const = 0;
 		virtual void GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const = 0;
+		virtual void GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const = 0;
+		virtual void GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const = 0;
 		virtual void GetCompressedTexImage(int level, void* pixels) const = 0;
 		virtual void GetCompressedTexImage(int level, IBuffer* buffer, size_t buffer_offset) const = 0;
+		virtual void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, void* pixels, size_t bufferSize) const = 0;
+		virtual void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const = 0;
 
 		virtual int GetWidth() const = 0;
 		virtual int GetHeight() const = 0;
@@ -193,6 +217,8 @@ namespace gls
 		virtual void ClearTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const void* data) = 0;
 		virtual void GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) const = 0;
 		virtual void GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const = 0;
+		virtual void GetTexSubImage(int layerFace, int numLayerFaces, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const = 0;
+		virtual void GetTexSubImage(int layerFace, int numLayerFaces, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const = 0;
 
 		virtual int GetWidth() const = 0;
 		virtual int GetDepth() const = 0;
@@ -227,6 +253,8 @@ namespace gls
 		virtual void ClearTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const void* data) = 0;
 		virtual void GetTexImage(ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels) const = 0;
 		virtual void GetTexImage(ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const = 0;
+		virtual void GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const = 0;
+		virtual void GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const = 0;
 
 		virtual int GetWidth() const = 0;
 		virtual int GetHeight() const = 0;

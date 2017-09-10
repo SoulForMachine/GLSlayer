@@ -3,6 +3,7 @@
 #define _H_GLEXT_H_
 
 #include <cassert>
+#include "glcorearb.h"
 #include "glext.h"
 
 #if defined(_WIN32)
@@ -22,6 +23,11 @@
 #endif
 
 struct GLContextInfo;
+
+#if defined(_DEBUG)
+	// Comment this out to disable checking for error after each GL call.
+	#define DEBUG_GL_CHECK_FOR_ERROR
+#endif
 
 #if defined(_WIN32)
 	#include "glext_windows_ptrs.h"

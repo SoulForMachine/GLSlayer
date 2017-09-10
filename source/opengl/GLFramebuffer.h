@@ -19,11 +19,10 @@ public:
 
 	GLRenderbuffer() {}
 
-	bool Create(GLState* gl_state);
+	bool Create(GLState* gl_state, size_t samples, gls::PixelFormat internal_format, size_t width, size_t height);
 	void Destroy();
 
 	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_RENDERBUFFER) ? this : GLResource::DynamicCast(type_id); }
-	void Storage(size_t samples, gls::PixelFormat internal_format, size_t width, size_t height);
 
 private:
 	GLRenderbuffer(const GLRenderbuffer&);

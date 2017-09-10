@@ -14,11 +14,11 @@
 	#include <GL/glx.h>
 #endif
 
-#include <GL/gl.h>
+
+#include "extensions/h_glext.h"
 
 #include "GLSlayer/Common.h"
 #include "GLSlayer/Resource.h"
-#include "extensions/h_glext.h"
 
 
 using gls::ulong;
@@ -51,6 +51,7 @@ DECL_GL_ENUM_LOOKUP_TABLE(ShaderType, __shaderTypeTable)
 DECL_GL_ENUM_LOOKUP_TABLE(TextureType, __textureTypeTable)
 DECL_GL_ENUM_LOOKUP_TABLE(QueryType, __queryTypeTable)
 DECL_GL_ENUM_LOOKUP_TABLE(DataType, __dataTypeTable)
+DECL_GL_ENUM_LOOKUP_TABLE(ShaderDataType, __shaderDataTypeTable)
 DECL_GL_ENUM_LOOKUP_TABLE(ImageFormat, __imageFormatTable)
 DECL_GL_ENUM_LOOKUP_TABLE(PixelFormat, __pixelFormatTable)
 DECL_GL_ENUM_LOOKUP_TABLE(CubeFace, __cubeFaceTable)
@@ -95,6 +96,8 @@ DECL_GL_ENUM_LOOKUP_TABLE(DebugMessageSource, __debugMessageSourceTable)
 DECL_GL_ENUM_LOOKUP_TABLE(DebugMessageType, __debugMessageTypeTable)
 DECL_GL_ENUM_LOOKUP_TABLE(DebugMessageSeverity, __debugMessageSeverityTable)
 DECL_GL_ENUM_LOOKUP_TABLE(ResourceType, __resourceTypeTable)
+DECL_GL_ENUM_LOOKUP_TABLE(ClipOrigin, __clipOriginTable)
+DECL_GL_ENUM_LOOKUP_TABLE(ClipDepth, __clipDepthTable)
 
 
 
@@ -150,6 +153,8 @@ struct GLState
 	GLuint atomicCounterBuf;
 	GLuint shaderStorageBuf;
 	GLuint queryBuffer;
+	GLuint copyWriteBuffer;
+	GLuint copyReadBuffer;
 
 	// textures
 	struct SamplerState

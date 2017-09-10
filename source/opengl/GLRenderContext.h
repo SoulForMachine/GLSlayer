@@ -23,7 +23,7 @@
 
 #define LOAD_EXTENSION_REQ(ext) \
 	if(!glextLoad_##ext()){ \
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_NOTIFICATION, MESSAGE_ERROR_UNSUPPORTED_EXTENSION, #ext); \
+		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_UNSUPPORTED_EXTENSION, #ext); \
 		result = false; } \
 
 
@@ -34,14 +34,18 @@ public:
 	~GLRenderContext();
 
 #if defined(_WIN32)
-	bool Create(gls::uint version, HINSTANCE instance_handle, HWND window_handle, const gls::FramebufferFormat& format, bool debug_context);
+	bool Create(gls::uint version, HINSTANCE instance_handle, HWND window_handle, const gls::FramebufferFormat& format, bool debug_context, IRenderContext* shareContext);
+	bool SetWindowCompatiblePixelFormat(HWND windowHandle);
+	HWND SetContextWindow(HWND windowHandle);
 #elif defined(__linux__)
 	bool Create(gls::uint version, Display* display, Window window, const gls::FramebufferFormat& format, bool debug_context);
+	HWND SetContextWindow(Window window);
 #endif
 
 	void Destroy();
 
 	bool SetCurrentContext();
+	void UnsetCurrentContext();
 	const gls::ContextInfo& GetInfo() const
 		{ return _info; }
 
@@ -56,8 +60,8 @@ public:
 
 	// tessellation
 	void PatchVertexCount(int count);
-	void PatchDefaultOuterLevels(float values[4]);
-	void PatchDefaultInnerLevels(float values[2]);
+	void PatchDefaultOuterLevels(const float values[4]);
+	void PatchDefaultInnerLevels(const float values[2]);
 
 	// conditional render
 	void BeginConditionalRender(gls::IQuery* query, gls::ConditionalRenderMode mode);
@@ -72,6 +76,7 @@ public:
 	// viewport transform
 	void Viewport(int x, int y, int width, int height);
 	void ViewportIndexed(gls::uint index, float x, float y, float width, float height);
+	void ClipControl(gls::ClipOrigin origin, gls::ClipDepth depth);
 
 	// back face culling
 	void EnableFaceCulling(bool enable);
@@ -81,6 +86,8 @@ public:
 	// rasterization
 	void RasterizationMode(gls::RasterMode mode);
 	void EnableRasterizerDiscard(bool enable);
+	void LineWidth(float width);
+	void EnableLineAntialiasing(bool enable);
 
 	// multisampling
 	void EnableMultisampling(bool enable);
@@ -115,7 +122,7 @@ public:
 	// blending
 	void EnableBlending(bool enable);
 	void EnableBlending(gls::uint buffer, bool enable);
-	void BlendingColor(float color[4]);
+	void BlendingColor(const float color[4]);
 	void BlendingFunc(gls::BlendFunc src_factor, gls::BlendFunc dest_factor);
 	void BlendingFunc(gls::BlendFunc src_rgb_factor, gls::BlendFunc dest_rgb_factor, gls::BlendFunc src_alpha_factor, gls::BlendFunc dest_alpha_factor);
 	void BlendingFunc(gls::uint buffer, gls::BlendFunc src_factor, gls::BlendFunc dest_factor);
@@ -137,9 +144,9 @@ public:
 	void EnableColorWrite(gls::uint buffer, bool r, bool g, bool b, bool a);
 	void EnableDepthWrite(bool enable);
 	void EnableStencilWrite(gls::PolygonFace face, gls::uint mask);
-	void ClearColorBuffer(gls::IFramebuffer* fbuf, gls::uint buffer, float color[4]);
-	void ClearColorBuffer(gls::IFramebuffer* fbuf, gls::uint buffer, int color[4]);
-	void ClearColorBuffer(gls::IFramebuffer* fbuf, gls::uint buffer, gls::uint color[4]);
+	void ClearColorBuffer(gls::IFramebuffer* fbuf, gls::uint buffer, const float color[4]);
+	void ClearColorBuffer(gls::IFramebuffer* fbuf, gls::uint buffer, const int color[4]);
+	void ClearColorBuffer(gls::IFramebuffer* fbuf, gls::uint buffer, const gls::uint color[4]);
 	void ClearDepthBuffer(gls::IFramebuffer* fbuf, float depth);
 	void ClearStencilBuffer(gls::IFramebuffer* fbuf, int stencil);
 	void ClearDepthStencilBuffer(gls::IFramebuffer* fbuf, float depth, int stencil);
@@ -196,6 +203,8 @@ public:
 	gls::SyncWaitStatus ClientWaitSync(gls::SyncObject sync, gls::uint flags, gls::uint64 timeout);
 	void Wait(gls::SyncObject sync, gls::uint flags, gls::uint64 timeout);
 	void MemoryBarrier(gls::uint flags);
+	void MemoryBarrierByRegion(gls::uint flags);
+	void TextureBarrier();
 
 	// buffer and image copying
 	void CopyBufferData(gls::IBuffer* source, size_t source_offset, gls::IBuffer* dest, size_t dest_offset, size_t size);
@@ -269,13 +278,13 @@ public:
 
 	void DestroyTexture(gls::ITexture* texture);
 
-	gls::IBuffer* CreateBuffer(gls::BufferType type, size_t size, const void* data, gls::uint flags);
+	gls::IBuffer* CreateBuffer(size_t size, const void* data, gls::uint flags);
 	void DestroyBuffer(gls::IBuffer* buffer);
 
 	gls::IFramebuffer* CreateFramebuffer();
 	gls::IFramebuffer* CreateFramebufferWithoutAttachments(const gls::FramebufferParams& params);
 	void DestroyFramebuffer(gls::IFramebuffer* framebuffer);
-	gls::IRenderbuffer* CreateRenderbuffer();
+	gls::IRenderbuffer* CreateRenderbuffer(size_t samples, gls::PixelFormat internal_format, size_t width, size_t height);
 	void DestroyRenderbuffer(gls::IRenderbuffer* renderbuffer);
 
 	gls::IQuery* CreateQuery();
@@ -329,7 +338,7 @@ private:
 
 	bool InitCommon(gls::uint version);
 	void DeinitCommon();
-	bool CreateContext(gls::uint version, const gls::FramebufferFormat& format, bool debug_context);
+	bool CreateContext(gls::uint version, const gls::FramebufferFormat& format, bool debug_context, IRenderContext* shareContext);
 	void GetContextInfo();
 	bool LoadOpenGLExtensions(gls::uint version);
 	bool LoadPlatformOpenGLExtensions();

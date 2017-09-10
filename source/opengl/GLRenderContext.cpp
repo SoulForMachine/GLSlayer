@@ -32,6 +32,16 @@ bool InitFuncPtr(_FUNCT& func_ptr, const char* func_name)
 {
 #if defined(_WIN32)
 	func_ptr = (_FUNCT)wglGetProcAddress(func_name);
+
+	if (func_ptr == nullptr)
+	{
+		HMODULE hMod = LoadLibraryA("opengl32.dll");
+
+		if (hMod == NULL)
+			return false;
+
+		func_ptr = (_FUNCT)GetProcAddress(hMod, func_name);
+	}
 #elif defined(__linux__)
 	func_ptr = (_FUNCT)glXGetProcAddressARB((const GLubyte*)func_name);
 #endif
@@ -433,16 +443,22 @@ void GLRenderContext::GetContextInfo()
 		glGetIntegerv(GL_MAX_VERTEX_ATTRIB_BINDINGS, &_info.maxVertexAttribBindings);
 	}
 	
+	if (ver_num >= 450)
+	{
+		glGetIntegerv(GL_MAX_CULL_DISTANCES, &_info.maxCullDistances);
+		glGetIntegerv(GL_MAX_COMBINED_CLIP_AND_CULL_DISTANCES, &_info.maxCombinedClipAndCullDistances);
+
+	}
 }
 
 bool GLRenderContext::LoadOpenGLExtensions(uint version)
 {
 	bool result = true;
 
-#if defined (_WIN32)
+	LOAD_EXTENSION_REQ(GL_VERSION_1_0);
+	LOAD_EXTENSION_REQ(GL_VERSION_1_1);
 	LOAD_EXTENSION_REQ(GL_VERSION_1_2);
 	LOAD_EXTENSION_REQ(GL_VERSION_1_3);
-#endif
 	LOAD_EXTENSION_REQ(GL_VERSION_1_4);
 	LOAD_EXTENSION_REQ(GL_VERSION_1_5);
 	LOAD_EXTENSION_REQ(GL_VERSION_2_0);
@@ -453,7 +469,7 @@ bool GLRenderContext::LoadOpenGLExtensions(uint version)
 	LOAD_EXTENSION_REQ(GL_VERSION_3_3);
 	LOAD_EXTENSION_REQ(GL_EXT_texture_sRGB);
 	LOAD_EXTENSION_REQ(GL_EXT_texture_filter_anisotropic);
-	LOAD_EXTENSION(GL_EXT_texture_snorm);
+//	LOAD_EXTENSION(GL_EXT_texture_snorm);
 
 	if(version >= 400)
 	{
@@ -497,6 +513,11 @@ bool GLRenderContext::LoadOpenGLExtensions(uint version)
 	else
 	{
 		LOAD_EXTENSION_REQ(GL_ARB_buffer_storage);
+	}
+
+	if (version >= 450)
+	{
+		LOAD_EXTENSION_REQ(GL_VERSION_4_5);
 	}
 
 	result = LoadPlatformOpenGLExtensions() && result;
@@ -638,12 +659,12 @@ void GLRenderContext::PatchVertexCount(int count)
 	glPatchParameteri(GL_PATCH_VERTICES, count);
 }
 
-void GLRenderContext::PatchDefaultOuterLevels(float values[4])
+void GLRenderContext::PatchDefaultOuterLevels(const float values[4])
 {
 	glPatchParameterfv(GL_PATCH_DEFAULT_OUTER_LEVEL, values);
 }
 
-void GLRenderContext::PatchDefaultInnerLevels(float values[2])
+void GLRenderContext::PatchDefaultInnerLevels(const float values[2])
 {
 	glPatchParameterfv(GL_PATCH_DEFAULT_INNER_LEVEL, values);
 }
@@ -698,6 +719,11 @@ void GLRenderContext::ViewportIndexed(uint index, float x, float y, float width,
 	glViewportIndexedf(index, x, y, width, height);
 }
 
+void GLRenderContext::ClipControl(ClipOrigin origin, ClipDepth depth)
+{
+	glClipControl(GetGLEnum(origin), GetGLEnum(depth));
+}
+
 void GLRenderContext::EnableFaceCulling(bool enable)
 {
 	if(enable)
@@ -727,6 +753,19 @@ void GLRenderContext::EnableRasterizerDiscard(bool enable)
 		glEnable(GL_RASTERIZER_DISCARD);
 	else
 		glDisable(GL_RASTERIZER_DISCARD);
+}
+
+void GLRenderContext::LineWidth(float width)
+{
+	glLineWidth(width);
+}
+
+void GLRenderContext::EnableLineAntialiasing(bool enable)
+{
+	if (enable)
+		glEnable(GL_LINE_SMOOTH);
+	else
+		glDisable(GL_LINE_SMOOTH);
 }
 
 void GLRenderContext::EnableMultisampling(bool enable)
@@ -887,7 +926,7 @@ void GLRenderContext::EnableBlending(uint buffer, bool enable)
 		glDisablei(GL_BLEND, buffer);
 }
 
-void GLRenderContext::BlendingColor(float color[4])
+void GLRenderContext::BlendingColor(const float color[4])
 {
 	glBlendColor(color[0], color[1], color[2], color[3]);
 }
@@ -955,6 +994,12 @@ void GLRenderContext::SetFramebuffer(IFramebuffer* fbuf)
 
 void GLRenderContext::ActiveColorBuffers(IFramebuffer* fbuf, size_t count, const ColorBuffer* buffers)
 {
+	if (count > (size_t)_info.maxDrawBuffers)
+	{
+		assert(false);
+		return;
+	}
+
 	GLuint id = fbuf ? dyn_cast_ptr<GLFramebuffer*>(fbuf)->GetID() : 0;
 	if(id != _glState.drawFbuf)
 	{
@@ -1011,7 +1056,7 @@ void GLRenderContext::EnableStencilWrite(PolygonFace face, uint mask)
 	glStencilMaskSeparate(GetGLEnum(face), mask);
 }
 
-void GLRenderContext::ClearColorBuffer(IFramebuffer* fbuf, uint buffer, float color[4])
+void GLRenderContext::ClearColorBuffer(IFramebuffer* fbuf, uint buffer, const float color[4])
 {
 	assert(buffer < (uint)_info.maxDrawBuffers);
 
@@ -1025,7 +1070,7 @@ void GLRenderContext::ClearColorBuffer(IFramebuffer* fbuf, uint buffer, float co
 	glClearBufferfv(GL_COLOR, buffer, color);
 }
 
-void GLRenderContext::ClearColorBuffer(IFramebuffer* fbuf, uint buffer, int color[4])
+void GLRenderContext::ClearColorBuffer(IFramebuffer* fbuf, uint buffer, const int color[4])
 {
 	assert(buffer < (uint)_info.maxDrawBuffers);
 
@@ -1039,7 +1084,7 @@ void GLRenderContext::ClearColorBuffer(IFramebuffer* fbuf, uint buffer, int colo
 	glClearBufferiv(GL_COLOR, buffer, color);
 }
 
-void GLRenderContext::ClearColorBuffer(IFramebuffer* fbuf, uint buffer, uint color[4])
+void GLRenderContext::ClearColorBuffer(IFramebuffer* fbuf, uint buffer, const uint color[4])
 {
 	assert(buffer < (uint)_info.maxDrawBuffers);
 
@@ -1106,6 +1151,12 @@ void GLRenderContext::ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_c
 	if(source_color_buf != COLOR_BUFFER_NONE)
 	{
 		glReadBuffer(GetGLEnum(source_color_buf));
+	}
+
+	if (_glState.pixelPackBuf != 0)
+	{
+		glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+		_glState.pixelPackBuf = 0;
 	}
 
 	// apply pixel store states
@@ -1375,6 +1426,12 @@ void GLRenderContext::MultiDrawIndirect(PrimitiveType prim, IBuffer* buffer, siz
 	glMultiDrawArraysIndirect(GetGLEnum(prim), BUFFER_OFFSET(offset), (GLsizei)count, (GLsizei)stride);
 }
 
+/*
+	Draws indexed primitives.
+	index_start - an offset in bytes into the index buffer where the first index is to be taken.
+	base_vertex - a constant that is added to each index.
+	count - number of vertices to be rendered.
+*/
 void GLRenderContext::DrawIndexed(PrimitiveType prim, size_t index_start, int base_vertex, size_t count)
 {
 	if(!_vertexFormat || !_indexBuffer)
@@ -1392,7 +1449,10 @@ void GLRenderContext::DrawIndexed(PrimitiveType prim, size_t index_start, int ba
 }
 
 /*
-	Draws a range of elements - it has constraint that all the indices must lie between start and end inclusive
+	Draws a range of elements - it has constraint that all the indices must lie between start and end inclusive.
+	index_start - an offset in bytes into the index buffer where the first index be taken.
+	base_vertex - a constant that is added to each index.
+	count - number of vertices to be rendered.
 */
 void GLRenderContext::DrawIndexed(PrimitiveType prim, size_t start, size_t end, size_t index_start, int base_vertex, size_t count)
 {
@@ -1570,49 +1630,81 @@ void GLRenderContext::Wait(SyncObject sync, uint flags, uint64 timeout)
 void GLRenderContext::MemoryBarrier(uint flags)
 {
 	GLbitfield bits = 0;
-	if(flags & BARRIER_ALL_BITS)
-	{
-		bits = GL_ALL_BARRIER_BITS;
-	}
-	else
-	{
-		if(flags & BARRIER_VERTEX_ATTRIB_ARRAY_BIT)
-			bits |= GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT;
-		if(flags & BARRIER_INDEX_ARRAY_BIT)
-			bits |= GL_ELEMENT_ARRAY_BARRIER_BIT;
-		if(flags & BARRIER_UNIFORM_BIT)
-			bits |= GL_UNIFORM_BARRIER_BIT;
-		if(flags & BARRIER_TEXTURE_FETCH_BIT)
-			bits |= GL_TEXTURE_FETCH_BARRIER_BIT;
-		if(flags & BARRIER_SHADER_IMAGE_ACCESS_BIT)
-			bits |= GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
-		if(flags & BARRIER_COMMAND_BIT)
-			bits |= GL_COMMAND_BARRIER_BIT;
-		if(flags & BARRIER_PIXEL_BUFFER_BIT)
-			bits |= GL_PIXEL_BUFFER_BARRIER_BIT;
-		if(flags & BARRIER_TEXTURE_UPDATE_BIT)
-			bits |= GL_TEXTURE_UPDATE_BARRIER_BIT;
-		if(flags & BARRIER_BUFFER_UPDATE_BIT)
-			bits |= GL_BUFFER_UPDATE_BARRIER_BIT;
-		if(flags & BARRIER_FRAMEBUFFER_BIT)
-			bits |= GL_FRAMEBUFFER_BARRIER_BIT;
-		if(flags & BARRIER_TRANSFORM_FEEDBACK_BIT)
-			bits |= GL_TRANSFORM_FEEDBACK_BARRIER_BIT;
-		if(flags & BARRIER_ATOMIC_COUNTER_BIT)
-			bits |= GL_ATOMIC_COUNTER_BARRIER_BIT;
-		if(flags & BARRIER_SHADER_STORAGE_BIT)
-			bits |= GL_SHADER_STORAGE_BARRIER_BIT;
-		if(flags & BARRIER_QUERY_BUFFER_BIT)
-			bits |= GL_QUERY_BUFFER_BARRIER_BIT;
-	}
+
+	if(flags & BARRIER_VERTEX_ATTRIB_ARRAY_BIT)
+		bits |= GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT;
+	if(flags & BARRIER_INDEX_ARRAY_BIT)
+		bits |= GL_ELEMENT_ARRAY_BARRIER_BIT;
+	if(flags & BARRIER_UNIFORM_BIT)
+		bits |= GL_UNIFORM_BARRIER_BIT;
+	if(flags & BARRIER_TEXTURE_FETCH_BIT)
+		bits |= GL_TEXTURE_FETCH_BARRIER_BIT;
+	if(flags & BARRIER_SHADER_IMAGE_ACCESS_BIT)
+		bits |= GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
+	if(flags & BARRIER_COMMAND_BIT)
+		bits |= GL_COMMAND_BARRIER_BIT;
+	if(flags & BARRIER_PIXEL_BUFFER_BIT)
+		bits |= GL_PIXEL_BUFFER_BARRIER_BIT;
+	if(flags & BARRIER_TEXTURE_UPDATE_BIT)
+		bits |= GL_TEXTURE_UPDATE_BARRIER_BIT;
+	if(flags & BARRIER_BUFFER_UPDATE_BIT)
+		bits |= GL_BUFFER_UPDATE_BARRIER_BIT;
+	if(flags & BARRIER_FRAMEBUFFER_BIT)
+		bits |= GL_FRAMEBUFFER_BARRIER_BIT;
+	if(flags & BARRIER_TRANSFORM_FEEDBACK_BIT)
+		bits |= GL_TRANSFORM_FEEDBACK_BARRIER_BIT;
+	if(flags & BARRIER_ATOMIC_COUNTER_BIT)
+		bits |= GL_ATOMIC_COUNTER_BARRIER_BIT;
+	if(flags & BARRIER_SHADER_STORAGE_BIT)
+		bits |= GL_SHADER_STORAGE_BARRIER_BIT;
+	if(flags & BARRIER_QUERY_BUFFER_BIT)
+		bits |= GL_QUERY_BUFFER_BARRIER_BIT;
 
 	glMemoryBarrier(bits);
 }
 
+void GLRenderContext::MemoryBarrierByRegion(gls::uint flags)
+{
+	GLbitfield bits = 0;
+
+	if (flags & BARRIER_UNIFORM_BIT)
+		bits |= GL_UNIFORM_BARRIER_BIT;
+	if (flags & BARRIER_TEXTURE_FETCH_BIT)
+		bits |= GL_TEXTURE_FETCH_BARRIER_BIT;
+	if (flags & BARRIER_SHADER_IMAGE_ACCESS_BIT)
+		bits |= GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
+	if (flags & BARRIER_FRAMEBUFFER_BIT)
+		bits |= GL_FRAMEBUFFER_BARRIER_BIT;
+	if (flags & BARRIER_ATOMIC_COUNTER_BIT)
+		bits |= GL_ATOMIC_COUNTER_BARRIER_BIT;
+	if (flags & BARRIER_SHADER_STORAGE_BIT)
+		bits |= GL_SHADER_STORAGE_BARRIER_BIT;
+
+	glMemoryBarrierByRegion(bits);
+}
+
+void GLRenderContext::TextureBarrier()
+{
+	glTextureBarrier();
+}
+
 void GLRenderContext::CopyBufferData(IBuffer* source, size_t source_offset, IBuffer* dest, size_t dest_offset, size_t size)
 {
-	glBindBuffer(GL_COPY_READ_BUFFER, dyn_cast_ptr<GLBuffer*>(source)->GetID());
-	glBindBuffer(GL_COPY_WRITE_BUFFER, dyn_cast_ptr<GLBuffer*>(dest)->GetID());
+	GLuint srcId = dyn_cast_ptr<GLBuffer*>(source)->GetID();
+	GLuint destId = dyn_cast_ptr<GLBuffer*>(dest)->GetID();
+
+	if (srcId != _glState.copyReadBuffer)
+	{
+		glBindBuffer(GL_COPY_READ_BUFFER, srcId);
+		_glState.copyReadBuffer = srcId;
+	}
+
+	if (destId != _glState.copyWriteBuffer)
+	{
+		glBindBuffer(GL_COPY_WRITE_BUFFER, destId);
+		_glState.copyWriteBuffer = destId;
+	}
+
 	glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, source_offset, dest_offset, size);
 }
 
@@ -2558,10 +2650,10 @@ void GLRenderContext::DestroyTexture(ITexture* texture)
 	}
 }
 
-IBuffer* GLRenderContext::CreateBuffer(BufferType type, size_t size, const void* data, uint flags)
+IBuffer* GLRenderContext::CreateBuffer(size_t size, const void* data, uint flags)
 {
 	GLBuffer* buf = new GLBuffer;
-	bool result = buf->Create(&_glState, type, size, data, flags);
+	bool result = buf->Create(&_glState, size, data, flags);
 	if(!result)
 	{
 		delete buf;
@@ -2650,10 +2742,10 @@ void GLRenderContext::DestroyFramebuffer(IFramebuffer* framebuffer)
 	}
 }
 
-IRenderbuffer* GLRenderContext::CreateRenderbuffer()
+IRenderbuffer* GLRenderContext::CreateRenderbuffer(size_t samples, gls::PixelFormat internal_format, size_t width, size_t height)
 {
 	GLRenderbuffer* rbuf = new GLRenderbuffer;
-	if(!rbuf->Create(&_glState))
+	if(!rbuf->Create(&_glState, samples, internal_format, width, height))
 	{
 		delete rbuf;
 		rbuf = 0;

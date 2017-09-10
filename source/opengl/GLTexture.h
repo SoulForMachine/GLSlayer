@@ -94,8 +94,12 @@ public:
 	void ClearTexSubImage(int level, int xoffset, int width, gls::ImageFormat format, gls::DataType type, const void* data);
 	void GetTexImage(int level, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels) const;
 	void GetTexImage(int level, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset) const;
+	void GetTexSubImage(int level, int xoffset, int width, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels, size_t bufferSize) const;
+	void GetTexSubImage(int level, int xoffset, int width, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const;
 	void GetCompressedTexImage(int level, void* pixels) const;
 	void GetCompressedTexImage(int level, gls::IBuffer* buffer, size_t buffer_offset) const;
+	void GetCompressedTexSubImage(int level, int xoffset, int width, void* pixels, size_t bufferSize) const;
+	void GetCompressedTexSubImage(int level, int xoffset, int width, gls::IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const;
 
 	int GetWidth() const
 		{ return _width; }
@@ -129,8 +133,12 @@ public:
 	void ClearTexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const void* data);
 	void GetTexImage(int level, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels) const;
 	void GetTexImage(int level, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset) const;
+	void GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels, size_t bufferSize) const;
+	void GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const;
 	void GetCompressedTexImage(int level, void* pixels) const;
 	void GetCompressedTexImage(int level, gls::IBuffer* buffer, size_t buffer_offset) const;
+	void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, void* pixels, size_t bufferSize) const;
+	void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const;
 
 	int GetWidth() const
 		{ return _width; }
@@ -196,8 +204,12 @@ public:
 	void ClearTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const void* data);
 	void GetTexImage(int level, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels) const;
 	void GetTexImage(int level, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset) const;
+	void GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels, size_t bufferSize) const;
+	void GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const;
 	void GetCompressedTexImage(int level, void* pixels) const;
 	void GetCompressedTexImage(int level, gls::IBuffer* buffer, size_t buffer_offset) const;
+	void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, void* pixels, size_t bufferSize) const;
+	void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const;
 
 	int GetWidth() const
 		{ return _width; }
@@ -237,8 +249,12 @@ public:
 	void ClearTexSubImage(gls::CubeFace face, int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const void* data);
 	void GetTexImage(gls::CubeFace face, int level, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels) const;
 	void GetTexImage(gls::CubeFace face, int level, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset) const;
+	void GetTexSubImage(gls::CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels, size_t bufferSize) const;
+	void GetTexSubImage(gls::CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const;
 	void GetCompressedTexImage(gls::CubeFace face, int level, void* pixels) const;
 	void GetCompressedTexImage(gls::CubeFace face, int level, gls::IBuffer* buffer, size_t buffer_offset) const;
+	void GetCompressedTexSubImage(gls::CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, void* pixels, size_t bufferSize) const;
+	void GetCompressedTexSubImage(gls::CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, gls::IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const;
 
 	int GetWidth() const
 		{ return _width; }
@@ -272,8 +288,12 @@ public:
 	void ClearTexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const void* data);
 	void GetTexImage(int level, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels) const;
 	void GetTexImage(int level, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset) const;
+	void GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels, size_t bufferSize) const;
+	void GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const;
 	void GetCompressedTexImage(int level, void* pixels) const;
 	void GetCompressedTexImage(int level, gls::IBuffer* buffer, size_t buffer_offset) const;
+	void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, void* pixels, size_t bufferSize) const;
+	void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const;
 
 	int GetWidth() const
 		{ return _width; }
@@ -309,8 +329,12 @@ public:
 	void ClearTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const void* data);
 	void GetTexImage(int level, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels) const;
 	void GetTexImage(int level, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset) const;
+	void GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels, size_t bufferSize) const;
+	void GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const;
 	void GetCompressedTexImage(int level, void* pixels) const;
 	void GetCompressedTexImage(int level, gls::IBuffer* buffer, size_t buffer_offset) const;
+	void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, void* pixels, size_t bufferSize) const;
+	void GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const;
 
 	int GetWidth() const
 		{ return _width; }
@@ -381,6 +405,8 @@ public:
 	void ClearTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, gls::ImageFormat format, gls::DataType type, const void* data);
 	void GetTexImage(int level, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels) const;
 	void GetTexImage(int level, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset) const;
+	void GetTexSubImage(int layerFace, int numLayerFaces, int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels, size_t bufferSize) const;
+	void GetTexSubImage(int layerFace, int numLayerFaces, int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const;
 
 	int GetWidth() const
 		{ return _width; }
@@ -443,6 +469,8 @@ public:
 	void ClearTexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const void* data);
 	void GetTexImage(gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels) const;
 	void GetTexImage(gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset) const;
+	void GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* pixels, size_t bufferSize) const;
+	void GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const;
 
 	int GetWidth() const
 		{ return _width; }
