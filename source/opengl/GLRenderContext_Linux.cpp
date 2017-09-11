@@ -22,10 +22,12 @@ bool IsExtSupported(const char* extension, Display* display)
 		return false;
 
 	PFNGLGETSTRINGIPROC ptr_glGetStringi = (PFNGLGETSTRINGIPROC)glXGetProcAddressARB((const GLubyte*)"glGetStringi");
-	if(ptr_glGetStringi)
+	PFNGLGETINTEGERVPROC ptr_glGetIntegerv = (PFNGLGETINTEGERVPROC)glXGetProcAddressARB((const GLubyte*)"glGetIntegerv");
+
+	if (ptr_glGetStringi && ptr_glGetIntegerv)
 	{
 		GLint count = 0;
-		glGetIntegerv(GL_NUM_EXTENSIONS, &count);
+		ptr_glGetIntegerv(GL_NUM_EXTENSIONS, &count);
 		for(int i = 0; i < count; ++i)
 		{
 			const char* ext_string = (const char*)ptr_glGetStringi(GL_EXTENSIONS, i);
@@ -35,7 +37,7 @@ bool IsExtSupported(const char* extension, Display* display)
 		}
 	}
 
-	const char* ext_string = (const char*)glXQueryExtensionsString(display, DefaultScreen(display));
+	const char* ext_string = glXQueryExtensionsString(display, DefaultScreen(display));
 	if(ext_string && strstr(ext_string, extension))
 		return true;
 
@@ -101,7 +103,7 @@ GLXFBConfig GetFBConfig(Display* display, const FramebufferFormat& format)
 IRenderContext* gls::CreateRenderContext(const CreateContextInfo& info)
 {
 	GLRenderContext* render_context = new GLRenderContext(info.logger);
-	bool result = render_context->Create(info.version, info.display, info.window, *info.format, info.debugContext);
+	bool result = render_context->Create(info.version, info.display, info.window, *info.format, info.debugContext, info.shareContext);
 	if(!result)
 	{
 		delete render_context;
@@ -148,7 +150,7 @@ Window GLRenderContext::SetContextWindow(Window window)
 	return old;
 }
 
-bool GLRenderContext::Create(uint version, Display* display, Window window, const FramebufferFormat& format, bool debug_context)
+bool GLRenderContext::Create(uint version, Display* display, Window window, const FramebufferFormat& format, bool debug_context, IRenderContext* shareContext)
 {
 	if(_initialized)
 		return false;
@@ -162,7 +164,7 @@ bool GLRenderContext::Create(uint version, Display* display, Window window, cons
 	_window = window;
 	_display = display;
 
-	if(!CreateContext(version, format, debug_context))
+	if(!CreateContext(version, format, debug_context, shareContext))
 	{
 		return false;
 	}
@@ -178,7 +180,7 @@ bool GLRenderContext::Create(uint version, Display* display, Window window, cons
 	return InitCommon(version);
 }
 
-bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& format, bool debug_context)
+bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& format, bool debug_context, IRenderContext* shareContext)
 {
 	ctxErrorOccurred = false;
 	int (*oldHandler)(Display*, XErrorEvent*) = XSetErrorHandler(&ctxErrorHandler);
@@ -206,7 +208,8 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 			None
 		};
 
-		context = glXCreateContextAttribsARB(_display, fb_config, 0, True, attribs);
+		GLXContext sharedContext = shareContext ? reinterpret_cast<GLRenderContext*>(shareContext)->_context : 0;
+		context = glXCreateContextAttribsARB(_display, fb_config, sharedContext, True, attribs);
 	}
 	else
 	{
@@ -270,6 +273,11 @@ bool GLRenderContext::SetCurrentContext()
 {
 	Bool result = glXMakeCurrent(_display, _window, _context);
 	return (result == True);
+}
+
+void GLRenderContext::UnsetCurrentContext()
+{
+	glXMakeCurrent(_display, 0, 0);
 }
 
 void GLRenderContext::SwapBuffers()

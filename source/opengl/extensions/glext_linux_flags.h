@@ -1,6 +1,10 @@
 
 struct FeaturesGL
 {
+	bool VERSION_1_0 : 1;
+	bool VERSION_1_1 : 1;
+	bool VERSION_1_2 : 1;
+	bool VERSION_1_3 : 1;
 	bool VERSION_1_4 : 1;
 	bool VERSION_1_5 : 1;
 	bool VERSION_2_0 : 1;
@@ -100,6 +104,16 @@ struct FeaturesGL
 	bool ARB_texture_mirror_clamp_to_edge : 1;
 	bool ARB_texture_stencil8 : 1;
 	bool ARB_vertex_type_10f_11f_11f_rev : 1;
+	bool VERSION_4_5 : 1;
+	bool ARB_clip_control : 1;
+	bool ARB_conditional_render_inverted : 1;
+	bool ARB_cull_distance : 1;
+	bool ARB_direct_state_access : 1;
+	bool ARB_ES3_1_compatibility : 1;
+	bool ARB_get_texture_sub_image : 1;
+	bool ARB_robustness : 1;
+	bool ARB_texture_barrier : 1;
+	bool KHR_context_flush_control : 1;
 	bool EXT_texture_filter_anisotropic : 1;
 	bool EXT_texture_sRGB : 1;
 	bool EXT_texture_snorm : 1;

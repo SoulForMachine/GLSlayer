@@ -31,7 +31,7 @@ namespace gls
 		_T& GetVariableInBuffer(void* bufferPtr, size_t posIndex)
 		{
 			return *reinterpret_cast<_T*>(
-				reinterpret_cast<uint8_t*>(bufferPtr) + variables[posIndex]->offset);
+				reinterpret_cast<uint8_t*>(bufferPtr) + variables[posIndex].offset);
 		}
 	};
 

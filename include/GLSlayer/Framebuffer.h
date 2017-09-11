@@ -14,7 +14,7 @@ namespace gls
 	class IRenderbuffer: public IResource
 	{
 	public:
-		virtual ~IRenderbuffer() = 0 {}
+		virtual ~IRenderbuffer() = default;
 	};
 
 

@@ -9,6 +9,7 @@
 #if defined(_WIN32)
 	#include "wglext.h"
 #elif defined(__linux__)
+	#include <GL/glx.h>
 	#include "glxext.h"
 #endif
 

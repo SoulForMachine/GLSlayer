@@ -34,9 +34,9 @@ int SampleFramework::Run(ISample* sample)
     _display = XOpenDisplay(nullptr);
 
     if(!_display)
-        return 1;
+		return 1;
 
-    _sample = sample;
+	_sample = sample;
 
     gls::FramebufferFormat fbufFormat;
 	_sample->GetFramebufferFormat(fbufFormat);

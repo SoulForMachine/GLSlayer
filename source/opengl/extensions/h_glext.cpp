@@ -4,10 +4,7 @@
 	#define NOMINMAX
 	#include <windows.h>
 #elif defined(__linux__)
-	#include <GL/glx.h>
 #endif
-
-#include <cstring>
 
 #include "h_glext.h"
 

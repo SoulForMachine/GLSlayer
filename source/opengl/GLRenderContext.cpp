@@ -8,6 +8,10 @@
 #include <cstdarg>
 #include "GLRenderContext.h"
 
+#if defined(__linux__)
+#include <dlfcn.h>
+#endif
+
 using namespace gls;
 
 
@@ -43,7 +47,17 @@ bool InitFuncPtr(_FUNCT& func_ptr, const char* func_name)
 		func_ptr = (_FUNCT)GetProcAddress(hMod, func_name);
 	}
 #elif defined(__linux__)
-	func_ptr = (_FUNCT)glXGetProcAddressARB((const GLubyte*)func_name);
+	func_ptr = (_FUNCT)glXGetProcAddress((const GLubyte*)func_name);
+
+	if (func_ptr == nullptr)
+	{
+		void* handle = dlopen(NULL, RTLD_LAZY | RTLD_LOCAL);
+
+		if (handle == nullptr)
+			return false;
+
+		func_ptr = (_FUNCT)dlsym(handle, func_name);
+	}
 #endif
 	return func_ptr != 0;
 }

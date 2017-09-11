@@ -1,6 +1,10 @@
 
 # Core functionality by OpenGL version for which to generate loading code
 
+GL_VERSION_1_0
+GL_VERSION_1_1
+GL_VERSION_1_2
+GL_VERSION_1_3
 GL_VERSION_1_4
 GL_VERSION_1_5
 GL_VERSION_2_0
@@ -14,6 +18,7 @@ GL_VERSION_4_1
 GL_VERSION_4_2
 GL_VERSION_4_3
 GL_VERSION_4_4
+GL_VERSION_4_5
 
 # Extensions for which to generate loading code
 

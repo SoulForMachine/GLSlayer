@@ -1,6 +1,7 @@
 
 #include "GLShader.h"
 #include <cassert>
+#include <cstring>
 #include <algorithm>
 
 using namespace std;

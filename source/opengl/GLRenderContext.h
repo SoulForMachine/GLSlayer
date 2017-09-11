@@ -38,8 +38,8 @@ public:
 	bool SetWindowCompatiblePixelFormat(HWND windowHandle);
 	HWND SetContextWindow(HWND windowHandle);
 #elif defined(__linux__)
-	bool Create(gls::uint version, Display* display, Window window, const gls::FramebufferFormat& format, bool debug_context);
-	HWND SetContextWindow(Window window);
+	bool Create(gls::uint version, Display* display, Window window, const gls::FramebufferFormat& format, bool debug_context, IRenderContext* shareContext);
+	Window SetContextWindow(Window window);
 #endif
 
 	void Destroy();
