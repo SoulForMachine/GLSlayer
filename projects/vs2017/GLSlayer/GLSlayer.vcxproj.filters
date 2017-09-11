@@ -180,7 +180,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\..\source\opengl\extensions\extensions_windows.txt">
+    <Text Include="..\..\..\source\opengl\extensions\extensions.txt">
       <Filter>OpenGL\Extensions</Filter>
     </Text>
   </ItemGroup>

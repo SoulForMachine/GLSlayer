@@ -8,10 +8,6 @@
 #include <cstdarg>
 #include "GLRenderContext.h"
 
-#if defined(__linux__)
-#include <dlfcn.h>
-#endif
-
 using namespace gls;
 
 

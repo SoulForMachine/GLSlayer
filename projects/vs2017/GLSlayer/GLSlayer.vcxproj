@@ -79,7 +79,7 @@
     <ClCompile Include="..\..\..\source\opengl\GLVertexFormat.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\..\source\opengl\extensions\extensions_windows.txt" />
+    <Text Include="..\..\..\source\opengl\extensions\extensions.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B32C8840-CA15-4D44-B887-BC923D2F80A5}</ProjectGuid>
