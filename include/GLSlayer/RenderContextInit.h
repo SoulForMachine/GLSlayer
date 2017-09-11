@@ -41,7 +41,7 @@ namespace gls
 		GLSLAYER_API HWND SetContextWindow(IRenderContext* render_context, HWND windowHandle);
 	#elif defined (__linux__)
 		GLSLAYER_API IRenderContext* CreateRenderContext(const CreateContextInfo& info);
-		GLSLAYER_API bool XGetVisualInfo(Display* display, const FramebufferFormat& format, XVisualInfo& visual_info);
+		GLSLAYER_API bool GetXVisualInfo(Display* display, const FramebufferFormat& format, XVisualInfo& visual_info);
 		GLSLAYER_API Window SetContextWindow(IRenderContext* render_context, Window window);
 	#endif
 		GLSLAYER_API void DestroyRenderContext(IRenderContext* render_context);

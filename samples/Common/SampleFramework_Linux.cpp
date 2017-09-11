@@ -42,7 +42,7 @@ int SampleFramework::Run(ISample* sample)
 	_sample->GetFramebufferFormat(fbufFormat);
 
     XVisualInfo visual_info;
-    if(!gls::XGetVisualInfo(_display, fbufFormat, visual_info))
+	if(!gls::GetXVisualInfo(_display, fbufFormat, visual_info))
         return 1;
     Window root_window = XRootWindow(_display, visual_info.screen);
 

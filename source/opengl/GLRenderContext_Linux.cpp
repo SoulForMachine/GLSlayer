@@ -112,7 +112,7 @@ IRenderContext* gls::CreateRenderContext(const CreateContextInfo& info)
 	return render_context;
 }
 
-bool gls::XGetVisualInfo(Display* display, const FramebufferFormat& format, XVisualInfo& visual_info)
+bool gls::GetXVisualInfo(Display* display, const FramebufferFormat& format, XVisualInfo& visual_info)
 {
 	GLXFBConfig fbc = GetFBConfig(display, format);
 	if(!fbc)

@@ -48,16 +48,6 @@ bool InitFuncPtr(_FUNCT& func_ptr, const char* func_name)
 	}
 #elif defined(__linux__)
 	func_ptr = (_FUNCT)glXGetProcAddress((const GLubyte*)func_name);
-
-	if (func_ptr == nullptr)
-	{
-		void* handle = dlopen(NULL, RTLD_LAZY | RTLD_LOCAL);
-
-		if (handle == nullptr)
-			return false;
-
-		func_ptr = (_FUNCT)dlsym(handle, func_name);
-	}
 #endif
 	return func_ptr != 0;
 }
