@@ -192,6 +192,13 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 		return false;
 	}
 
+	// Initialize base GL version for some basic functions.
+	if (!glextLoad_GL_VERSION_1_0())
+	{
+		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "could not load version 1.0");
+		return false;
+	}
+
 	GLXContext context = 0;
 	if( IsExtSupported("GLX_ARB_create_context") &&
 		glextLoad_GLX_ARB_create_context() &&

@@ -26,7 +26,7 @@ SampleFramework::SampleFramework(const wchar_t* name, int wndWidth, int wndHeigh
 
 SampleFramework::~SampleFramework()
 {
-
+	delete _sample;
 }
 
 int SampleFramework::Run(ISample* sample)
@@ -70,6 +70,7 @@ int SampleFramework::Run(ISample* sample)
 	info.window = window;
 	info.logger = nullptr;
 	info.version = 330;
+	info.shareContext = nullptr;
 
     if(!_sample->Init(info))
     {
