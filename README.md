@@ -6,9 +6,9 @@ OpenGL Sanity Layer is an object-oriented 3D graphics API on top of OpenGL writt
 * GL_ARB_viewport_array
 * GL_ARB_base_instance
 * GL_ARB_texture_storage
+* GL_ARB_buffer_storage
 * GL_ARB_explicit_uniform_location
 * GL_KHR_debug
-* GL_ARB_buffer_storage
 
 ## Building
 
@@ -27,7 +27,7 @@ $ make
 
 ##### On Windows
 
-- With Visual Studio 2015: there is a solution file in projects/vs2015 directory.
+- With Visual Studio 2015/17: there are solution files in projects/vs* directories.
 - CMake: if you want to generate a solution for an older version of VS.
 
 Qt projects currently need to be fixed for Windows.
@@ -53,7 +53,7 @@ format.swapMethod = gls::SWAP_EXCHANGE;
 // On Linux, we need to get XVisualInfo for given display and framebuffer format
 // so we can use it to create the window.
 #if defined (__linux__)
-gls::XGetVisualInfo(_display, format, visualInfo);
+gls::GetXVisualInfo(_display, format, visualInfo);
 #endif
 
 // Create the window here
@@ -72,6 +72,7 @@ info.display = _display;    // pointer ot X Display struct
 info.window = _window;      // X Window handle
 #endif
 info.logger = nullptr;
+info.sharedContext = nullptr;
 
 _context = CreateRenderContext(info);
 
@@ -131,7 +132,7 @@ public:
     {
       // This is a message from GLSlayer.
     }
-    
+
 		printf("%s\n", message);
 		// ... or log to file, or whatever.
   }
