@@ -13,16 +13,16 @@ namespace gls
 	public:
 		virtual ~IBuffer() {}
 
-		virtual void BufferSubData(size_t offset, size_t size, const void* data) = 0;
-		virtual void GetBufferSubData(size_t offset, size_t size, void* data) = 0;
+		virtual void BufferSubData(intptr offset, sizeiptr size, const void* data) = 0;
+		virtual void GetBufferSubData(intptr offset, sizeiptr size, void* data) = 0;
 		virtual void* Map(uint map_flags) = 0;
-		virtual void* MapRange(size_t offset, size_t length, uint map_flags) = 0;
-		virtual void FlushMappedRange(size_t offset, size_t length) = 0;
+		virtual void* MapRange(intptr offset, sizeiptr length, uint map_flags) = 0;
+		virtual void FlushMappedRange(intptr offset, sizeiptr length) = 0;
 		virtual bool Unmap() = 0;
 		virtual void ClearData(PixelFormat internal_format, ImageFormat format, DataType type, const void* data) = 0;
-		virtual void ClearSubData(PixelFormat internal_format, ImageFormat format, DataType type, size_t offset, size_t size, const void* data) = 0;
+		virtual void ClearSubData(PixelFormat internal_format, ImageFormat format, DataType type, intptr offset, sizeiptr size, const void* data) = 0;
 		virtual void InvalidateData() = 0;
-		virtual void InvalidateSubData(size_t offset, size_t size) = 0;
+		virtual void InvalidateSubData(intptr offset, sizeiptr size) = 0;
 	};
 
 }

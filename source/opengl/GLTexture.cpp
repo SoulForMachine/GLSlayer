@@ -4,8 +4,6 @@
 #include "GLTexture.h"
 #include "GLFramebuffer.h"
 
-using namespace gls;
-
 
 #define STATE_MACHINE_HACK \
 	if(_id != _glState->imageUnits[0].texture) \
@@ -37,6 +35,8 @@ using namespace gls;
 	glReadBuffer(GetGLEnum(source_color_buf)); \
 
 
+namespace gls::internals
+{
 
 bool IsCompressedFormat(PixelFormat format)
 {
@@ -82,12 +82,6 @@ bool IsCompressedFormat(PixelFormat format)
 }
 
 //==================== Texture ====================
-
-GLTexture::GLTexture()
-{
-	_baseLevel = 0;
-	_maxLevel = 1000;
-}
 
 void GLTexture::Destroy()
 {
@@ -195,12 +189,12 @@ bool GLTexture1D::Create(GLState* gl_state)
 	return true;
 }
 
-bool GLTexture1D::CreateImmutable(GLState* gl_state, size_t levels, PixelFormat internal_format, int width)
+bool GLTexture1D::CreateImmutable(GLState* gl_state, sizei levels, PixelFormat internal_format, int width)
 {
 	if(!Create(gl_state))
 		return false;
 
-	glTexStorage1D(GL_TEXTURE_1D, (GLsizei)levels, GetGLEnum(internal_format), width);
+	glTexStorage1D(GL_TEXTURE_1D, levels, GetGLEnum(internal_format), width);
 
 	_format = internal_format;
 	_width = width;
@@ -242,18 +236,18 @@ void GLTexture1D::TexSubImage(int level, int xoffset, int width, ImageFormat for
 	glTexSubImage1D(GL_TEXTURE_1D, level, xoffset, width, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTexture1D::TexSubImage(int level, int xoffset, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
+void GLTexture1D::TexSubImage(int level, int xoffset, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset)
 {
 	UNPACK_BUFFER_STATE_MACHINE_HACK
 	TexSubImage(level, xoffset, width, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTexture1D::CompressedTexSubImage(int level, int xoffset, int width, ImageFormat format, size_t size, const void* pixels)
+void GLTexture1D::CompressedTexSubImage(int level, int xoffset, int width, ImageFormat format, sizei size, const void* pixels)
 {
 	assert(_id);
 	STATE_MACHINE_HACK
 
-	glCompressedTexSubImage1D(GL_TEXTURE_1D, level, xoffset, width, GetGLEnum(format), (GLsizei)size, pixels);
+	glCompressedTexSubImage1D(GL_TEXTURE_1D, level, xoffset, width, GetGLEnum(format), size, pixels);
 }
 
 void GLTexture1D::CopyTexImage(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, int level, PixelFormat internal_format, int x, int y, int width)
@@ -313,13 +307,13 @@ void GLTexture1D::GetTexImage(int level, ImageFormat format, DataType type, cons
 	glGetTexImage(GL_TEXTURE_1D, level, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTexture1D::GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const
+void GLTexture1D::GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset) const
 {
 	PACK_BUFFER_STATE_MACHINE_HACK
 	GetTexImage(level, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTexture1D::GetTexSubImage(int level, int xoffset, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const
+void GLTexture1D::GetTexSubImage(int level, int xoffset, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, sizei bufferSize) const
 {
 	assert(_id);
 
@@ -327,7 +321,7 @@ void GLTexture1D::GetTexSubImage(int level, int xoffset, int width, ImageFormat 
 	glGetTextureSubImage(_id, level, xoffset, 0, 0, width, 1, 1, GetGLEnum(format), GetGLEnum(type), bufferSize, pixels);
 }
 
-void GLTexture1D::GetTexSubImage(int level, int xoffset, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const
+void GLTexture1D::GetTexSubImage(int level, int xoffset, int width, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset, sizei bufferSize) const
 {
 	assert(_id);
 	PACK_BUFFER_STATE_MACHINE_HACK
@@ -344,20 +338,20 @@ void GLTexture1D::GetCompressedTexImage(int level, void* pixels) const
 	glGetCompressedTexImage(GL_TEXTURE_1D, level, pixels);
 }
 
-void GLTexture1D::GetCompressedTexImage(int level, IBuffer* buffer, size_t buffer_offset) const
+void GLTexture1D::GetCompressedTexImage(int level, IBuffer* buffer, intptr buffer_offset) const
 {
 	PACK_BUFFER_STATE_MACHINE_HACK
 	GetCompressedTexImage(level, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTexture1D::GetCompressedTexSubImage(int level, int xoffset, int width, void* pixels, size_t bufferSize) const
+void GLTexture1D::GetCompressedTexSubImage(int level, int xoffset, int width, void* pixels, sizei bufferSize) const
 {
 	assert(_id);
 
 	glGetCompressedTextureSubImage(_id, level, xoffset, 0, 0, width, 1, 1, bufferSize, pixels);
 }
 
-void GLTexture1D::GetCompressedTexSubImage(int level, int xoffset, int width, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const
+void GLTexture1D::GetCompressedTexSubImage(int level, int xoffset, int width, IBuffer* buffer, intptr buffer_offset, sizei bufferSize) const
 {
 	assert(_id);
 
@@ -390,12 +384,12 @@ bool GLTexture2D::Create(GLState* gl_state)
 	return true;
 }
 
-bool GLTexture2D::CreateImmutable(GLState* gl_state, size_t levels, PixelFormat internal_format, int width, int height)
+bool GLTexture2D::CreateImmutable(GLState* gl_state, sizei levels, PixelFormat internal_format, int width, int height)
 {
 	if(!Create(gl_state))
 		return false;
 
-	glTexStorage2D(GL_TEXTURE_2D, (GLsizei)levels, GetGLEnum(internal_format), width, height);
+	glTexStorage2D(GL_TEXTURE_2D, levels, GetGLEnum(internal_format), width, height);
 
 	_format = internal_format;
 	_width = width;
@@ -440,18 +434,18 @@ void GLTexture2D::TexSubImage(int level, int xoffset, int yoffset, int width, in
 	glTexSubImage2D(GL_TEXTURE_2D, level, xoffset, yoffset, width, height, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTexture2D::TexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
+void GLTexture2D::TexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset)
 {
 	UNPACK_BUFFER_STATE_MACHINE_HACK
 	TexSubImage(level, xoffset, yoffset, width, height, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTexture2D::CompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, size_t size, const void* pixels)
+void GLTexture2D::CompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, sizei size, const void* pixels)
 {
 	assert(_id);
 	STATE_MACHINE_HACK
 
-	glCompressedTexSubImage2D(GL_TEXTURE_2D, level, xoffset, yoffset, width, height, GetGLEnum(format), (GLsizei)size, pixels);
+	glCompressedTexSubImage2D(GL_TEXTURE_2D, level, xoffset, yoffset, width, height, GetGLEnum(format), size, pixels);
 }
 
 void GLTexture2D::CopyTexImage(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, int level, PixelFormat internal_format, int x, int y, int width, int height)
@@ -512,13 +506,13 @@ void GLTexture2D::GetTexImage(int level, ImageFormat format, DataType type, cons
 	glGetTexImage(GL_TEXTURE_2D, level, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTexture2D::GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const
+void GLTexture2D::GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset) const
 {
 	PACK_BUFFER_STATE_MACHINE_HACK
 	GetTexImage(level, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTexture2D::GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const
+void GLTexture2D::GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, sizei bufferSize) const
 {
 	assert(_id);
 
@@ -526,7 +520,7 @@ void GLTexture2D::GetTexSubImage(int level, int xoffset, int yoffset, int width,
 	glGetTextureSubImage(_id, level, xoffset, yoffset, 0, width, height, 1, GetGLEnum(format), GetGLEnum(type), bufferSize, pixels);
 }
 
-void GLTexture2D::GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const
+void GLTexture2D::GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset, sizei bufferSize) const
 {
 	assert(_id);
 	PACK_BUFFER_STATE_MACHINE_HACK
@@ -543,20 +537,20 @@ void GLTexture2D::GetCompressedTexImage(int level, void* pixels) const
 	glGetCompressedTexImage(GL_TEXTURE_2D, level, pixels);
 }
 
-void GLTexture2D::GetCompressedTexImage(int level, IBuffer* buffer, size_t buffer_offset) const
+void GLTexture2D::GetCompressedTexImage(int level, IBuffer* buffer, intptr buffer_offset) const
 {
 	PACK_BUFFER_STATE_MACHINE_HACK
 	GetCompressedTexImage(level, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTexture2D::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, void* pixels, size_t bufferSize) const
+void GLTexture2D::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, void* pixels, sizei bufferSize) const
 {
 	assert(_id);
 
 	glGetCompressedTextureSubImage(_id, level, xoffset, yoffset, 0, width, height, 1, bufferSize, pixels);
 }
 
-void GLTexture2D::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const
+void GLTexture2D::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, IBuffer* buffer, intptr buffer_offset, sizei bufferSize) const
 {
 	assert(_id);
 
@@ -679,12 +673,12 @@ bool GLTexture3D::Create(GLState* gl_state)
 	return true;
 }
 
-bool GLTexture3D::CreateImmutable(GLState* gl_state, size_t levels, PixelFormat internal_format, int width, int height, int depth)
+bool GLTexture3D::CreateImmutable(GLState* gl_state, sizei levels, PixelFormat internal_format, int width, int height, int depth)
 {
 	if(!Create(gl_state))
 		return false;
 
-	glTexStorage3D(GL_TEXTURE_3D, (GLsizei)levels, GetGLEnum(internal_format), width, height, depth);
+	glTexStorage3D(GL_TEXTURE_3D, levels, GetGLEnum(internal_format), width, height, depth);
 
 	_format = internal_format;
 	_width = width;
@@ -731,18 +725,18 @@ void GLTexture3D::TexSubImage(int level, int xoffset, int yoffset, int zoffset, 
 	glTexSubImage3D(GL_TEXTURE_3D, level, xoffset, yoffset, zoffset, width, height, depth, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTexture3D::TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
+void GLTexture3D::TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset)
 {
 	UNPACK_BUFFER_STATE_MACHINE_HACK
 	TexSubImage(level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTexture3D::CompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, size_t size, const void* pixels)
+void GLTexture3D::CompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, sizei size, const void* pixels)
 {
 	assert(_id);
 	STATE_MACHINE_HACK
 
-	glCompressedTexSubImage3D(GL_TEXTURE_3D, level, xoffset, yoffset, zoffset, width, height, depth, GetGLEnum(format), (GLsizei)size, pixels);
+	glCompressedTexSubImage3D(GL_TEXTURE_3D, level, xoffset, yoffset, zoffset, width, height, depth, GetGLEnum(format), size, pixels);
 }
 	
 void GLTexture3D::CopyTexSubImage(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, int level, int xoffset, int yoffset, int zoffset, int x, int y, int width, int height)
@@ -789,13 +783,13 @@ void GLTexture3D::GetTexImage(int level, ImageFormat format, DataType type, cons
 	glGetTexImage(GL_TEXTURE_3D, level, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTexture3D::GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const
+void GLTexture3D::GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset) const
 {
 	PACK_BUFFER_STATE_MACHINE_HACK
 	GetTexImage(level, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTexture3D::GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const
+void GLTexture3D::GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, sizei bufferSize) const
 {
 	assert(_id);
 
@@ -803,7 +797,7 @@ void GLTexture3D::GetTexSubImage(int level, int xoffset, int yoffset, int zoffse
 	glGetTextureSubImage(_id, level, xoffset, yoffset, zoffset, width, height, depth, GetGLEnum(format), GetGLEnum(type), bufferSize, pixels);
 }
 
-void GLTexture3D::GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const
+void GLTexture3D::GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset, sizei bufferSize) const
 {
 	assert(_id);
 	PACK_BUFFER_STATE_MACHINE_HACK
@@ -820,20 +814,20 @@ void GLTexture3D::GetCompressedTexImage(int level, void* pixels) const
 	glGetCompressedTexImage(GL_TEXTURE_3D, level, pixels);
 }
 
-void GLTexture3D::GetCompressedTexImage(int level, IBuffer* buffer, size_t buffer_offset) const
+void GLTexture3D::GetCompressedTexImage(int level, IBuffer* buffer, intptr buffer_offset) const
 {
 	PACK_BUFFER_STATE_MACHINE_HACK
 	GetCompressedTexImage(level, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTexture3D::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, void* pixels, size_t bufferSize) const
+void GLTexture3D::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, void* pixels, sizei bufferSize) const
 {
 	assert(_id);
 
 	glGetCompressedTextureSubImage(_id, level, xoffset, yoffset, zoffset, width, height, depth, bufferSize, pixels);
 }
 
-void GLTexture3D::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const
+void GLTexture3D::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, IBuffer* buffer, intptr buffer_offset, sizei bufferSize) const
 {
 	assert(_id);
 
@@ -865,12 +859,12 @@ bool GLTextureCube::Create(GLState* gl_state)
 	return true;
 }
 
-bool GLTextureCube::CreateImmutable(GLState* gl_state, size_t levels, PixelFormat internal_format, int width)
+bool GLTextureCube::CreateImmutable(GLState* gl_state, sizei levels, PixelFormat internal_format, int width)
 {
 	if(!Create(gl_state))
 		return false;
 
-	glTexStorage2D(GL_TEXTURE_CUBE_MAP, (GLsizei)levels, GetGLEnum(internal_format), width, width);
+	glTexStorage2D(GL_TEXTURE_CUBE_MAP, levels, GetGLEnum(internal_format), width, width);
 
 	_format = internal_format;
 	_width = width;
@@ -913,18 +907,18 @@ void GLTextureCube::TexSubImage(CubeFace face, int level, int xoffset, int yoffs
 	glTexSubImage2D(GetGLEnum(face), level, xoffset, yoffset, width, height, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTextureCube::TexSubImage(CubeFace face, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
+void GLTextureCube::TexSubImage(CubeFace face, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset)
 {
 	UNPACK_BUFFER_STATE_MACHINE_HACK
 	TexSubImage(face, level, xoffset, yoffset, width, height, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTextureCube::CompressedTexSubImage(CubeFace face, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, size_t size, const void* pixels)
+void GLTextureCube::CompressedTexSubImage(CubeFace face, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, sizei size, const void* pixels)
 {
 	assert(_id);
 	STATE_MACHINE_HACK
 
-	glCompressedTexSubImage2D(GetGLEnum(face), level, xoffset, yoffset, width, height, GetGLEnum(format), (GLsizei)size, pixels);
+	glCompressedTexSubImage2D(GetGLEnum(face), level, xoffset, yoffset, width, height, GetGLEnum(format), size, pixels);
 }
 
 void GLTextureCube::CopyTexImage(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, CubeFace face, int level, PixelFormat internal_format, int x, int y, int width)
@@ -984,13 +978,13 @@ void GLTextureCube::GetTexImage(CubeFace face, int level, ImageFormat format, Da
 	glGetTexImage(GetGLEnum(face), level, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTextureCube::GetTexImage(CubeFace face, int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const
+void GLTextureCube::GetTexImage(CubeFace face, int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset) const
 {
 	PACK_BUFFER_STATE_MACHINE_HACK
 	GetTexImage(face, level, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTextureCube::GetTexSubImage(CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const
+void GLTextureCube::GetTexSubImage(CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, sizei bufferSize) const
 {
 	assert(_id);
 
@@ -998,7 +992,7 @@ void GLTextureCube::GetTexSubImage(CubeFace face, int numFaces, int level, int x
 	glGetTextureSubImage(_id, level, xoffset, yoffset, static_cast<GLint>(face), width, height, numFaces, GetGLEnum(format), GetGLEnum(type), bufferSize, pixels);
 }
 
-void GLTextureCube::GetTexSubImage(CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const
+void GLTextureCube::GetTexSubImage(CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset, sizei bufferSize) const
 {
 	assert(_id);
 	PACK_BUFFER_STATE_MACHINE_HACK
@@ -1015,20 +1009,20 @@ void GLTextureCube::GetCompressedTexImage(CubeFace face, int level, void* pixels
 	glGetCompressedTexImage(GetGLEnum(face), level, pixels);
 }
 
-void GLTextureCube::GetCompressedTexImage(CubeFace face, int level, IBuffer* buffer, size_t buffer_offset) const
+void GLTextureCube::GetCompressedTexImage(CubeFace face, int level, IBuffer* buffer, intptr buffer_offset) const
 {
 	PACK_BUFFER_STATE_MACHINE_HACK
 	GetCompressedTexImage(face, level, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTextureCube::GetCompressedTexSubImage(CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, void* pixels, size_t bufferSize) const
+void GLTextureCube::GetCompressedTexSubImage(CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, void* pixels, sizei bufferSize) const
 {
 	assert(_id);
 
 	glGetCompressedTextureSubImage(_id, level, xoffset, yoffset, static_cast<GLint>(face), width, height, numFaces, bufferSize, pixels);
 }
 
-void GLTextureCube::GetCompressedTexSubImage(CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const
+void GLTextureCube::GetCompressedTexSubImage(CubeFace face, int numFaces, int level, int xoffset, int yoffset, int width, int height, IBuffer* buffer, intptr buffer_offset, sizei bufferSize) const
 {
 	assert(_id);
 
@@ -1061,12 +1055,12 @@ bool GLTexture1DArray::Create(GLState* gl_state)
 	return true;
 }
 
-bool GLTexture1DArray::CreateImmutable(GLState* gl_state, size_t levels, PixelFormat internal_format, int width, int height)
+bool GLTexture1DArray::CreateImmutable(GLState* gl_state, sizei levels, PixelFormat internal_format, int width, int height)
 {
 	if(!Create(gl_state))
 		return false;
 
-	glTexStorage2D(GL_TEXTURE_1D_ARRAY, (GLsizei)levels, GetGLEnum(internal_format), width, height);
+	glTexStorage2D(GL_TEXTURE_1D_ARRAY, levels, GetGLEnum(internal_format), width, height);
 
 	_format = internal_format;
 	_width = width;
@@ -1111,18 +1105,18 @@ void GLTexture1DArray::TexSubImage(int level, int xoffset, int yoffset, int widt
 	glTexSubImage2D(GL_TEXTURE_1D_ARRAY, level, xoffset, yoffset, width, height, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTexture1DArray::TexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
+void GLTexture1DArray::TexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset)
 {
 	UNPACK_BUFFER_STATE_MACHINE_HACK
 	TexSubImage(level, xoffset, yoffset, width, height, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTexture1DArray::CompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, size_t size, const void* pixels)
+void GLTexture1DArray::CompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, sizei size, const void* pixels)
 {
 	assert(_id);
 	STATE_MACHINE_HACK
 
-	glCompressedTexSubImage2D(GL_TEXTURE_1D_ARRAY, level, xoffset, yoffset, width, height, GetGLEnum(format), (GLsizei)size, pixels);
+	glCompressedTexSubImage2D(GL_TEXTURE_1D_ARRAY, level, xoffset, yoffset, width, height, GetGLEnum(format), size, pixels);
 }
 
 void GLTexture1DArray::CopyTexImage(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, int level, PixelFormat internal_format, int x, int y, int width, int height)
@@ -1183,13 +1177,13 @@ void GLTexture1DArray::GetTexImage(int level, ImageFormat format, DataType type,
 	glGetTexImage(GL_TEXTURE_1D_ARRAY, level, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTexture1DArray::GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const
+void GLTexture1DArray::GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset) const
 {
 	PACK_BUFFER_STATE_MACHINE_HACK
 	GetTexImage(level, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTexture1DArray::GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const
+void GLTexture1DArray::GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, sizei bufferSize) const
 {
 	assert(_id);
 
@@ -1197,7 +1191,7 @@ void GLTexture1DArray::GetTexSubImage(int level, int xoffset, int yoffset, int w
 	glGetTextureSubImage(_id, level, xoffset, yoffset, 0, width, height, 1, GetGLEnum(format), GetGLEnum(type), bufferSize, pixels);
 }
 
-void GLTexture1DArray::GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const
+void GLTexture1DArray::GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset, sizei bufferSize) const
 {
 	assert(_id);
 	PACK_BUFFER_STATE_MACHINE_HACK
@@ -1214,20 +1208,20 @@ void GLTexture1DArray::GetCompressedTexImage(int level, void* pixels) const
 	glGetCompressedTexImage(GL_TEXTURE_1D_ARRAY, level, pixels);
 }
 
-void GLTexture1DArray::GetCompressedTexImage(int level, IBuffer* buffer, size_t buffer_offset) const
+void GLTexture1DArray::GetCompressedTexImage(int level, IBuffer* buffer, intptr buffer_offset) const
 {
 	PACK_BUFFER_STATE_MACHINE_HACK
 	GetCompressedTexImage(level, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTexture1DArray::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, void* pixels, size_t bufferSize) const
+void GLTexture1DArray::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, void* pixels, sizei bufferSize) const
 {
 	assert(_id);
 
 	glGetCompressedTextureSubImage(_id, level, xoffset, yoffset, 0, width, height, 1, bufferSize, pixels);
 }
 
-void GLTexture1DArray::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const
+void GLTexture1DArray::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int width, int height, IBuffer* buffer, intptr buffer_offset, sizei bufferSize) const
 {
 	assert(_id);
 
@@ -1261,12 +1255,12 @@ bool GLTexture2DArray::Create(GLState* gl_state)
 	return true;
 }
 
-bool GLTexture2DArray::CreateImmutable(GLState* gl_state, size_t levels, PixelFormat internal_format, int width, int height, int depth)
+bool GLTexture2DArray::CreateImmutable(GLState* gl_state, sizei levels, PixelFormat internal_format, int width, int height, int depth)
 {
 	if(!Create(gl_state))
 		return false;
 
-	glTexStorage3D(GL_TEXTURE_2D_ARRAY, (GLsizei)levels, GetGLEnum(internal_format), width, height, depth);
+	glTexStorage3D(GL_TEXTURE_2D_ARRAY, levels, GetGLEnum(internal_format), width, height, depth);
 
 	_format = internal_format;
 	_width = width;
@@ -1313,18 +1307,18 @@ void GLTexture2DArray::TexSubImage(int level, int xoffset, int yoffset, int zoff
 	glTexSubImage3D(GL_TEXTURE_2D_ARRAY, level, xoffset, yoffset, zoffset, width, height, depth, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTexture2DArray::TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
+void GLTexture2DArray::TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset)
 {
 	UNPACK_BUFFER_STATE_MACHINE_HACK
 	TexSubImage(level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTexture2DArray::CompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, size_t size, const void* pixels)
+void GLTexture2DArray::CompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, sizei size, const void* pixels)
 {
 	assert(_id);
 	STATE_MACHINE_HACK
 
-	glCompressedTexSubImage3D(GL_TEXTURE_2D_ARRAY, level, xoffset, yoffset, zoffset, width, height, depth, GetGLEnum(format), (GLsizei)size, pixels);
+	glCompressedTexSubImage3D(GL_TEXTURE_2D_ARRAY, level, xoffset, yoffset, zoffset, width, height, depth, GetGLEnum(format), size, pixels);
 }
 
 void GLTexture2DArray::CopyTexSubImage(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, int level, int xoffset, int yoffset, int zoffset, int x, int y, int width, int height)
@@ -1369,13 +1363,13 @@ void GLTexture2DArray::GetTexImage(int level, ImageFormat format, DataType type,
 	glGetTexImage(GL_TEXTURE_2D_ARRAY, level, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTexture2DArray::GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const
+void GLTexture2DArray::GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset) const
 {
 	PACK_BUFFER_STATE_MACHINE_HACK
 	GetTexImage(level, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTexture2DArray::GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const
+void GLTexture2DArray::GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, sizei bufferSize) const
 {
 	assert(_id);
 
@@ -1383,7 +1377,7 @@ void GLTexture2DArray::GetTexSubImage(int level, int xoffset, int yoffset, int z
 	glGetTextureSubImage(_id, level, xoffset, yoffset, zoffset, width, height, depth, GetGLEnum(format), GetGLEnum(type), bufferSize, pixels);
 }
 
-void GLTexture2DArray::GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const
+void GLTexture2DArray::GetTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset, sizei bufferSize) const
 {
 	assert(_id);
 	PACK_BUFFER_STATE_MACHINE_HACK
@@ -1400,20 +1394,20 @@ void GLTexture2DArray::GetCompressedTexImage(int level, void* pixels) const
 	glGetCompressedTexImage(GL_TEXTURE_2D_ARRAY, level, pixels);
 }
 
-void GLTexture2DArray::GetCompressedTexImage(int level, IBuffer* buffer, size_t buffer_offset) const
+void GLTexture2DArray::GetCompressedTexImage(int level, IBuffer* buffer, intptr buffer_offset) const
 {
 	PACK_BUFFER_STATE_MACHINE_HACK
 	GetCompressedTexImage(level, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTexture2DArray::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, void* pixels, size_t bufferSize) const
+void GLTexture2DArray::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, void* pixels, sizei bufferSize) const
 {
 	assert(_id);
 
 	glGetCompressedTextureSubImage(_id, level, xoffset, yoffset, zoffset, width, height, depth, bufferSize, pixels);
 }
 
-void GLTexture2DArray::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const
+void GLTexture2DArray::GetCompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, IBuffer* buffer, intptr buffer_offset, sizei bufferSize) const
 {
 	assert(_id);
 
@@ -1538,12 +1532,12 @@ bool GLTextureCubeArray::Create(GLState* gl_state)
 	return true;
 }
 
-bool GLTextureCubeArray::CreateImmutable(GLState* gl_state, size_t levels, PixelFormat internal_format, int width, int depth)
+bool GLTextureCubeArray::CreateImmutable(GLState* gl_state, sizei levels, PixelFormat internal_format, int width, int depth)
 {
 	if(!Create(gl_state))
 		return false;
 
-	glTexStorage3D(GL_TEXTURE_CUBE_MAP_ARRAY, (GLsizei)levels, GetGLEnum(internal_format), width, width, depth);
+	glTexStorage3D(GL_TEXTURE_CUBE_MAP_ARRAY, levels, GetGLEnum(internal_format), width, width, depth);
 
 	_format = internal_format;
 	_width = width;
@@ -1588,18 +1582,18 @@ void GLTextureCubeArray::TexSubImage(int level, int xoffset, int yoffset, int zo
 	glTexSubImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, level, xoffset, yoffset, zoffset, width, height, depth, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTextureCubeArray::TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
+void GLTextureCubeArray::TexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset)
 {
 	UNPACK_BUFFER_STATE_MACHINE_HACK
 	TexSubImage(level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTextureCubeArray::CompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, size_t size, const void* pixels)
+void GLTextureCubeArray::CompressedTexSubImage(int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, ImageFormat format, sizei size, const void* pixels)
 {
 	assert(_id);
 	STATE_MACHINE_HACK
 
-	glCompressedTexSubImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, level, xoffset, yoffset, zoffset, width, height, depth, GetGLEnum(format), (GLsizei)size, pixels);
+	glCompressedTexSubImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, level, xoffset, yoffset, zoffset, width, height, depth, GetGLEnum(format), size, pixels);
 }
 
 void GLTextureCubeArray::CopyTexSubImage(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, int level, int xoffset, int yoffset, int zoffset, int x, int y, int width, int height)
@@ -1644,13 +1638,13 @@ void GLTextureCubeArray::GetTexImage(int level, ImageFormat format, DataType typ
 	glGetTexImage(GL_TEXTURE_CUBE_MAP_ARRAY, level, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTextureCubeArray::GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const
+void GLTextureCubeArray::GetTexImage(int level, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset) const
 {
 	PACK_BUFFER_STATE_MACHINE_HACK
 	GetTexImage(level, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTextureCubeArray::GetTexSubImage(int layerFace, int numLayerFaces, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const
+void GLTextureCubeArray::GetTexSubImage(int layerFace, int numLayerFaces, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, sizei bufferSize) const
 {
 	assert(_id);
 
@@ -1658,7 +1652,7 @@ void GLTextureCubeArray::GetTexSubImage(int layerFace, int numLayerFaces, int le
 	glGetTextureSubImage(_id, level, xoffset, yoffset, layerFace, width, height, numLayerFaces, GetGLEnum(format), GetGLEnum(type), bufferSize, pixels);
 }
 
-void GLTextureCubeArray::GetTexSubImage(int layerFace, int numLayerFaces, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const
+void GLTextureCubeArray::GetTexSubImage(int layerFace, int numLayerFaces, int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset, sizei bufferSize) const
 {
 	assert(_id);
 	PACK_BUFFER_STATE_MACHINE_HACK
@@ -1702,7 +1696,7 @@ void GLTextureBuffer::TexBuffer(PixelFormat internal_format, IBuffer* buffer)
 	_size = dyn_cast_ptr<GLBuffer*>(buffer)->GetSize();
 }
 
-void GLTextureBuffer::TexBufferRange(PixelFormat internal_format, IBuffer* buffer, size_t offset, size_t size)
+void GLTextureBuffer::TexBufferRange(PixelFormat internal_format, IBuffer* buffer, intptr offset, sizeiptr size)
 {
 	assert(_id);
 	STATE_MACHINE_HACK
@@ -1754,12 +1748,12 @@ bool GLTextureRectangle::Create(GLState* gl_state)
 	return true;
 }
 
-bool GLTextureRectangle::CreateImmutable(GLState* gl_state, size_t levels, PixelFormat internal_format, int width, int height)
+bool GLTextureRectangle::CreateImmutable(GLState* gl_state, sizei levels, PixelFormat internal_format, int width, int height)
 {
 	if(!Create(gl_state))
 		return false;
 
-	glTexStorage2D(GL_TEXTURE_RECTANGLE, (GLsizei)levels, GetGLEnum(internal_format), width, height);
+	glTexStorage2D(GL_TEXTURE_RECTANGLE, levels, GetGLEnum(internal_format), width, height);
 
 	_format = internal_format;
 	_width = width;
@@ -1804,7 +1798,7 @@ void GLTextureRectangle::TexSubImage(int xoffset, int yoffset, int width, int he
 	glTexSubImage2D(GL_TEXTURE_RECTANGLE, 0, xoffset, yoffset, width, height, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTextureRectangle::TexSubImage(int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
+void GLTextureRectangle::TexSubImage(int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset)
 {
 	UNPACK_BUFFER_STATE_MACHINE_HACK
 	TexSubImage(xoffset, yoffset, width, height, format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
@@ -1865,13 +1859,13 @@ void GLTextureRectangle::GetTexImage(ImageFormat format, DataType type, const Pi
 	glGetTexImage(GL_TEXTURE_RECTANGLE, 0, GetGLEnum(format), GetGLEnum(type), pixels);
 }
 
-void GLTextureRectangle::GetTexImage(ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) const
+void GLTextureRectangle::GetTexImage(ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset) const
 {
 	PACK_BUFFER_STATE_MACHINE_HACK
 	GetTexImage(format, type, pixel_store, BUFFER_OFFSET(buffer_offset));
 }
 
-void GLTextureRectangle::GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, size_t bufferSize) const
+void GLTextureRectangle::GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* pixels, sizei bufferSize) const
 {
 	assert(_id);
 
@@ -1879,7 +1873,7 @@ void GLTextureRectangle::GetTexSubImage(int level, int xoffset, int yoffset, int
 	glGetTextureSubImage(_id, level, xoffset, yoffset, 0, width, height, 1, GetGLEnum(format), GetGLEnum(type), bufferSize, pixels);
 }
 
-void GLTextureRectangle::GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset, size_t bufferSize) const
+void GLTextureRectangle::GetTexSubImage(int level, int xoffset, int yoffset, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset, sizei bufferSize) const
 {
 	assert(_id);
 	PACK_BUFFER_STATE_MACHINE_HACK
@@ -1887,3 +1881,5 @@ void GLTextureRectangle::GetTexSubImage(int level, int xoffset, int yoffset, int
 	__SetPixelPackState(_glState, pixel_store);
 	glGetTextureSubImage(_id, level, xoffset, yoffset, 0, width, height, 1, GetGLEnum(format), GetGLEnum(type), bufferSize, BUFFER_OFFSET(buffer_offset));
 }
+
+} // namespace gls::internals

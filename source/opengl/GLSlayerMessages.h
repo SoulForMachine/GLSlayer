@@ -2,6 +2,9 @@
 #ifndef _GL_SLAYER_MESSAGES_H_
 #define _GL_SLAYER_MESSAGES_H_
 
+namespace gls::internals
+{
+
 enum ErrorMessageId
 {
 	MESSAGE_ERROR_UNSUPPORTED_VERSION,
@@ -19,5 +22,6 @@ enum ErrorMessageId
 
 const char* GetMessageString(ErrorMessageId message_id);
 
+} // namespace gls::internals
 
 #endif // _GL_SLAYER_MESSAGES_H_

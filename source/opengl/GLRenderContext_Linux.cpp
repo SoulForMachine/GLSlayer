@@ -212,6 +212,7 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 			GLX_CONTEXT_MAJOR_VERSION_ARB, (int)version / 100,
 			GLX_CONTEXT_MINOR_VERSION_ARB, (int)version % 100 / 10,
 			GLX_CONTEXT_FLAGS_ARB, context_flags,
+			GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
 			None
 		};
 

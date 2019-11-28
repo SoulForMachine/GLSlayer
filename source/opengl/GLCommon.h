@@ -20,23 +20,19 @@
 #include "GLSlayer/Resource.h"
 
 
-using gls::ulong;
-using gls::uint;
-using gls::ushort;
-using gls::ubyte;
-using gls::uint64;
-using gls::int64;
-
 
 #define BUFFER_OFFSET(offset) ((char*)0 + (offset))
 
 
 #define DECL_GL_ENUM_LOOKUP_TABLE(type, table) \
 	extern const GLenum table[]; \
-	gls::type GetFromGLEnum_##type(GLenum value); \
-	template <> inline GLenum GetGLEnum<gls::type>(gls::type value) { return table[value]; } \
-	template <> inline gls::type GetFromGLEnum<gls::type>(GLenum value) { return GetFromGLEnum_##type(value); }
+	type GetFromGLEnum_##type(GLenum value); \
+	template <> inline GLenum GetGLEnum<type>(type value) { return table[value]; } \
+	template <> inline type GetFromGLEnum<type>(GLenum value) { return GetFromGLEnum_##type(value); }
 
+
+namespace gls::internals
+{
 
 template <class _EnumT>
 GLenum GetGLEnum(_EnumT value);
@@ -163,9 +159,6 @@ struct GLState
 	};
 	SamplerState* imageUnits;
 
-	// GLSL
-	GLuint glslProg;
-
 	// framebuffer
 	GLuint drawFbuf;
 	GLuint readFbuf;
@@ -177,13 +170,13 @@ struct GLState
 	GLuint transformFeedback;
 
 	// pixel store
-	gls::PixelStore pixelStorePack;
-	gls::PixelStore pixelStoreUnpack;
+	PixelStore pixelStorePack;
+	PixelStore pixelStoreUnpack;
 };
 
 
-void __SetPixelPackState(GLState* gl_state, const gls::PixelStore* pixel_store);
-void __SetPixelUnpackState(GLState* gl_state, const gls::PixelStore* pixel_store);
+void __SetPixelPackState(GLState* gl_state, const PixelStore* pixel_store);
+void __SetPixelUnpackState(GLState* gl_state, const PixelStore* pixel_store);
 
 template<class Type>
 class dyn_cast_ptr;
@@ -192,12 +185,14 @@ template<class Type>
 class dyn_cast_ptr<Type*>
 {
 public:
-	dyn_cast_ptr(gls::IResource* res)	{ _res = res; }
-	operator Type* ()		{ return (_res != 0) ? static_cast<Type*>(_res->DynamicCast(Type::typeID)) : 0; }
+	dyn_cast_ptr(IResource* res)	{ _res = res; }
+	operator Type* ()		{ return (_res != nullptr) ? static_cast<Type*>(_res->DynamicCast(Type::typeID)) : 0; }
 	Type* operator -> ()	{ return operator Type*(); }
 
 private:
-	gls::IResource* _res;
+	IResource* _res;
 };
+
+} // namespace gls::internals
 
 #endif // _GL_COMMON_H_

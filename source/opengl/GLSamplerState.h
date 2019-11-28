@@ -6,7 +6,10 @@
 #include "GLResource.h"
 
 
-class GLSamplerState : public gls::ISamplerState, public GLResource
+namespace gls::internals
+{
+
+class GLSamplerState : public ISamplerState, public GLResource
 {
 public:
 	IMPLEMENT_IRESOURCE
@@ -15,11 +18,14 @@ public:
 
 	GLSamplerState();
 
-	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_SAMPLER_STATE) ? this : GLResource::DynamicCast(type_id); }
-	bool Create(const gls::SamplerStateDesc& desc);
+	GLSamplerState(const GLSamplerState&) = delete;
+	GLSamplerState& operator = (const GLSamplerState&) = delete;
+
+	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_SAMPLER_STATE) ? this : GLResource::DynamicCast(type_id); }
+	bool Create(const SamplerStateDesc& desc);
 	void Destroy();
 };
 
-
+} // namespace gls::internals
 
 #endif // _GL_SAMPLER_STATE_H_

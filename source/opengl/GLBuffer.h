@@ -6,44 +6,42 @@
 #include "GLResource.h"
 
 
+namespace gls::internals
+{
 
-class GLTextureBuffer;
-
-
-class GLBuffer: public gls::IBuffer, public GLResource
+class GLBuffer : public gls::IBuffer, public GLResource
 {
 public:
 	IMPLEMENT_IRESOURCE
 
 	static const int typeID = TYPE_ID_BUFFER;
 
-	GLBuffer();
+	GLBuffer() = default;
 
-	bool Create(GLState* state, size_t size, const void* data, gls::uint flags);
+	GLBuffer(const GLBuffer&) = delete;
+	GLBuffer& operator = (const GLBuffer&) = delete;
+
+	bool Create(GLState* state, sizeiptr size, const void* data, uint flags);
 	void Destroy();
 
-	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_BUFFER) ? this : GLResource::DynamicCast(type_id); }
-	void BufferSubData(size_t offset, size_t size, const void* data);
-	void GetBufferSubData(size_t offset, size_t size, void* data);
-	void* Map(uint map_flags);
-	void* MapRange(size_t offset, size_t length, gls::uint map_flags);
-	void FlushMappedRange(size_t offset, size_t length);
-	bool Unmap();
-	void ClearData(gls::PixelFormat internal_format, gls::ImageFormat format, gls::DataType type, const void* data);
-	void ClearSubData(gls::PixelFormat internal_format, gls::ImageFormat format, gls::DataType type, size_t offset, size_t size, const void* data);
-	void InvalidateData();
-	void InvalidateSubData(size_t offset, size_t size);
-	size_t GetSize() const { return _size; }
+	virtual void* DynamicCast(int type_id) override { return (type_id == TYPE_ID_BUFFER) ? this : GLResource::DynamicCast(type_id); }
+	virtual void BufferSubData(intptr offset, sizeiptr size, const void* data) override;
+	virtual void GetBufferSubData(intptr offset, sizeiptr size, void* data) override;
+	virtual void* Map(uint map_flags) override;
+	virtual void* MapRange(intptr offset, sizeiptr length, uint map_flags) override;
+	virtual void FlushMappedRange(intptr offset, sizeiptr length) override;
+	virtual bool Unmap() override;
+	virtual void ClearData(PixelFormat internal_format, ImageFormat format, DataType type, const void* data) override;
+	virtual void ClearSubData(PixelFormat internal_format, ImageFormat format, DataType type, intptr offset, sizeiptr size, const void* data) override;
+	virtual void InvalidateData() override;
+	virtual void InvalidateSubData(intptr offset, sizeiptr size) override;
+	sizeiptr GetSize() const { return _size; }
 
 private:
-	GLBuffer(const GLBuffer&);
-	GLBuffer& operator = (const GLBuffer&);
-
-	size_t _size; // size of buffer in bytes
-	GLState* _glState;
-
-	friend class GLTextureBuffer;
+	sizeiptr _size = 0; // size of buffer in bytes
+	GLState* _glState = nullptr;
 };
 
+} // namespace gls::internals
 
 #endif // _GL_BUFFER_H_

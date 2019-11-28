@@ -11,29 +11,32 @@ namespace gls
 	class IBuffer;
 }
 
+namespace gls::internals
+{
 
-class GLTransformFeedback : public gls::ITransformFeedback, public GLResource
+class GLTransformFeedback : public ITransformFeedback, public GLResource
 {
 public:
 	IMPLEMENT_IRESOURCE
 
 	static const int typeID = TYPE_ID_TRANSFORM_FEEDBACK;
 
-	GLTransformFeedback() {}
+	GLTransformFeedback() = default;
+
+	GLTransformFeedback(const GLTransformFeedback&) = delete;
+	GLTransformFeedback& operator = (const GLTransformFeedback&) = delete;
 
 	bool Create(GLState* gl_state);
 	void Destroy();
 
-	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_TRANSFORM_FEEDBACK) ? this : GLResource::DynamicCast(type_id); }
-	void BindBuffer(gls::uint index, gls::IBuffer* buffer);
-	void BindBuffer(gls::uint index, gls::IBuffer* buffer, size_t offset, size_t size);
+	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_TRANSFORM_FEEDBACK) ? this : GLResource::DynamicCast(type_id); }
+	virtual void BindBuffer(uint index, IBuffer* buffer) override;
+	virtual void BindBuffer(uint index, IBuffer* buffer, intptr offset, sizeiptr size) override;
 
 private:
-	GLTransformFeedback(const GLTransformFeedback&);
-	GLTransformFeedback& operator = (const GLTransformFeedback&);
-
 	GLState* _glState;
 };
 
+} // namespace gls::internals
 
 #endif // _GL_TRANSFORM_FEEDBACK_H_

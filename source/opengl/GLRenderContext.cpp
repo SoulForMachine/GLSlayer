@@ -8,8 +8,6 @@
 #include <cstdarg>
 #include "GLRenderContext.h"
 
-using namespace gls;
-
 
 // Inclide definitions of extension loading functions.
 // ===========================================================================
@@ -35,19 +33,22 @@ bool InitFuncPtr(_FUNCT& func_ptr, const char* func_name)
 
 	if (func_ptr == nullptr)
 	{
-		HMODULE hMod = LoadLibraryA("opengl32.dll");
+		static HMODULE hMod = LoadLibraryA("opengl32.dll");
 
 		if (hMod == NULL)
 			return false;
 
-		func_ptr = (_FUNCT)GetProcAddress(hMod, func_name);
+		func_ptr = reinterpret_cast<_FUNCT>(GetProcAddress(hMod, func_name));
 	}
 #elif defined(__linux__)
 	func_ptr = (_FUNCT)glXGetProcAddress((const GLubyte*)func_name);
 #endif
-	return func_ptr != 0;
+	return func_ptr != nullptr;
 }
 
+
+namespace gls::internals
+{
 
 #if defined(_WIN32)
 
@@ -326,6 +327,7 @@ void GLRenderContext::GetContextInfo()
 	{
 		glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &_info.maxUniformBlockSize);
 		glGetIntegerv(GL_MAX_COMBINED_UNIFORM_BLOCKS, &_info.maxCombinedUniformBlocks);
+		glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &_info.uniformBufferOffsetAlignment);
 	}
 
 	if(ver_num >= 320)
@@ -533,7 +535,7 @@ void GLRenderContext::Clear()
 	_hdc = 0;
 	_instanceHandle = 0;
 #elif defined(__linux__)
-	_display = 0;
+	_display = nullptr;
 	_window = 0;
 	_context = 0;
 #endif
@@ -543,20 +545,25 @@ void GLRenderContext::Clear()
 	memset(&_glState, 0, sizeof(_glState));
 	_glState.pixelStorePack = __defaultPixelStore;
 	_glState.pixelStoreUnpack = __defaultPixelStore;
-	_vertexStreams = 0;
-	_vertexFormat = 0;
-	_vertexAttribs = 0;
-	_enabledVertexAttribs = 0;
-	_indexBuffer = 0;
+	_vertexStreams = nullptr;
+	_vertexFormat = nullptr;
+	_vertexAttribs = nullptr;
+	_enabledVertexAttribs = nullptr;
+	_indexBuffer = nullptr;
 	_indexType = TYPE_NONE;
-	_framebuffer = 0;
-	_imageUnits = 0;
+	_framebuffer = nullptr;
+	_imageUnits = nullptr;
 	_highImageUnit = -1;
 	_pipeline = 0;
-	_logger = 0;
+	_logger = nullptr;
 }
 
-void GLRenderContext::VertexSource(int stream, IBuffer* buffer, size_t stride, size_t offset)
+const ContextInfo& GLRenderContext::GetInfo() const
+{
+	return _info;
+}
+
+void GLRenderContext::VertexSource(int stream, IBuffer* buffer, sizei stride, intptr offset)
 {
 	assert(stream >= 0 && stream < _info.maxVertexAttribBindings);
 	_vertexStreams[stream].buffer = dyn_cast_ptr<GLBuffer*>(buffer);
@@ -989,12 +996,12 @@ void GLRenderContext::LogicOperation(LogicOp op)
 */
 void GLRenderContext::SetFramebuffer(IFramebuffer* fbuf)
 {
-	_framebuffer = fbuf ? dyn_cast_ptr<GLFramebuffer*>(fbuf) : 0;
+	_framebuffer = fbuf ? dyn_cast_ptr<GLFramebuffer*>(fbuf) : nullptr;
 }
 
-void GLRenderContext::ActiveColorBuffers(IFramebuffer* fbuf, size_t count, const ColorBuffer* buffers)
+void GLRenderContext::ActiveColorBuffers(IFramebuffer* fbuf, sizei count, const ColorBuffer* buffers)
 {
-	if (count > (size_t)_info.maxDrawBuffers)
+	if (count < 0 || count > _info.maxDrawBuffers)
 	{
 		assert(false);
 		return;
@@ -1007,13 +1014,13 @@ void GLRenderContext::ActiveColorBuffers(IFramebuffer* fbuf, size_t count, const
 		_glState.drawFbuf = id;
 	}
 
-	if(count > 0 && buffers != 0)
+	if(count > 0 && buffers != nullptr)
 	{
-		GLenum* enums = (GLenum*)alloca(sizeof(GLenum) * count);
-		for(size_t i = 0; i < count; ++i)
+		GLenum* enums = (GLenum*)_malloca(sizeof(GLenum) * count);
+		for(sizei i = 0; i < count; ++i)
 			enums[i] = GetGLEnum(buffers[i]);
 
-		glDrawBuffers((GLsizei)count, enums);
+		glDrawBuffers(count, enums);
 	}
 	else
 	{
@@ -1139,7 +1146,7 @@ void GLRenderContext::ClearDepthStencilBuffer(IFramebuffer* fbuf, float depth, i
 	If pixel_store is 0, default values are used. If depth or stencil data is read,
 	source_color_buf should be COLOR_BUFFER_NONE and color_clamp is ignored.
 */
-void GLRenderContext::ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, ColorReadClamp color_clamp, int x, int y, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* buffer)
+void GLRenderContext::ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, ColorReadClamp color_clamp, int x, int y, sizei width, sizei height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* buffer)
 {
 	GLuint id = source_fbuf ? dyn_cast_ptr<GLFramebuffer*>(source_fbuf)->GetID() : 0;
 	if(id != _glState.readFbuf)
@@ -1173,7 +1180,7 @@ void GLRenderContext::ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_c
 	If pixel_store is 0, default values are used. If depth or stencil data is read,
 	source_color_buf should be COLOR_BUFFER_NONE and color_clamp is ignored.
 */
-void GLRenderContext::ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, ColorReadClamp color_clamp, int x, int y, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset)
+void GLRenderContext::ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, ColorReadClamp color_clamp, int x, int y, sizei width, sizei height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset)
 {
 	GLuint id = source_fbuf ? dyn_cast_ptr<GLFramebuffer*>(source_fbuf)->GetID() : 0;
 	if(id != _glState.readFbuf)
@@ -1279,7 +1286,7 @@ void GLRenderContext::SetUniformBuffer(uint index, IBuffer* buffer)
 	glBindBufferBase(GL_UNIFORM_BUFFER, index, buf_id);
 }
 
-void GLRenderContext::SetUniformBuffer(uint index, IBuffer* buffer, size_t offset, size_t size)
+void GLRenderContext::SetUniformBuffer(uint index, IBuffer* buffer, intptr offset, sizeiptr size)
 {
 	GLuint buf_id = dyn_cast_ptr<GLBuffer*>(buffer)->GetID();
 	_glState.uniformBuf = buf_id;
@@ -1293,7 +1300,7 @@ void GLRenderContext::SetAtomicCounterBuffer(uint index, IBuffer* buffer)
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, index, buf_id);
 }
 
-void GLRenderContext::SetAtomicCounterBuffer(uint index, IBuffer* buffer, size_t offset, size_t size)
+void GLRenderContext::SetAtomicCounterBuffer(uint index, IBuffer* buffer, intptr offset, sizeiptr size)
 {
 	GLuint buf_id = dyn_cast_ptr<GLBuffer*>(buffer)->GetID();
 	_glState.atomicCounterBuf = buf_id;
@@ -1307,16 +1314,16 @@ void GLRenderContext::SetStorageBuffer(uint index, IBuffer* buffer)
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, index, id);
 }
 
-void GLRenderContext::SetStorageBuffer(uint index, IBuffer* buffer, size_t offset, size_t size)
+void GLRenderContext::SetStorageBuffer(uint index, IBuffer* buffer, intptr offset, sizeiptr size)
 {
 	GLuint id = dyn_cast_ptr<GLBuffer*>(buffer)->GetID();
 	_glState.shaderStorageBuf = id;
 	glBindBufferRange(GL_SHADER_STORAGE_BUFFER, index, id, offset, size);
 }
 
-void GLRenderContext::UniformSubroutine(ShaderType shader_type, size_t count, const uint* indices)
+void GLRenderContext::UniformSubroutine(ShaderType shader_type, sizei count, const uint* indices)
 {
-	glUniformSubroutinesuiv(GetGLEnum(shader_type), (GLsizei)count, indices);
+	glUniformSubroutinesuiv(GetGLEnum(shader_type), count, indices);
 }
 
 void GLRenderContext::SetImageTexture(uint image_unit, ITexture* texture, int level, bool layered, int layer, BufferAccess access, PixelFormat format)
@@ -1342,11 +1349,11 @@ void GLRenderContext::SetSamplerTexture(int sampler, ITexture* texture)
 		_imageUnits[sampler].texture = dyn_cast_ptr<GLTexture*>(texture);
 		_imageUnits[sampler].texRemoved = false;
 	}
-	else if(_imageUnits[sampler].texture != 0)
+	else if(_imageUnits[sampler].texture != nullptr)
 	{
 		_imageUnits[sampler].removedTexTarget = _imageUnits[sampler].texture->GetTarget();
 		_imageUnits[sampler].texRemoved = true;
-		_imageUnits[sampler].texture = 0;
+		_imageUnits[sampler].texture = nullptr;
 	}
 
 	if(sampler > _highImageUnit)
@@ -1368,27 +1375,27 @@ void GLRenderContext::EnableSeamlessCubeMap(bool enable)
 		glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
 
-void GLRenderContext::Draw(PrimitiveType prim, int first, size_t count)
+void GLRenderContext::Draw(PrimitiveType prim, int first, sizei count)
 {
 	if(!_vertexFormat)
 		return;
 
 	SetupDrawingState();
-	glDrawArrays(GetGLEnum(prim), first, (GLsizei)count);
+	glDrawArrays(GetGLEnum(prim), first, count);
 }
 
-void GLRenderContext::DrawInstanced(PrimitiveType prim, int first, size_t count, uint base_inst, size_t inst_count)
+void GLRenderContext::DrawInstanced(PrimitiveType prim, int first, sizei count, uint base_inst, sizei inst_count)
 {
 	if(!_vertexFormat)
 		return;
 
 	SetupDrawingState();
 
-	glDrawArraysInstancedBaseInstance(GetGLEnum(prim), first, (GLsizei)count, (GLsizei)inst_count, base_inst);
+	glDrawArraysInstancedBaseInstance(GetGLEnum(prim), first, count, inst_count, base_inst);
 }
 
 // Same as DrawInstanced(), but parameters are sourced from the buffer (struct DrawIndirectData).
-void GLRenderContext::DrawIndirect(PrimitiveType prim, IBuffer* buffer, size_t offset)
+void GLRenderContext::DrawIndirect(PrimitiveType prim, IBuffer* buffer, intptr offset)
 {
 	if(!_vertexFormat)
 		return;
@@ -1407,7 +1414,7 @@ void GLRenderContext::DrawIndirect(PrimitiveType prim, IBuffer* buffer, size_t o
 
 // Same as DrawIndirect, but buffer contains count DrawIndirectData structures.
 // stride 0 means that structures are tightly packed.
-void GLRenderContext::MultiDrawIndirect(PrimitiveType prim, IBuffer* buffer, size_t offset, size_t count, size_t stride)
+void GLRenderContext::MultiDrawIndirect(PrimitiveType prim, IBuffer* buffer, intptr offset, sizei count, sizei stride)
 {
 	assert((stride & 3) == 0); // stride must be multiple of 4
 
@@ -1423,7 +1430,7 @@ void GLRenderContext::MultiDrawIndirect(PrimitiveType prim, IBuffer* buffer, siz
 		_glState.drawIndirectBuf = buf_id;
 	}
 
-	glMultiDrawArraysIndirect(GetGLEnum(prim), BUFFER_OFFSET(offset), (GLsizei)count, (GLsizei)stride);
+	glMultiDrawArraysIndirect(GetGLEnum(prim), BUFFER_OFFSET(offset), count, stride);
 }
 
 /*
@@ -1432,7 +1439,7 @@ void GLRenderContext::MultiDrawIndirect(PrimitiveType prim, IBuffer* buffer, siz
 	base_vertex - a constant that is added to each index.
 	count - number of vertices to be rendered.
 */
-void GLRenderContext::DrawIndexed(PrimitiveType prim, size_t index_start, int base_vertex, size_t count)
+void GLRenderContext::DrawIndexed(PrimitiveType prim, intptr index_start, int base_vertex, sizei count)
 {
 	if(!_vertexFormat || !_indexBuffer)
 		return;
@@ -1445,7 +1452,7 @@ void GLRenderContext::DrawIndexed(PrimitiveType prim, size_t index_start, int ba
 		_glState.indexBuf = _indexBuffer->GetID();
 	}
 
-	glDrawElementsBaseVertex(GetGLEnum(prim), (GLsizei)count, GetGLEnum(_indexType), BUFFER_OFFSET(index_start), base_vertex);
+	glDrawElementsBaseVertex(GetGLEnum(prim), count, GetGLEnum(_indexType), BUFFER_OFFSET(index_start), base_vertex);
 }
 
 /*
@@ -1454,7 +1461,7 @@ void GLRenderContext::DrawIndexed(PrimitiveType prim, size_t index_start, int ba
 	base_vertex - a constant that is added to each index.
 	count - number of vertices to be rendered.
 */
-void GLRenderContext::DrawIndexed(PrimitiveType prim, size_t start, size_t end, size_t index_start, int base_vertex, size_t count)
+void GLRenderContext::DrawIndexed(PrimitiveType prim, uint start, uint end, intptr index_start, int base_vertex, sizei count)
 {
 	if(!_vertexFormat || !_indexBuffer)
 		return;
@@ -1467,10 +1474,10 @@ void GLRenderContext::DrawIndexed(PrimitiveType prim, size_t start, size_t end, 
 		_glState.indexBuf = _indexBuffer->GetID();
 	}
 
-	glDrawRangeElementsBaseVertex(GetGLEnum(prim), (GLuint)start, (GLuint)end, (GLsizei)count, GetGLEnum(_indexType), BUFFER_OFFSET(index_start), base_vertex);
+	glDrawRangeElementsBaseVertex(GetGLEnum(prim), start, end, count, GetGLEnum(_indexType), BUFFER_OFFSET(index_start), base_vertex);
 }
 
-void GLRenderContext::DrawIndexedInstanced(PrimitiveType prim, size_t index_start, int base_vertex, size_t count, uint base_inst, size_t inst_count)
+void GLRenderContext::DrawIndexedInstanced(PrimitiveType prim, intptr index_start, int base_vertex, sizei count, uint base_inst, sizei inst_count)
 {
 	if(!_vertexFormat || !_indexBuffer)
 		return;
@@ -1483,11 +1490,11 @@ void GLRenderContext::DrawIndexedInstanced(PrimitiveType prim, size_t index_star
 		_glState.indexBuf = _indexBuffer->GetID();
 	}
 
-	glDrawElementsInstancedBaseVertexBaseInstance(GetGLEnum(prim), (GLsizei)count, GetGLEnum(_indexType), BUFFER_OFFSET(index_start), (GLsizei)inst_count, base_vertex, base_inst);
+	glDrawElementsInstancedBaseVertexBaseInstance(GetGLEnum(prim), count, GetGLEnum(_indexType), BUFFER_OFFSET(index_start), inst_count, base_vertex, base_inst);
 }
 
 // Same as DrawIndexedInstanced(), but parameters are sourced from the buffer (struct DrawIndexedIndirectData).
-void GLRenderContext::DrawIndexedIndirect(PrimitiveType prim, IBuffer* buffer, size_t offset)
+void GLRenderContext::DrawIndexedIndirect(PrimitiveType prim, IBuffer* buffer, intptr offset)
 {
 	if(!_vertexFormat)
 		return;
@@ -1512,7 +1519,7 @@ void GLRenderContext::DrawIndexedIndirect(PrimitiveType prim, IBuffer* buffer, s
 
 // Same as DrawIndexedIndirect, but buffer contains count DrawIndexedIndirectData structures.
 // stride 0 means that structures are tightly packed.
-void GLRenderContext::MultiDrawIndexedIndirect(PrimitiveType prim, IBuffer* buffer, size_t offset, size_t count, size_t stride)
+void GLRenderContext::MultiDrawIndexedIndirect(PrimitiveType prim, IBuffer* buffer, intptr offset, sizei count, sizei stride)
 {
 	assert((stride & 3) == 0); // stride must be multiple of 4
 
@@ -1534,7 +1541,7 @@ void GLRenderContext::MultiDrawIndexedIndirect(PrimitiveType prim, IBuffer* buff
 		_glState.drawIndirectBuf = buf_id;
 	}
 
-	glMultiDrawElementsIndirect(GetGLEnum(prim), GetGLEnum(_indexType), BUFFER_OFFSET(offset), (GLsizei)count, (GLsizei)stride);
+	glMultiDrawElementsIndirect(GetGLEnum(prim), GetGLEnum(_indexType), BUFFER_OFFSET(offset), count, stride);
 }
 
 void GLRenderContext::DrawTransformFeedback(PrimitiveType prim, ITransformFeedback* transform_feedback, uint stream)
@@ -1554,7 +1561,7 @@ void GLRenderContext::DrawTransformFeedback(PrimitiveType prim, ITransformFeedba
 	glDrawTransformFeedbackStream(GetGLEnum(prim), tf_id, stream);
 }
 
-void GLRenderContext::DrawTransformFeedbackInstanced(PrimitiveType prim, ITransformFeedback* transform_feedback, uint stream, size_t inst_count)
+void GLRenderContext::DrawTransformFeedbackInstanced(PrimitiveType prim, ITransformFeedback* transform_feedback, uint stream, sizei inst_count)
 {
 	if(!_vertexFormat)
 		return;
@@ -1568,7 +1575,7 @@ void GLRenderContext::DrawTransformFeedbackInstanced(PrimitiveType prim, ITransf
 		_glState.transformFeedback = tf_id;
 	}
 
-	glDrawTransformFeedbackStreamInstanced(GetGLEnum(prim), tf_id, stream, (GLsizei)inst_count);
+	glDrawTransformFeedbackStreamInstanced(GetGLEnum(prim), tf_id, stream, inst_count);
 }
 
 void GLRenderContext::DispatchCompute(uint num_groups_x, uint num_groups_y, uint num_groups_z)
@@ -1576,7 +1583,7 @@ void GLRenderContext::DispatchCompute(uint num_groups_x, uint num_groups_y, uint
 	glDispatchCompute(num_groups_x, num_groups_y, num_groups_z);
 }
 
-void GLRenderContext::DispatchComputeIndirect(IBuffer* buffer, size_t offset)
+void GLRenderContext::DispatchComputeIndirect(IBuffer* buffer, intptr offset)
 {
 	GLuint buf_id = dyn_cast_ptr<GLBuffer*>(buffer)->GetID();
 	if(buf_id != _glState.dispatchIndirectBuf)
@@ -1663,7 +1670,7 @@ void GLRenderContext::MemoryBarrier(uint flags)
 	glMemoryBarrier(bits);
 }
 
-void GLRenderContext::MemoryBarrierByRegion(gls::uint flags)
+void GLRenderContext::MemoryBarrierByRegion(uint flags)
 {
 	GLbitfield bits = 0;
 
@@ -1688,7 +1695,7 @@ void GLRenderContext::TextureBarrier()
 	glTextureBarrier();
 }
 
-void GLRenderContext::CopyBufferData(IBuffer* source, size_t source_offset, IBuffer* dest, size_t dest_offset, size_t size)
+void GLRenderContext::CopyBufferData(IBuffer* source, intptr source_offset, IBuffer* dest, intptr dest_offset, sizeiptr size)
 {
 	GLuint srcId = dyn_cast_ptr<GLBuffer*>(source)->GetID();
 	GLuint destId = dyn_cast_ptr<GLBuffer*>(dest)->GetID();
@@ -1709,7 +1716,7 @@ void GLRenderContext::CopyBufferData(IBuffer* source, size_t source_offset, IBuf
 }
 
 void GLRenderContext::CopyTextureData(
-	ITexture* source, int source_level, int source_x, int source_y, int source_z, int width, int height, int depth,
+	ITexture* source, int source_level, int source_x, int source_y, int source_z, sizei width, sizei height, sizei depth,
 	ITexture* dest, int dest_level, int dest_x, int dest_y, int dest_z)
 {
 	GLTexture* src_tex = dyn_cast_ptr<GLTexture*>(source);
@@ -1724,7 +1731,7 @@ void GLRenderContext::CopyTextureData(
 		width, height, depth);
 }
 
-void GLRenderContext::CopyRenderbufferData(IRenderbuffer* source, int source_x, int source_y, int width, int height, IRenderbuffer* dest, int dest_x, int dest_y)
+void GLRenderContext::CopyRenderbufferData(IRenderbuffer* source, int source_x, int source_y, sizei width, sizei height, IRenderbuffer* dest, int dest_x, int dest_y)
 {
 	GLRenderbuffer* src_rbuf = dyn_cast_ptr<GLRenderbuffer*>(source);
 	GLRenderbuffer* dst_rbuf = dyn_cast_ptr<GLRenderbuffer*>(dest);
@@ -1757,7 +1764,7 @@ void GLRenderContext::SetupDrawingState()
 				vstream.stride != vattrib.stride ||
 				vstream.offset != vattrib.bufferBase )
 			{
-				glBindVertexBuffer(i, vstream.buffer->GetID(), vstream.offset, (GLsizei)vstream.stride);
+				glBindVertexBuffer(static_cast<GLuint>(i), vstream.buffer->GetID(), vstream.offset, vstream.stride);
 
 				vattrib.buffer = vstream.buffer;
 				vattrib.stride = vstream.stride;
@@ -2147,7 +2154,7 @@ ErrorCode GLRenderContext::GetLastError()
 IVertexFormat* GLRenderContext::CreateVertexFormat(int count, const VertexAttribDesc* descriptors)
 {
 	if(count <= 0 || !descriptors)
-		return 0;
+		return nullptr;
 
 	GLVertexFormat* vformat = new GLVertexFormat;
 	vformat->_count = count;
@@ -2164,7 +2171,7 @@ IVertexFormat* GLRenderContext::CreateVertexFormat(int count, const VertexAttrib
 void GLRenderContext::DestroyVertexFormat(IVertexFormat* vert_fmt)
 {
 	if(_vertexFormat == static_cast<GLVertexFormat*>(vert_fmt))
-		_vertexFormat = 0;
+		_vertexFormat = nullptr;
 
 	delete vert_fmt;
 }
@@ -2176,7 +2183,7 @@ ISamplerState* GLRenderContext::CreateSamplerState(const SamplerStateDesc& descr
 	if(!result)
 	{
 		delete sstate;
-		sstate = 0;
+		sstate = nullptr;
 	}
 	return sstate;
 }
@@ -2191,7 +2198,7 @@ void GLRenderContext::DestroySamplerState(ISamplerState* samp_state)
 		{
 			if(_imageUnits[i].sampler == gl_sampl)
 			{
-				_imageUnits[i].sampler = 0;
+				_imageUnits[i].sampler = nullptr;
 			}
 			if(_glState.imageUnits[i].sampler == gl_sampl->GetID())
 			{
@@ -2205,14 +2212,14 @@ void GLRenderContext::DestroySamplerState(ISamplerState* samp_state)
 	}
 }
 
-ITexture1D* GLRenderContext::CreateTexture1D(size_t levels, PixelFormat internal_format, int width)
+ITexture1D* GLRenderContext::CreateTexture1D(sizei levels, PixelFormat internal_format, int width)
 {
 	GLTexture1D* tex = new GLTexture1D;
 	bool result = tex->CreateImmutable(&_glState, levels, internal_format, width);
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2224,7 +2231,7 @@ ITexture1D* GLRenderContext::CreateTexture1DView(ITexture1D* orig_tex, PixelForm
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2236,19 +2243,19 @@ ITexture1D* GLRenderContext::CreateTexture1DView(ITexture1DArray* orig_tex, Pixe
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
 
-ITexture1DArray* GLRenderContext::CreateTexture1DArray(size_t levels, PixelFormat internal_format, int width, int height)
+ITexture1DArray* GLRenderContext::CreateTexture1DArray(sizei levels, PixelFormat internal_format, int width, int height)
 {
 	GLTexture1DArray* tex = new GLTexture1DArray;
 	bool result = tex->CreateImmutable(&_glState, levels, internal_format, width, height);
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2260,7 +2267,7 @@ ITexture1DArray* GLRenderContext::CreateTexture1DArrayView(ITexture1D* orig_tex,
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2272,19 +2279,19 @@ ITexture1DArray* GLRenderContext::CreateTexture1DArrayView(ITexture1DArray* orig
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
 
-ITexture2D* GLRenderContext::CreateTexture2D(size_t levels, PixelFormat internal_format, int width, int height)
+ITexture2D* GLRenderContext::CreateTexture2D(sizei levels, PixelFormat internal_format, int width, int height)
 {
 	GLTexture2D* tex = new GLTexture2D;
 	bool result = tex->CreateImmutable(&_glState, levels, internal_format, width, height);
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2296,7 +2303,7 @@ ITexture2D* GLRenderContext::CreateTexture2DView(ITexture2D* orig_tex, PixelForm
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2308,7 +2315,7 @@ ITexture2D* GLRenderContext::CreateTexture2DView(ITexture2DArray* orig_tex, Pixe
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2320,7 +2327,7 @@ ITexture2D* GLRenderContext::CreateTexture2DView(ITextureCube* orig_tex, PixelFo
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2332,19 +2339,19 @@ ITexture2D* GLRenderContext::CreateTexture2DView(ITextureCubeArray* orig_tex, Pi
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
 
-ITexture2DArray* GLRenderContext::CreateTexture2DArray(size_t levels, PixelFormat internal_format, int width, int height, int depth)
+ITexture2DArray* GLRenderContext::CreateTexture2DArray(sizei levels, PixelFormat internal_format, int width, int height, int depth)
 {
 	GLTexture2DArray* tex = new GLTexture2DArray;
 	bool result = tex->CreateImmutable(&_glState, levels, internal_format, width, height, depth);
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2356,7 +2363,7 @@ ITexture2DArray* GLRenderContext::CreateTexture2DArrayView(ITexture2D* orig_tex,
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2368,7 +2375,7 @@ ITexture2DArray* GLRenderContext::CreateTexture2DArrayView(ITexture2DArray* orig
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2380,7 +2387,7 @@ ITexture2DArray* GLRenderContext::CreateTexture2DArrayView(ITextureCube* orig_te
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2392,7 +2399,7 @@ ITexture2DArray* GLRenderContext::CreateTexture2DArrayView(ITextureCubeArray* or
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2404,7 +2411,7 @@ ITexture2DMultisample* GLRenderContext::CreateTexture2DMultisample(int samples, 
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2416,7 +2423,7 @@ ITexture2DMultisample* GLRenderContext::CreateTexture2DMultisampleView(ITexture2
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2428,7 +2435,7 @@ ITexture2DMultisample* GLRenderContext::CreateTexture2DMultisampleView(ITexture2
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2440,7 +2447,7 @@ ITexture2DMultisampleArray* GLRenderContext::CreateTexture2DMultisampleArray(int
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2452,7 +2459,7 @@ ITexture2DMultisampleArray* GLRenderContext::CreateTexture2DMultisampleArrayView
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2464,19 +2471,19 @@ ITexture2DMultisampleArray* GLRenderContext::CreateTexture2DMultisampleArrayView
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
 
-ITexture3D* GLRenderContext::CreateTexture3D(size_t levels, PixelFormat internal_format, int width, int height, int depth)
+ITexture3D* GLRenderContext::CreateTexture3D(sizei levels, PixelFormat internal_format, int width, int height, int depth)
 {
 	GLTexture3D* tex = new GLTexture3D;
 	bool result = tex->CreateImmutable(&_glState, levels, internal_format, width, height, depth);
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2488,19 +2495,19 @@ ITexture3D* GLRenderContext::CreateTexture3DView(ITexture3D* orig_tex, PixelForm
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
 
-ITextureCube* GLRenderContext::CreateTextureCube(size_t levels, PixelFormat internal_format, int width)
+ITextureCube* GLRenderContext::CreateTextureCube(sizei levels, PixelFormat internal_format, int width)
 {
 	GLTextureCube* tex = new GLTextureCube;
 	bool result = tex->CreateImmutable(&_glState, levels, internal_format, width);
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2512,7 +2519,7 @@ ITextureCube* GLRenderContext::CreateTextureCubeView(ITextureCube* orig_tex, Pix
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2524,7 +2531,7 @@ ITextureCube* GLRenderContext::CreateTextureCubeView(ITextureCubeArray* orig_tex
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2538,19 +2545,19 @@ ITextureCube* GLRenderContext::CreateTextureCubeView(ITexture2DArray* orig_tex, 
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
 
-ITextureCubeArray* GLRenderContext::CreateTextureCubeArray(size_t levels, PixelFormat internal_format, int width, int depth)
+ITextureCubeArray* GLRenderContext::CreateTextureCubeArray(sizei levels, PixelFormat internal_format, int width, int depth)
 {
 	GLTextureCubeArray* tex = new GLTextureCubeArray;
 	bool result = tex->CreateImmutable(&_glState, levels, internal_format, width, depth);
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2562,7 +2569,7 @@ ITextureCubeArray* GLRenderContext::CreateTextureCubeArrayView(ITextureCube* ori
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2574,7 +2581,7 @@ ITextureCubeArray* GLRenderContext::CreateTextureCubeArrayView(ITextureCubeArray
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2588,7 +2595,7 @@ ITextureCubeArray* GLRenderContext::CreateTextureCubeArrayView(ITexture2DArray* 
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2600,19 +2607,19 @@ ITextureBuffer* GLRenderContext::CreateTextureBuffer()
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
 
-ITextureRectangle* GLRenderContext::CreateTextureRectangle(size_t levels, PixelFormat internal_format, int width, int height)
+ITextureRectangle* GLRenderContext::CreateTextureRectangle(sizei levels, PixelFormat internal_format, int width, int height)
 {
 	GLTextureRectangle* tex = new GLTextureRectangle;
 	bool result = tex->CreateImmutable(&_glState, levels, internal_format, width, height);
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2624,7 +2631,7 @@ ITextureRectangle* GLRenderContext::CreateTextureRectangleView(ITextureRectangle
 	if(!result)
 	{
 		delete tex;
-		tex = 0;
+		tex = nullptr;
 	}
 	return tex;
 }
@@ -2639,9 +2646,19 @@ void GLRenderContext::DestroyTexture(ITexture* texture)
 		{
 			if(_imageUnits[i].texture == gl_tex)
 			{
-				_imageUnits[i].texture = 0;
+				_imageUnits[i].texture = nullptr;
 				_imageUnits[i].texRemoved = true;
 				_imageUnits[i].removedTexTarget = gl_tex->GetTarget();
+			}
+
+			if (_glState.imageUnits[i].texture == gl_tex->GetID())
+			{
+				GLint active_tex;
+				glGetIntegerv(GL_ACTIVE_TEXTURE, &active_tex);
+				glActiveTexture(GL_TEXTURE0 + i);
+				glBindTexture(gl_tex->GetTarget(), 0);
+				glActiveTexture(active_tex);
+				_glState.imageUnits[i].texture = 0;
 			}
 		}
 
@@ -2650,14 +2667,14 @@ void GLRenderContext::DestroyTexture(ITexture* texture)
 	}
 }
 
-IBuffer* GLRenderContext::CreateBuffer(size_t size, const void* data, uint flags)
+IBuffer* GLRenderContext::CreateBuffer(sizeiptr size, const void* data, uint flags)
 {
 	GLBuffer* buf = new GLBuffer;
 	bool result = buf->Create(&_glState, size, data, flags);
 	if(!result)
 	{
 		delete buf;
-		buf = 0;
+		buf = nullptr;
 	}
 	return buf;
 }
@@ -2675,7 +2692,7 @@ void GLRenderContext::DestroyBuffer(IBuffer* buffer)
 		{
 			if(_vertexStreams[i].buffer == gl_buf)
 			{
-				_vertexStreams[i].buffer = 0;
+				_vertexStreams[i].buffer = nullptr;
 				if(_info.featuresGL.ARB_vertex_attrib_binding)
 				{
 					glBindVertexBuffer(i, 0, 0, 0);
@@ -2687,7 +2704,7 @@ void GLRenderContext::DestroyBuffer(IBuffer* buffer)
 		{
 			if(_vertexAttribs[i].buffer == gl_buf)
 			{
-				_vertexAttribs[i].buffer = 0;
+				_vertexAttribs[i].buffer = nullptr;
 				if(_vertexAttribs[i].enabled)
 				{
 					_vertexAttribs[i].enabled = false;
@@ -2697,7 +2714,49 @@ void GLRenderContext::DestroyBuffer(IBuffer* buffer)
 		}
 
 		if(_indexBuffer == gl_buf)
-			_indexBuffer = 0;
+			_indexBuffer = nullptr;
+
+		if (_glState.vertexBuf == gl_buf->GetID())
+			_glState.vertexBuf = 0;
+
+		if (_glState.indexBuf == gl_buf->GetID())
+			_glState.indexBuf = 0;
+
+		if (_glState.pixelPackBuf == gl_buf->GetID())
+			_glState.pixelPackBuf = 0;
+
+		if (_glState.pixelUnpackBuf == gl_buf->GetID())
+			_glState.pixelUnpackBuf = 0;
+
+		if (_glState.textureBuf == gl_buf->GetID())
+			_glState.textureBuf = 0;
+
+		if (_glState.uniformBuf == gl_buf->GetID())
+			_glState.uniformBuf = 0;
+
+		if (_glState.transfFeedbackBuf == gl_buf->GetID())
+			_glState.transfFeedbackBuf = 0;
+
+		if (_glState.drawIndirectBuf == gl_buf->GetID())
+			_glState.drawIndirectBuf = 0;
+
+		if (_glState.dispatchIndirectBuf == gl_buf->GetID())
+			_glState.dispatchIndirectBuf = 0;
+
+		if (_glState.atomicCounterBuf == gl_buf->GetID())
+			_glState.atomicCounterBuf = 0;
+
+		if (_glState.shaderStorageBuf == gl_buf->GetID())
+			_glState.shaderStorageBuf = 0;
+
+		if (_glState.queryBuffer == gl_buf->GetID())
+			_glState.queryBuffer = 0;
+
+		if (_glState.copyWriteBuffer == gl_buf->GetID())
+			_glState.copyWriteBuffer = 0;
+
+		if (_glState.copyReadBuffer == gl_buf->GetID())
+			_glState.copyReadBuffer = 0;
 
 		gl_buf->Destroy();
 		delete buffer;
@@ -2711,7 +2770,7 @@ IFramebuffer* GLRenderContext::CreateFramebuffer()
 	if(!result)
 	{
 		delete fbuf;
-		fbuf = 0;
+		fbuf = nullptr;
 	}
 	return fbuf;
 }
@@ -2723,7 +2782,7 @@ IFramebuffer* GLRenderContext::CreateFramebufferWithoutAttachments(const Framebu
 	if(!result)
 	{
 		delete fbuf;
-		fbuf = 0;
+		fbuf = nullptr;
 	}
 	return fbuf;
 }
@@ -2735,20 +2794,26 @@ void GLRenderContext::DestroyFramebuffer(IFramebuffer* framebuffer)
 		GLFramebuffer* gl_fbuf = dyn_cast_ptr<GLFramebuffer*>(framebuffer);
 		assert(gl_fbuf);
 		if(_framebuffer == gl_fbuf)
-			_framebuffer = 0;
+			_framebuffer = nullptr;
+
+		if (_glState.drawFbuf == gl_fbuf->GetID())
+			_glState.drawFbuf = 0;
+
+		if (_glState.readFbuf == gl_fbuf->GetID())
+			_glState.readFbuf = 0;
 
 		gl_fbuf->Destroy();
 		delete framebuffer;
 	}
 }
 
-IRenderbuffer* GLRenderContext::CreateRenderbuffer(size_t samples, gls::PixelFormat internal_format, size_t width, size_t height)
+IRenderbuffer* GLRenderContext::CreateRenderbuffer(sizei samples, PixelFormat internal_format, sizei width, sizei height)
 {
 	GLRenderbuffer* rbuf = new GLRenderbuffer;
 	if(!rbuf->Create(&_glState, samples, internal_format, width, height))
 	{
 		delete rbuf;
-		rbuf = 0;
+		rbuf = nullptr;
 	}
 	return rbuf;
 }
@@ -2758,6 +2823,10 @@ void GLRenderContext::DestroyRenderbuffer(IRenderbuffer* renderbuffer)
 	if(renderbuffer)
 	{
 		GLRenderbuffer* rbuf = dyn_cast_ptr<GLRenderbuffer*>(renderbuffer);
+
+		if (_glState.renderbuffer == rbuf->GetID())
+			_glState.renderbuffer = 0;
+
 		rbuf->Destroy();
 		delete renderbuffer;
 	}
@@ -2779,140 +2848,140 @@ void GLRenderContext::DestroyQuery(IQuery* query)
 	}
 }
 
-IVertexShader* GLRenderContext::CreateVertexShader(size_t count, const char** source, bool& success)
+IVertexShader* GLRenderContext::CreateVertexShader(sizei count, const char** source, bool& success)
 {
 	GLVertexShader* shader = new GLVertexShader;
 	success = shader->Create(count, source);
 	return shader;
 }
 
-IVertexShader* GLRenderContext::CreateVertexShader(size_t size, const void* binary, uint format, bool& success)
+IVertexShader* GLRenderContext::CreateVertexShader(sizei size, const void* binary, uint format, bool& success)
 {
 	GLVertexShader* shader = new GLVertexShader;
 	success = shader->Create(size, binary, format);
 	return shader;
 }
 
-IVertexShader* GLRenderContext::CreateVertexShaderWithTransformFeedback(size_t count, const char** source, size_t attrib_count, const char** attrib_names, bool& success)
+IVertexShader* GLRenderContext::CreateVertexShaderWithTransformFeedback(sizei count, const char** source, sizei attrib_count, const char** attrib_names, bool& success)
 {
 	GLVertexShader* shader = new GLVertexShader;
 	success = shader->CreateWithTransformFeedback(count, source, attrib_count, attrib_names);
 	return shader;
 }
 
-IVertexShader* GLRenderContext::CreateVertexShaderWithTransformFeedback(size_t size, const void* binary, uint format, size_t attrib_count, const char** attrib_names, bool& success)
+IVertexShader* GLRenderContext::CreateVertexShaderWithTransformFeedback(sizei size, const void* binary, uint format, sizei attrib_count, const char** attrib_names, bool& success)
 {
 	GLVertexShader* shader = new GLVertexShader;
 	success = shader->CreateWithTransformFeedback(size, binary, format, attrib_count, attrib_names);
 	return shader;
 }
 
-ITessControlShader* GLRenderContext::CreateTessControlShader(size_t count, const char** source, bool& success)
+ITessControlShader* GLRenderContext::CreateTessControlShader(sizei count, const char** source, bool& success)
 {
 	GLTessControlShader* shader = new GLTessControlShader;
 	success = shader->Create(count, source);
 	return shader;
 }
 
-ITessControlShader* GLRenderContext::CreateTessControlShader(size_t size, const void* binary, uint format, bool& success)
+ITessControlShader* GLRenderContext::CreateTessControlShader(sizei size, const void* binary, uint format, bool& success)
 {
 	GLTessControlShader* shader = new GLTessControlShader;
 	success = shader->Create(size, binary, format);
 	return shader;
 }
 
-ITessControlShader* GLRenderContext::CreateTessControlShaderWithTransformFeedback(size_t count, const char** source, size_t attrib_count, const char** attrib_names, bool& success)
+ITessControlShader* GLRenderContext::CreateTessControlShaderWithTransformFeedback(sizei count, const char** source, sizei attrib_count, const char** attrib_names, bool& success)
 {
 	GLTessControlShader* shader = new GLTessControlShader;
 	success = shader->CreateWithTransformFeedback(count, source, attrib_count, attrib_names);
 	return shader;
 }
 
-ITessControlShader* GLRenderContext::CreateTessControlShaderWithTransformFeedback(size_t size, const void* binary, uint format, size_t attrib_count, const char** attrib_names, bool& success)
+ITessControlShader* GLRenderContext::CreateTessControlShaderWithTransformFeedback(sizei size, const void* binary, uint format, sizei attrib_count, const char** attrib_names, bool& success)
 {
 	GLTessControlShader* shader = new GLTessControlShader;
 	success = shader->CreateWithTransformFeedback(size, binary, format, attrib_count, attrib_names);
 	return shader;
 }
 
-ITessEvaluationShader* GLRenderContext::CreateTessEvaluationShader(size_t count, const char** source, bool& success)
+ITessEvaluationShader* GLRenderContext::CreateTessEvaluationShader(sizei count, const char** source, bool& success)
 {
 	GLTessEvaluationShader* shader = new GLTessEvaluationShader;
 	success = shader->Create(count, source);
 	return shader;
 }
 
-ITessEvaluationShader* GLRenderContext::CreateTessEvaluationShader(size_t size, const void* binary, uint format, bool& success)
+ITessEvaluationShader* GLRenderContext::CreateTessEvaluationShader(sizei size, const void* binary, uint format, bool& success)
 {
 	GLTessEvaluationShader* shader = new GLTessEvaluationShader;
 	success = shader->Create(size, binary, format);
 	return shader;
 }
 
-ITessEvaluationShader* GLRenderContext::CreateTessEvaluationShaderWithTransformFeedback(size_t count, const char** source, size_t attrib_count, const char** attrib_names, bool& success)
+ITessEvaluationShader* GLRenderContext::CreateTessEvaluationShaderWithTransformFeedback(sizei count, const char** source, sizei attrib_count, const char** attrib_names, bool& success)
 {
 	GLTessEvaluationShader* shader = new GLTessEvaluationShader;
 	success = shader->CreateWithTransformFeedback(count, source, attrib_count, attrib_names);
 	return shader;
 }
 
-ITessEvaluationShader* GLRenderContext::CreateTessEvaluationShaderWithTransformFeedback(size_t size, const void* binary, uint format, size_t attrib_count, const char** attrib_names, bool& success)
+ITessEvaluationShader* GLRenderContext::CreateTessEvaluationShaderWithTransformFeedback(sizei size, const void* binary, uint format, sizei attrib_count, const char** attrib_names, bool& success)
 {
 	GLTessEvaluationShader* shader = new GLTessEvaluationShader;
 	success = shader->CreateWithTransformFeedback(size, binary, format, attrib_count, attrib_names);
 	return shader;
 }
 
-IGeometryShader* GLRenderContext::CreateGeometryShader(size_t count, const char** source, bool& success)
+IGeometryShader* GLRenderContext::CreateGeometryShader(sizei count, const char** source, bool& success)
 {
 	GLGeometryShader* shader = new GLGeometryShader;
 	success = shader->Create(count, source);
 	return shader;
 }
 
-IGeometryShader* GLRenderContext::CreateGeometryShader(size_t size, const void* binary, uint format, bool& success)
+IGeometryShader* GLRenderContext::CreateGeometryShader(sizei size, const void* binary, uint format, bool& success)
 {
 	GLGeometryShader* shader = new GLGeometryShader;
 	success = shader->Create(size, binary, format);
 	return shader;
 }
 
-IGeometryShader* GLRenderContext::CreateGeometryShaderWithTransformFeedback(size_t count, const char** source, size_t attrib_count, const char** attrib_names, bool& success)
+IGeometryShader* GLRenderContext::CreateGeometryShaderWithTransformFeedback(sizei count, const char** source, sizei attrib_count, const char** attrib_names, bool& success)
 {
 	GLGeometryShader* shader = new GLGeometryShader;
 	success = shader->CreateWithTransformFeedback(count, source, attrib_count, attrib_names);
 	return shader;
 }
 
-IGeometryShader* GLRenderContext::CreateGeometryShaderWithTransformFeedback(size_t size, const void* binary, uint format, size_t attrib_count, const char** attrib_names, bool& success)
+IGeometryShader* GLRenderContext::CreateGeometryShaderWithTransformFeedback(sizei size, const void* binary, uint format, sizei attrib_count, const char** attrib_names, bool& success)
 {
 	GLGeometryShader* shader = new GLGeometryShader;
 	success = shader->CreateWithTransformFeedback(size, binary, format, attrib_count, attrib_names);
 	return shader;
 }
 
-IFragmentShader* GLRenderContext::CreateFragmentShader(size_t count, const char** source, bool& success)
+IFragmentShader* GLRenderContext::CreateFragmentShader(sizei count, const char** source, bool& success)
 {
 	GLFragmentShader* shader = new GLFragmentShader;
 	success = shader->Create(count, source);
 	return shader;
 }
 
-IFragmentShader* GLRenderContext::CreateFragmentShader(size_t size, const void* binary, uint format, bool& success)
+IFragmentShader* GLRenderContext::CreateFragmentShader(sizei size, const void* binary, uint format, bool& success)
 {
 	GLFragmentShader* shader = new GLFragmentShader;
 	success = shader->Create(size, binary, format);
 	return shader;
 }
 
-IComputeShader* GLRenderContext::CreateComputeShader(size_t count, const char** source, bool& success)
+IComputeShader* GLRenderContext::CreateComputeShader(sizei count, const char** source, bool& success)
 {
 	GLComputeShader* shader = new GLComputeShader;
 	success = shader->Create(count, source);
 	return shader;
 }
 
-IComputeShader* GLRenderContext::CreateComputeShader(size_t size, const void* binary, uint format, bool& success)
+IComputeShader* GLRenderContext::CreateComputeShader(sizei size, const void* binary, uint format, bool& success)
 {
 	GLComputeShader* shader = new GLComputeShader;
 	success = shader->Create(size, binary, format);
@@ -2934,7 +3003,7 @@ ITransformFeedback* GLRenderContext::CreateTransformFeedback()
 	if(!transform_feedback->Create(&_glState))
 	{
 		delete transform_feedback;
-		transform_feedback = 0;
+		transform_feedback = nullptr;
 	}
 
 	return transform_feedback;
@@ -2944,7 +3013,12 @@ void GLRenderContext::DestroyTransformFeedback(ITransformFeedback* transform_fee
 {
 	if(transform_feedback)
 	{
-		dyn_cast_ptr<GLTransformFeedback*>(transform_feedback)->Destroy();
+		GLTransformFeedback* tfb = dyn_cast_ptr<GLTransformFeedback*>(transform_feedback);
+		
+		if (_glState.transformFeedback == tfb->GetID())
+			_glState.transformFeedback = 0;
+
+		tfb->Destroy();
 		delete transform_feedback;
 	}
 }
@@ -3039,3 +3113,5 @@ void GLRenderContext::SyncObjectDebugLabel(SyncObject sync_object, const char* l
 {
 	glObjectPtrLabel(sync_object, -1, label);
 }
+
+} // namespace gls::internals

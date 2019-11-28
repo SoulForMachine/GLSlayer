@@ -1,6 +1,8 @@
 
 #include "GLCommon.h"
 
+namespace gls::internals
+{
 
 const GLenum __resourceTypeTable[] =
 {
@@ -783,11 +785,11 @@ const GLenum __clipDepthTable[] =
 
 
 #define FROM_GL_ENUM_TABLE_LOOKUP(type, table) \
-	gls::type GetFromGLEnum_##type(GLenum value) { \
+	type GetFromGLEnum_##type(GLenum value) { \
 		for(size_t i = 0; i < (sizeof(table) / sizeof(*table)); ++i) { \
 			if(value == table[i]) \
-				return (gls::type)i; } \
-		return (gls::type)-1; }
+				return (type)i; } \
+		return (type)-1; }
 
 FROM_GL_ENUM_TABLE_LOOKUP(BufferType, __bufferTypeTable)
 FROM_GL_ENUM_TABLE_LOOKUP(ShaderType, __shaderTypeTable)
@@ -841,3 +843,5 @@ FROM_GL_ENUM_TABLE_LOOKUP(DebugMessageSeverity, __debugMessageSeverityTable)
 FROM_GL_ENUM_TABLE_LOOKUP(ResourceType, __resourceTypeTable)
 FROM_GL_ENUM_TABLE_LOOKUP(ClipOrigin, __clipOriginTable)
 FROM_GL_ENUM_TABLE_LOOKUP(ClipDepth, __clipDepthTable)
+
+} // namespace gls::internals

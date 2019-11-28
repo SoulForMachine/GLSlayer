@@ -5,6 +5,7 @@
 *.suo
 *.opensdf
 *.opendb
+.vs
 
 # Build directories
 **/Debug*/

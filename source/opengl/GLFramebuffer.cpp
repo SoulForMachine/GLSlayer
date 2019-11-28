@@ -5,8 +5,6 @@
 #include "GLTexture.h"
 #include "GLFramebuffer.h"
 
-using namespace gls;
-
 
 // =================== Renderbuffer ==================
 
@@ -17,17 +15,18 @@ using namespace gls;
 		_glState->renderbuffer = _id; \
 	}
 
-
-
-bool GLRenderbuffer::Create(GLState* gl_state, size_t samples, PixelFormat internal_format, size_t width, size_t height)
+namespace gls::internals
 {
-	if(_id)
+
+bool GLRenderbuffer::Create(GLState* gl_state, sizei samples, PixelFormat internal_format, sizei width, sizei height)
+{
+	if (_id)
 		return false;
 
 	_glState = gl_state;
 
 	glGenRenderbuffers(1, &_id);
-	if(!_id)
+	if (!_id)
 		return false;
 
 	glBindRenderbuffer(GL_RENDERBUFFER, _id);
@@ -35,16 +34,16 @@ bool GLRenderbuffer::Create(GLState* gl_state, size_t samples, PixelFormat inter
 	_resType = RES_RENDERBUFFER;
 	_target = GL_RENDERBUFFER;
 
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, (GLsizei)samples, GetGLEnum(internal_format), (GLsizei)width, (GLsizei)height);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GetGLEnum(internal_format), width, height);
 
 	return true;
 }
 
 void GLRenderbuffer::Destroy()
 {
-	if(_id)
+	if (_id)
 	{
-		if(_id == _glState->renderbuffer)
+		if (_id == _glState->renderbuffer)
 		{
 			glBindRenderbuffer(GL_RENDERBUFFER, 0);
 			_glState->renderbuffer = 0;
@@ -67,13 +66,13 @@ if(_id != _glState->drawFbuf) \
 
 bool GLFramebuffer::Create(GLState* gl_state)
 {
-	if(_id)
+	if (_id)
 		return false;
 
 	_glState = gl_state;
 
 	glGenFramebuffers(1, &_id);
-	if(!_id)
+	if (!_id)
 		return false;
 
 	_target = GL_DRAW_FRAMEBUFFER;
@@ -87,7 +86,7 @@ bool GLFramebuffer::Create(GLState* gl_state)
 
 bool GLFramebuffer::CreateWithoutAttachments(GLState* gl_state, const FramebufferParams& params)
 {
-	if(Create(gl_state))
+	if (Create(gl_state))
 	{
 		glFramebufferParameteri(_target, GL_FRAMEBUFFER_DEFAULT_WIDTH, params.width);
 		glFramebufferParameteri(_target, GL_FRAMEBUFFER_DEFAULT_HEIGHT, params.height);
@@ -103,15 +102,15 @@ bool GLFramebuffer::CreateWithoutAttachments(GLState* gl_state, const Framebuffe
 
 void GLFramebuffer::Destroy()
 {
-	if(_id)
+	if (_id)
 	{
-		if(_id == _glState->drawFbuf)
+		if (_id == _glState->drawFbuf)
 		{
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 			_glState->drawFbuf = 0;
 		}
 
-		if(_id == _glState->readFbuf)
+		if (_id == _glState->readFbuf)
 		{
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 			_glState->readFbuf = 0;
@@ -127,7 +126,7 @@ void GLFramebuffer::AttachTexture(AttachmentBuffer attachment, ITexture* texture
 	assert(_id);
 	STATE_MACHINE_HACK
 
-	glFramebufferTexture(_target, GetGLEnum(attachment), dyn_cast_ptr<GLTexture*>(texture)->GetID(), level);
+		glFramebufferTexture(_target, GetGLEnum(attachment), dyn_cast_ptr<GLTexture*>(texture)->GetID(), level);
 }
 
 void GLFramebuffer::AttachTextureLayer(AttachmentBuffer attachment, ITexture* texture, int level, int layer)
@@ -135,7 +134,7 @@ void GLFramebuffer::AttachTextureLayer(AttachmentBuffer attachment, ITexture* te
 	assert(_id);
 	STATE_MACHINE_HACK
 
-	glFramebufferTextureLayer(_target, GetGLEnum(attachment), dyn_cast_ptr<GLTexture*>(texture)->GetID(), level, layer);
+		glFramebufferTextureLayer(_target, GetGLEnum(attachment), dyn_cast_ptr<GLTexture*>(texture)->GetID(), level, layer);
 }
 
 void GLFramebuffer::AttachTextureFace(AttachmentBuffer attachment, ITexture* texture, int level, CubeFace face)
@@ -143,7 +142,7 @@ void GLFramebuffer::AttachTextureFace(AttachmentBuffer attachment, ITexture* tex
 	assert(_id);
 	STATE_MACHINE_HACK
 
-	glFramebufferTexture2D(_target, GetGLEnum(attachment), GetGLEnum(face), dyn_cast_ptr<GLTexture*>(texture)->GetID(), level);
+		glFramebufferTexture2D(_target, GetGLEnum(attachment), GetGLEnum(face), dyn_cast_ptr<GLTexture*>(texture)->GetID(), level);
 }
 
 void GLFramebuffer::AttachRenderbuffer(AttachmentBuffer attachment, IRenderbuffer* renderbuffer)
@@ -151,7 +150,7 @@ void GLFramebuffer::AttachRenderbuffer(AttachmentBuffer attachment, IRenderbuffe
 	assert(_id);
 	STATE_MACHINE_HACK
 
-	glFramebufferRenderbuffer(_target, GetGLEnum(attachment), GL_RENDERBUFFER, dyn_cast_ptr<GLRenderbuffer*>(renderbuffer)->GetID());
+		glFramebufferRenderbuffer(_target, GetGLEnum(attachment), GL_RENDERBUFFER, dyn_cast_ptr<GLRenderbuffer*>(renderbuffer)->GetID());
 }
 
 FramebufferStatus GLFramebuffer::CheckStatus()
@@ -159,7 +158,7 @@ FramebufferStatus GLFramebuffer::CheckStatus()
 	assert(_id);
 	STATE_MACHINE_HACK
 
-	GLenum status = glCheckFramebufferStatus(_target);
+		GLenum status = glCheckFramebufferStatus(_target);
 
 	return GetFromGLEnum<FramebufferStatus>(status);
 }
@@ -169,14 +168,14 @@ void GLFramebuffer::InvalidateFramebuffer(int num_attachments, const AttachmentB
 	assert(_id);
 	STATE_MACHINE_HACK
 
-	if (num_attachments < 1 || num_attachments > 16)
-	{
-		assert(false);
-		return;
-	}
+		if (num_attachments < 1 || num_attachments > 16)
+		{
+			assert(false);
+			return;
+		}
 
 	GLenum* attach_enums = (GLenum*)alloca(sizeof(GLenum) * num_attachments);
-	for(int i = 0; i < num_attachments; ++i)
+	for (int i = 0; i < num_attachments; ++i)
 		attach_enums[i] = GetGLEnum(attachments[i]);
 
 	glInvalidateFramebuffer(_target, num_attachments, attach_enums);
@@ -187,15 +186,17 @@ void GLFramebuffer::InvalidateSubFramebuffer(int num_attachments, const Attachme
 	assert(_id);
 	STATE_MACHINE_HACK
 
-	if (num_attachments < 1 || num_attachments > 16)
-	{
-		assert(false);
-		return;
-	}
+		if (num_attachments < 1 || num_attachments > 16)
+		{
+			assert(false);
+			return;
+		}
 
 	GLenum* attach_enums = (GLenum*)alloca(sizeof(GLenum) * num_attachments);
-	for(int i = 0; i < num_attachments; ++i)
+	for (int i = 0; i < num_attachments; ++i)
 		attach_enums[i] = GetGLEnum(attachments[i]);
 
 	glInvalidateSubFramebuffer(_target, num_attachments, attach_enums, x, y, width, height);
 }
+
+} // namespace gls::internals

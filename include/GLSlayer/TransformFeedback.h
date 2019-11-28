@@ -17,7 +17,7 @@ namespace gls
 		virtual ~ITransformFeedback() {}
 
 		virtual void BindBuffer(uint index, IBuffer* buffer) = 0;
-		virtual void BindBuffer(uint index, IBuffer* buffer, size_t offset, size_t size) = 0;
+		virtual void BindBuffer(uint index, IBuffer* buffer, intptr offset, sizeiptr size) = 0;
 	};
 
 }

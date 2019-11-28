@@ -45,6 +45,7 @@ namespace gls
 		int maxElementIndices;
 		int maxUniformBlockSize;
 		int maxCombinedUniformBlocks;
+		int uniformBufferOffsetAlignment;
 		int64 maxServerWaitTimeout;
 		int maxSampleMaskWords;
 		int maxColorTextureSamples;
@@ -251,7 +252,7 @@ namespace gls
 		virtual const ContextInfo& GetInfo() const = 0;
 
 		// vertex stream
-		virtual void VertexSource(int stream, IBuffer* buffer, size_t stride, size_t offset) = 0;
+		virtual void VertexSource(int stream, IBuffer* buffer, sizei stride, intptr offset) = 0;
 		virtual void IndexSource(IBuffer* buffer, DataType index_type) = 0;
 		virtual void ActiveVertexFormat(IVertexFormat* format) = 0;
 		virtual void EnablePrimitiveRestart(bool enable) = 0;
@@ -339,7 +340,7 @@ namespace gls
 
 		// framebuffer
 		virtual void SetFramebuffer(IFramebuffer* fbuf) = 0;
-		virtual void ActiveColorBuffers(IFramebuffer* fbuf, size_t count, const ColorBuffer* buffers) = 0;
+		virtual void ActiveColorBuffers(IFramebuffer* fbuf, sizei count, const ColorBuffer* buffers) = 0;
 		virtual void EnableFramebufferSRGB(bool enable) = 0;
 		virtual void EnableColorWrite(bool r, bool g, bool b, bool a) = 0;
 		virtual void EnableColorWrite(uint buffer, bool r, bool g, bool b, bool a) = 0;
@@ -352,7 +353,7 @@ namespace gls
 		virtual void ClearStencilBuffer(IFramebuffer* fbuf, int stencil) = 0;
 		virtual void ClearDepthStencilBuffer(IFramebuffer* fbuf, float depth, int stencil) = 0;
 		virtual void ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, ColorReadClamp color_clamp, int x, int y, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* buffer) = 0;
-		virtual void ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, ColorReadClamp color_clamp, int x, int y, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, size_t buffer_offset) = 0;
+		virtual void ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, ColorReadClamp color_clamp, int x, int y, int width, int height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset) = 0;
 		virtual void BlitFramebuffer(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, int src_x0, int src_y0, int src_x1, int src_y1, IFramebuffer* dest_fbuf, int dest_x0, int dest_y0, int dest_x1, int dest_y1, uint buffers, TexFilter filter) = 0;
 		virtual void SwapBuffers() = 0;
 		virtual void SwapInterval(int interval) = 0;
@@ -365,12 +366,12 @@ namespace gls
 		virtual void SetFragmentShader(IFragmentShader* shader) = 0;
 		virtual void SetComputeShader(IComputeShader* shader) = 0;
 		virtual void SetUniformBuffer(uint index, IBuffer* buffer) = 0;
-		virtual void SetUniformBuffer(uint index, IBuffer* buffer, size_t offset, size_t size) = 0;
+		virtual void SetUniformBuffer(uint index, IBuffer* buffer, intptr offset, sizeiptr size) = 0;
 		virtual void SetAtomicCounterBuffer(uint index, IBuffer* buffer) = 0;
-		virtual void SetAtomicCounterBuffer(uint index, IBuffer* buffer, size_t offset, size_t size) = 0;
+		virtual void SetAtomicCounterBuffer(uint index, IBuffer* buffer, intptr offset, sizeiptr size) = 0;
 		virtual void SetStorageBuffer(uint index, IBuffer* buffer) = 0;
-		virtual void SetStorageBuffer(uint index, IBuffer* buffer, size_t offset, size_t size) = 0;
-		virtual void UniformSubroutine(ShaderType shader_type, size_t count, const uint* indices) = 0;
+		virtual void SetStorageBuffer(uint index, IBuffer* buffer, intptr offset, sizeiptr size) = 0;
+		virtual void UniformSubroutine(ShaderType shader_type, sizei count, const uint* indices) = 0;
 		virtual void SetImageTexture(uint image_unit, ITexture* texture, int level, bool layered, int layer, BufferAccess access, PixelFormat format) = 0;
 		virtual bool ValidateShaderPipeline() = 0;
 
@@ -380,21 +381,21 @@ namespace gls
 		virtual void EnableSeamlessCubeMap(bool enable) = 0;
 
 		// drawing commands
-		virtual void Draw(PrimitiveType prim, int first, size_t count) = 0;
-		virtual void DrawInstanced(PrimitiveType prim, int first, size_t count, uint base_inst, size_t inst_count) = 0;
-		virtual void DrawIndirect(PrimitiveType prim, IBuffer* buffer, size_t offset) = 0;
-		virtual void MultiDrawIndirect(PrimitiveType prim, IBuffer* buffer, size_t offset, size_t count, size_t stride) = 0;
-		virtual void DrawIndexed(PrimitiveType prim, size_t index_start, int base_vertex, size_t count) = 0;
-		virtual void DrawIndexed(PrimitiveType prim, size_t start, size_t end, size_t index_start, int base_vertex, size_t count) = 0;
-		virtual void DrawIndexedInstanced(PrimitiveType prim, size_t index_start, int base_vertex, size_t count, uint base_inst, size_t inst_count) = 0;
-		virtual void DrawIndexedIndirect(PrimitiveType prim, IBuffer* buffer, size_t offset) = 0;
-		virtual void MultiDrawIndexedIndirect(PrimitiveType prim, IBuffer* buffer, size_t offset, size_t count, size_t stride) = 0;
+		virtual void Draw(PrimitiveType prim, int first, sizei count) = 0;
+		virtual void DrawInstanced(PrimitiveType prim, int first, sizei count, uint base_inst, sizei inst_count) = 0;
+		virtual void DrawIndirect(PrimitiveType prim, IBuffer* buffer, intptr offset) = 0;
+		virtual void MultiDrawIndirect(PrimitiveType prim, IBuffer* buffer, intptr offset, sizei count, sizei stride) = 0;
+		virtual void DrawIndexed(PrimitiveType prim, intptr index_start, int base_vertex, sizei count) = 0;
+		virtual void DrawIndexed(PrimitiveType prim, uint start, uint end, intptr index_start, int base_vertex, sizei count) = 0;
+		virtual void DrawIndexedInstanced(PrimitiveType prim, intptr index_start, int base_vertex, sizei count, uint base_inst, sizei inst_count) = 0;
+		virtual void DrawIndexedIndirect(PrimitiveType prim, IBuffer* buffer, intptr offset) = 0;
+		virtual void MultiDrawIndexedIndirect(PrimitiveType prim, IBuffer* buffer, intptr offset, sizei count, sizei stride) = 0;
 		virtual void DrawTransformFeedback(PrimitiveType prim, ITransformFeedback* transform_feedback, uint stream) = 0;
-		virtual void DrawTransformFeedbackInstanced(PrimitiveType prim, ITransformFeedback* transform_feedback, uint stream, size_t inst_count) = 0;
+		virtual void DrawTransformFeedbackInstanced(PrimitiveType prim, ITransformFeedback* transform_feedback, uint stream, sizei inst_count) = 0;
 
 		// compute commands
 		virtual void DispatchCompute(uint num_groups_x, uint num_groups_y, uint num_groups_z) = 0;
-		virtual void DispatchComputeIndirect(IBuffer* buffer, size_t offset) = 0;
+		virtual void DispatchComputeIndirect(IBuffer* buffer, intptr offset) = 0;
 
 		// synchronization
 		virtual void Flush() = 0;
@@ -408,7 +409,7 @@ namespace gls
 		virtual void TextureBarrier() = 0;
 
 		// buffer and image copying
-		virtual void CopyBufferData(IBuffer* source, size_t source_offset, IBuffer* dest, size_t dest_offset, size_t size) = 0;
+		virtual void CopyBufferData(IBuffer* source, intptr source_offset, IBuffer* dest, intptr dest_offset, sizeiptr size) = 0;
 		virtual void CopyTextureData(
 			ITexture* source, int source_level, int source_x, int source_y, int source_z, int width, int height, int depth,
 			ITexture* dest, int dest_level, int dest_x, int dest_y, int dest_z) = 0;
@@ -431,21 +432,21 @@ namespace gls
 		virtual ISamplerState* CreateSamplerState(const SamplerStateDesc& descriptor) = 0;
 		virtual void DestroySamplerState(ISamplerState* samp_state) = 0;
 
-		virtual ITexture1D* CreateTexture1D(size_t levels, PixelFormat internal_format, int width) = 0;
+		virtual ITexture1D* CreateTexture1D(sizei levels, PixelFormat internal_format, int width) = 0;
 		virtual ITexture1D* CreateTexture1DView(ITexture1D* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 		virtual ITexture1D* CreateTexture1DView(ITexture1DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint layer) = 0;
 
-		virtual ITexture1DArray* CreateTexture1DArray(size_t levels, PixelFormat internal_format, int width, int height) = 0;
+		virtual ITexture1DArray* CreateTexture1DArray(sizei levels, PixelFormat internal_format, int width, int height) = 0;
 		virtual ITexture1DArray* CreateTexture1DArrayView(ITexture1D* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 		virtual ITexture1DArray* CreateTexture1DArrayView(ITexture1DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 
-		virtual ITexture2D* CreateTexture2D(size_t levels, PixelFormat internal_format, int width, int height) = 0;
+		virtual ITexture2D* CreateTexture2D(sizei levels, PixelFormat internal_format, int width, int height) = 0;
 		virtual ITexture2D* CreateTexture2DView(ITexture2D* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 		virtual ITexture2D* CreateTexture2DView(ITexture2DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint layer) = 0;
 		virtual ITexture2D* CreateTexture2DView(ITextureCube* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint layer) = 0;
 		virtual ITexture2D* CreateTexture2DView(ITextureCubeArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint layer) = 0;
 
-		virtual ITexture2DArray* CreateTexture2DArray(size_t levels, PixelFormat internal_format, int width, int height, int depth) = 0;
+		virtual ITexture2DArray* CreateTexture2DArray(sizei levels, PixelFormat internal_format, int width, int height, int depth) = 0;
 		virtual ITexture2DArray* CreateTexture2DArrayView(ITexture2D* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 		virtual ITexture2DArray* CreateTexture2DArrayView(ITexture2DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 		virtual ITexture2DArray* CreateTexture2DArrayView(ITextureCube* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
@@ -459,63 +460,63 @@ namespace gls
 		virtual ITexture2DMultisampleArray* CreateTexture2DMultisampleArrayView(ITexture2DMultisample* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 		virtual ITexture2DMultisampleArray* CreateTexture2DMultisampleArrayView(ITexture2DMultisampleArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 
-		virtual ITexture3D* CreateTexture3D(size_t levels, PixelFormat internal_format, int width, int height, int depth) = 0;
+		virtual ITexture3D* CreateTexture3D(sizei levels, PixelFormat internal_format, int width, int height, int depth) = 0;
 		virtual ITexture3D* CreateTexture3DView(ITexture3D* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 
-		virtual ITextureCube* CreateTextureCube(size_t levels, PixelFormat internal_format, int width) = 0;
+		virtual ITextureCube* CreateTextureCube(sizei levels, PixelFormat internal_format, int width) = 0;
 		virtual ITextureCube* CreateTextureCubeView(ITextureCube* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 		virtual ITextureCube* CreateTextureCubeView(ITextureCubeArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 		virtual ITextureCube* CreateTextureCubeView(ITexture2DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 
-		virtual ITextureCubeArray* CreateTextureCubeArray(size_t levels, PixelFormat internal_format, int width, int depth) = 0;
+		virtual ITextureCubeArray* CreateTextureCubeArray(sizei levels, PixelFormat internal_format, int width, int depth) = 0;
 		virtual ITextureCubeArray* CreateTextureCubeArrayView(ITextureCube* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 		virtual ITextureCubeArray* CreateTextureCubeArrayView(ITextureCubeArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 		virtual ITextureCubeArray* CreateTextureCubeArrayView(ITexture2DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) = 0;
 
 		virtual ITextureBuffer* CreateTextureBuffer() = 0;
 
-		virtual ITextureRectangle* CreateTextureRectangle(size_t levels, PixelFormat internal_format, int width, int height) = 0;
+		virtual ITextureRectangle* CreateTextureRectangle(sizei levels, PixelFormat internal_format, int width, int height) = 0;
 		virtual ITextureRectangle* CreateTextureRectangleView(ITextureRectangle* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) = 0;
 
 		virtual void DestroyTexture(ITexture* texture) = 0;
 
-		virtual IBuffer* CreateBuffer(size_t size, const void* data, uint flags) = 0;
+		virtual IBuffer* CreateBuffer(sizeiptr size, const void* data, uint flags) = 0;
 		virtual void DestroyBuffer(IBuffer* buffer) = 0;
 
 		virtual IFramebuffer* CreateFramebuffer() = 0;
 		virtual IFramebuffer* CreateFramebufferWithoutAttachments(const FramebufferParams& params) = 0;
 		virtual void DestroyFramebuffer(IFramebuffer* framebuffer) = 0;
-		virtual IRenderbuffer* CreateRenderbuffer(size_t samples, gls::PixelFormat internal_format, size_t width, size_t height) = 0;
+		virtual IRenderbuffer* CreateRenderbuffer(sizei samples, gls::PixelFormat internal_format, sizei width, sizei height) = 0;
 		virtual void DestroyRenderbuffer(IRenderbuffer* renderbuffer) = 0;
 
 		virtual IQuery* CreateQuery() = 0;
 		virtual void DestroyQuery(IQuery* query) = 0;
 
-		virtual IVertexShader* CreateVertexShader(size_t count, const char** source, bool& success) = 0;
-		virtual IVertexShader* CreateVertexShader(size_t size, const void* binary, uint format, bool& success) = 0;
-		virtual IVertexShader* CreateVertexShaderWithTransformFeedback(size_t count, const char** source, size_t attrib_count, const char** attrib_names, bool& success) = 0;
-		virtual IVertexShader* CreateVertexShaderWithTransformFeedback(size_t size, const void* binary, uint format, size_t attrib_count, const char** attrib_names, bool& success) = 0;
+		virtual IVertexShader* CreateVertexShader(sizei count, const char** source, bool& success) = 0;
+		virtual IVertexShader* CreateVertexShader(sizei size, const void* binary, uint format, bool& success) = 0;
+		virtual IVertexShader* CreateVertexShaderWithTransformFeedback(sizei count, const char** source, sizei attrib_count, const char** attrib_names, bool& success) = 0;
+		virtual IVertexShader* CreateVertexShaderWithTransformFeedback(sizei size, const void* binary, uint format, sizei attrib_count, const char** attrib_names, bool& success) = 0;
 
-		virtual ITessControlShader* CreateTessControlShader(size_t count, const char** source, bool& success) = 0;
-		virtual ITessControlShader* CreateTessControlShader(size_t size, const void* binary, uint format, bool& success) = 0;
-		virtual ITessControlShader* CreateTessControlShaderWithTransformFeedback(size_t count, const char** source, size_t attrib_count, const char** attrib_names, bool& success) = 0;
-		virtual ITessControlShader* CreateTessControlShaderWithTransformFeedback(size_t size, const void* binary, uint format, size_t attrib_count, const char** attrib_names, bool& success) = 0;
+		virtual ITessControlShader* CreateTessControlShader(sizei count, const char** source, bool& success) = 0;
+		virtual ITessControlShader* CreateTessControlShader(sizei size, const void* binary, uint format, bool& success) = 0;
+		virtual ITessControlShader* CreateTessControlShaderWithTransformFeedback(sizei count, const char** source, sizei attrib_count, const char** attrib_names, bool& success) = 0;
+		virtual ITessControlShader* CreateTessControlShaderWithTransformFeedback(sizei size, const void* binary, uint format, sizei attrib_count, const char** attrib_names, bool& success) = 0;
 
-		virtual ITessEvaluationShader* CreateTessEvaluationShader(size_t count, const char** source, bool& success) = 0;
-		virtual ITessEvaluationShader* CreateTessEvaluationShader(size_t size, const void* binary, uint format, bool& success) = 0;
-		virtual ITessEvaluationShader* CreateTessEvaluationShaderWithTransformFeedback(size_t count, const char** source, size_t attrib_count, const char** attrib_names, bool& success) = 0;
-		virtual ITessEvaluationShader* CreateTessEvaluationShaderWithTransformFeedback(size_t size, const void* binary, uint format, size_t attrib_count, const char** attrib_names, bool& success) = 0;
+		virtual ITessEvaluationShader* CreateTessEvaluationShader(sizei count, const char** source, bool& success) = 0;
+		virtual ITessEvaluationShader* CreateTessEvaluationShader(sizei size, const void* binary, uint format, bool& success) = 0;
+		virtual ITessEvaluationShader* CreateTessEvaluationShaderWithTransformFeedback(sizei count, const char** source, sizei attrib_count, const char** attrib_names, bool& success) = 0;
+		virtual ITessEvaluationShader* CreateTessEvaluationShaderWithTransformFeedback(sizei size, const void* binary, uint format, sizei attrib_count, const char** attrib_names, bool& success) = 0;
 
-		virtual IGeometryShader* CreateGeometryShader(size_t count, const char** source, bool& success) = 0;
-		virtual IGeometryShader* CreateGeometryShader(size_t size, const void* binary, uint format, bool& success) = 0;
-		virtual IGeometryShader* CreateGeometryShaderWithTransformFeedback(size_t count, const char** source, size_t attrib_count, const char** attrib_names, bool& success) = 0;
-		virtual IGeometryShader* CreateGeometryShaderWithTransformFeedback(size_t size, const void* binary, uint format, size_t attrib_count, const char** attrib_names, bool& success) = 0;
+		virtual IGeometryShader* CreateGeometryShader(sizei count, const char** source, bool& success) = 0;
+		virtual IGeometryShader* CreateGeometryShader(sizei size, const void* binary, uint format, bool& success) = 0;
+		virtual IGeometryShader* CreateGeometryShaderWithTransformFeedback(sizei count, const char** source, sizei attrib_count, const char** attrib_names, bool& success) = 0;
+		virtual IGeometryShader* CreateGeometryShaderWithTransformFeedback(sizei size, const void* binary, uint format, sizei attrib_count, const char** attrib_names, bool& success) = 0;
 
-		virtual IFragmentShader* CreateFragmentShader(size_t count, const char** source, bool& success) = 0;
-		virtual IFragmentShader* CreateFragmentShader(size_t size, const void* binary, uint format, bool& success) = 0;
+		virtual IFragmentShader* CreateFragmentShader(sizei count, const char** source, bool& success) = 0;
+		virtual IFragmentShader* CreateFragmentShader(sizei size, const void* binary, uint format, bool& success) = 0;
 
-		virtual IComputeShader* CreateComputeShader(size_t count, const char** source, bool& success) = 0;
-		virtual IComputeShader* CreateComputeShader(size_t size, const void* binary, uint format, bool& success) = 0;
+		virtual IComputeShader* CreateComputeShader(sizei count, const char** source, bool& success) = 0;
+		virtual IComputeShader* CreateComputeShader(sizei size, const void* binary, uint format, bool& success) = 0;
 
 		virtual void DestroyShader(IShader* shader) = 0;
 

@@ -27,333 +27,336 @@
 		result = false; } \
 
 
-class GLRenderContext : public gls::IRenderContext
+namespace gls::internals
+{
+
+class GLRenderContext : public IRenderContext
 {
 public:
-	GLRenderContext(gls::IDebugLogger* logger);
+	GLRenderContext(IDebugLogger* logger);
 	~GLRenderContext();
 
+	GLRenderContext(const GLRenderContext&) = delete;
+	GLRenderContext& operator = (const GLRenderContext&) = delete;
+
 #if defined(_WIN32)
-	bool Create(gls::uint version, HINSTANCE instance_handle, HWND window_handle, const gls::FramebufferFormat& format, bool debug_context, IRenderContext* shareContext);
+	bool Create(uint version, HINSTANCE instance_handle, HWND window_handle, const FramebufferFormat& format, bool debug_context, IRenderContext* shareContext);
 	bool SetWindowCompatiblePixelFormat(HWND windowHandle);
 	HWND SetContextWindow(HWND windowHandle);
 #elif defined(__linux__)
-	bool Create(gls::uint version, Display* display, Window window, const gls::FramebufferFormat& format, bool debug_context, IRenderContext* shareContext);
+	bool Create(uint version, Display* display, Window window, const FramebufferFormat& format, bool debug_context, IRenderContext* shareContext);
 	Window SetContextWindow(Window window);
 #endif
 
 	void Destroy();
 
-	bool SetCurrentContext();
-	void UnsetCurrentContext();
-	const gls::ContextInfo& GetInfo() const
-		{ return _info; }
+	virtual bool SetCurrentContext() override;
+	virtual void UnsetCurrentContext() override;
+	virtual const ContextInfo& GetInfo() const override;
 
 	// vertex stream
-	void VertexSource(int stream, gls::IBuffer* buffer, size_t stride, size_t offset);
-	void IndexSource(gls::IBuffer* buffer, gls::DataType index_type);
-	void ActiveVertexFormat(gls::IVertexFormat* format);
-	void EnablePrimitiveRestart(bool enable);
-	void EnablePrimitiveRestartFixedIndex(bool enable);
-	void PrimitiveRestartIndex(gls::uint index);
-	void ProvokingVertex(gls::VertexConvention vertex_convention);
+	virtual void VertexSource(int stream, IBuffer* buffer, sizei stride, intptr offset) override;
+	virtual void IndexSource(IBuffer* buffer, DataType index_type) override;
+	virtual void ActiveVertexFormat(IVertexFormat* format) override;
+	virtual void EnablePrimitiveRestart(bool enable) override;
+	virtual void EnablePrimitiveRestartFixedIndex(bool enable) override;
+	virtual void PrimitiveRestartIndex(uint index) override;
+	virtual void ProvokingVertex(VertexConvention vertex_convention) override;
 
 	// tessellation
-	void PatchVertexCount(int count);
-	void PatchDefaultOuterLevels(const float values[4]);
-	void PatchDefaultInnerLevels(const float values[2]);
+	virtual void PatchVertexCount(int count) override;
+	virtual void PatchDefaultOuterLevels(const float values[4]) override;
+	virtual void PatchDefaultInnerLevels(const float values[2]) override;
 
 	// conditional render
-	void BeginConditionalRender(gls::IQuery* query, gls::ConditionalRenderMode mode);
-	void EndConditionalRender();
+	virtual void BeginConditionalRender(IQuery* query, ConditionalRenderMode mode) override;
+	virtual void EndConditionalRender() override;
 
 	// transform feedback
-	void BeginTransformFeedback(gls::PrimitiveType primitive, gls::ITransformFeedback* transform_feedback);
-	void EndTransformFeedback();
-	void PauseTransformFeedback();
-	void ResumeTransformFeedback();
+	virtual void BeginTransformFeedback(PrimitiveType primitive, ITransformFeedback* transform_feedback) override;
+	virtual void EndTransformFeedback() override;
+	virtual void PauseTransformFeedback() override;
+	virtual void ResumeTransformFeedback() override;
 
 	// viewport transform
-	void Viewport(int x, int y, int width, int height);
-	void ViewportIndexed(gls::uint index, float x, float y, float width, float height);
-	void ClipControl(gls::ClipOrigin origin, gls::ClipDepth depth);
+	virtual void Viewport(int x, int y, int width, int height) override;
+	virtual void ViewportIndexed(uint index, float x, float y, float width, float height) override;
+	virtual void ClipControl(ClipOrigin origin, ClipDepth depth) override;
 
 	// back face culling
-	void EnableFaceCulling(bool enable);
-	void CullFace(gls::PolygonFace face);
-	void FrontFace(gls::VertexOrder orient);
+	virtual void EnableFaceCulling(bool enable) override;
+	virtual void CullFace(PolygonFace face) override;
+	virtual void FrontFace(VertexOrder orient) override;
 
 	// rasterization
-	void RasterizationMode(gls::RasterMode mode);
-	void EnableRasterizerDiscard(bool enable);
-	void LineWidth(float width);
-	void EnableLineAntialiasing(bool enable);
+	virtual void RasterizationMode(RasterMode mode) override;
+	virtual void EnableRasterizerDiscard(bool enable) override;
+	virtual void LineWidth(float width) override;
+	virtual void EnableLineAntialiasing(bool enable) override;
 
 	// multisampling
-	void EnableMultisampling(bool enable);
-	void EnableSampleAlphaToCoverage(bool enable);
-	void EnableSampleAlphaToOne(bool enable);
-	void EnableSampleCoverage(bool enable);
-	void EnableSampleShading(bool enable);
-	void SampleCoverage(float value, bool invert);
-	void SampleMask(gls::uint index, gls::uint mask);
-	void GetSamplePosition(gls::uint index, float position[2]);
-	void MinSampleShading(float value);
+	virtual void EnableMultisampling(bool enable) override;
+	virtual void EnableSampleAlphaToCoverage(bool enable) override;
+	virtual void EnableSampleAlphaToOne(bool enable) override;
+	virtual void EnableSampleCoverage(bool enable) override;
+	virtual void EnableSampleShading(bool enable) override;
+	virtual void SampleCoverage(float value, bool invert) override;
+	virtual void SampleMask(uint index, uint mask) override;
+	virtual void GetSamplePosition(uint index, float position[2]) override;
+	virtual void MinSampleShading(float value) override;
 
 	// scissor test
-	void EnableScissorTest(bool enable);
-	void EnableScissorTestIndexed(gls::uint index, bool enable);
-	void Scissor(int x, int y, int width, int height);
-	void ScissorIndexed(gls::uint index, int x, int y, int width, int height);
+	virtual void EnableScissorTest(bool enable) override;
+	virtual void EnableScissorTestIndexed(uint index, bool enable) override;
+	virtual void Scissor(int x, int y, int width, int height) override;
+	virtual void ScissorIndexed(uint index, int x, int y, int width, int height) override;
 
 	// depth test
-	void EnableDepthTest(bool enable);
-	void DepthTestFunc(gls::CompareFunc func);
-	void DepthRange(float dnear, float dfar);
-	void DepthRangeIndexed(gls::uint index, float dnear, float dfar);
-	void DepthOffset(float factor, float units);
-	void EnableDepthClamp(bool enable);
+	virtual void EnableDepthTest(bool enable) override;
+	virtual void DepthTestFunc(CompareFunc func) override;
+	virtual void DepthRange(float dnear, float dfar) override;
+	virtual void DepthRangeIndexed(uint index, float dnear, float dfar) override;
+	virtual void DepthOffset(float factor, float units) override;
+	virtual void EnableDepthClamp(bool enable) override;
 
 	// stencil test
-	void EnableStencilTest(bool enable);
-	void StencilFunc(gls::PolygonFace face, gls::CompareFunc func, int ref, gls::uint mask);
-	void StencilOperation(gls::PolygonFace face, gls::StencilOp stencil_fail, gls::StencilOp depth_fail, gls::StencilOp depth_pass);
+	virtual void EnableStencilTest(bool enable) override;
+	virtual void StencilFunc(PolygonFace face, CompareFunc func, int ref, uint mask) override;
+	virtual void StencilOperation(PolygonFace face, StencilOp stencil_fail, StencilOp depth_fail, StencilOp depth_pass) override;
 
 	// blending
-	void EnableBlending(bool enable);
-	void EnableBlending(gls::uint buffer, bool enable);
-	void BlendingColor(const float color[4]);
-	void BlendingFunc(gls::BlendFunc src_factor, gls::BlendFunc dest_factor);
-	void BlendingFunc(gls::BlendFunc src_rgb_factor, gls::BlendFunc dest_rgb_factor, gls::BlendFunc src_alpha_factor, gls::BlendFunc dest_alpha_factor);
-	void BlendingFunc(gls::uint buffer, gls::BlendFunc src_factor, gls::BlendFunc dest_factor);
-	void BlendingFunc(gls::uint buffer, gls::BlendFunc src_rgb_factor, gls::BlendFunc dest_rgb_factor, gls::BlendFunc src_alpha_factor, gls::BlendFunc dest_alpha_factor);
-	void BlendingOperation(gls::BlendOp op);
-	void BlendingOperation(gls::BlendOp op_rgb, gls::BlendOp op_alpha);
-	void BlendingOperation(gls::uint buffer, gls::BlendOp op);
-	void BlendingOperation(gls::uint buffer, gls::BlendOp op_rgb, gls::BlendOp op_alpha);
+	virtual void EnableBlending(bool enable) override;
+	virtual void EnableBlending(uint buffer, bool enable) override;
+	virtual void BlendingColor(const float color[4]) override;
+	virtual void BlendingFunc(BlendFunc src_factor, BlendFunc dest_factor) override;
+	virtual void BlendingFunc(BlendFunc src_rgb_factor, BlendFunc dest_rgb_factor, BlendFunc src_alpha_factor, BlendFunc dest_alpha_factor) override;
+	virtual void BlendingFunc(uint buffer, BlendFunc src_factor, BlendFunc dest_factor) override;
+	virtual void BlendingFunc(uint buffer, BlendFunc src_rgb_factor, BlendFunc dest_rgb_factor, BlendFunc src_alpha_factor, BlendFunc dest_alpha_factor) override;
+	virtual void BlendingOperation(BlendOp op) override;
+	virtual void BlendingOperation(BlendOp op_rgb, BlendOp op_alpha) override;
+	virtual void BlendingOperation(uint buffer, BlendOp op) override;
+	virtual void BlendingOperation(uint buffer, BlendOp op_rgb, BlendOp op_alpha) override;
 
 	// logic operation
-	void EnableLogicOperation(bool enable);
-	void LogicOperation(gls::LogicOp op);
+	virtual void EnableLogicOperation(bool enable) override;
+	virtual void LogicOperation(LogicOp op) override;
 
 	// framebuffer
-	void SetFramebuffer(gls::IFramebuffer* fbuf);
-	void ActiveColorBuffers(gls::IFramebuffer* fbuf, size_t count, const gls::ColorBuffer* buffers);
-	void EnableFramebufferSRGB(bool enable);
-	void EnableColorWrite(bool r, bool g, bool b, bool a);
-	void EnableColorWrite(gls::uint buffer, bool r, bool g, bool b, bool a);
-	void EnableDepthWrite(bool enable);
-	void EnableStencilWrite(gls::PolygonFace face, gls::uint mask);
-	void ClearColorBuffer(gls::IFramebuffer* fbuf, gls::uint buffer, const float color[4]);
-	void ClearColorBuffer(gls::IFramebuffer* fbuf, gls::uint buffer, const int color[4]);
-	void ClearColorBuffer(gls::IFramebuffer* fbuf, gls::uint buffer, const gls::uint color[4]);
-	void ClearDepthBuffer(gls::IFramebuffer* fbuf, float depth);
-	void ClearStencilBuffer(gls::IFramebuffer* fbuf, int stencil);
-	void ClearDepthStencilBuffer(gls::IFramebuffer* fbuf, float depth, int stencil);
-	void ReadPixels(gls::IFramebuffer* source_fbuf, gls::ColorBuffer source_color_buf, gls::ColorReadClamp color_clamp, int x, int y, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, void* buffer);
-	void ReadPixels(gls::IFramebuffer* source_fbuf, gls::ColorBuffer source_color_buf, gls::ColorReadClamp color_clamp, int x, int y, int width, int height, gls::ImageFormat format, gls::DataType type, const gls::PixelStore* pixel_store, gls::IBuffer* buffer, size_t buffer_offset);
-	void BlitFramebuffer(gls::IFramebuffer* source_fbuf, gls::ColorBuffer source_color_buf, int src_x0, int src_y0, int src_x1, int src_y1, gls::IFramebuffer* dest_fbuf, int dest_x0, int dest_y0, int dest_x1, int dest_y1, gls::uint buffers, gls::TexFilter filter);
-	void SwapBuffers();
-	void SwapInterval(int interval);
+	virtual void SetFramebuffer(IFramebuffer* fbuf) override;
+	virtual void ActiveColorBuffers(IFramebuffer* fbuf, sizei count, const ColorBuffer* buffers) override;
+	virtual void EnableFramebufferSRGB(bool enable) override;
+	virtual void EnableColorWrite(bool r, bool g, bool b, bool a) override;
+	virtual void EnableColorWrite(uint buffer, bool r, bool g, bool b, bool a) override;
+	virtual void EnableDepthWrite(bool enable) override;
+	virtual void EnableStencilWrite(PolygonFace face, uint mask) override;
+	virtual void ClearColorBuffer(IFramebuffer* fbuf, uint buffer, const float color[4]) override;
+	virtual void ClearColorBuffer(IFramebuffer* fbuf, uint buffer, const int color[4]) override;
+	virtual void ClearColorBuffer(IFramebuffer* fbuf, uint buffer, const uint color[4]) override;
+	virtual void ClearDepthBuffer(IFramebuffer* fbuf, float depth) override;
+	virtual void ClearStencilBuffer(IFramebuffer* fbuf, int stencil) override;
+	virtual void ClearDepthStencilBuffer(IFramebuffer* fbuf, float depth, int stencil) override;
+	virtual void ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, ColorReadClamp color_clamp, int x, int y, sizei width, sizei height, ImageFormat format, DataType type, const PixelStore* pixel_store, void* buffer) override;
+	virtual void ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, ColorReadClamp color_clamp, int x, int y, sizei width, sizei height, ImageFormat format, DataType type, const PixelStore* pixel_store, IBuffer* buffer, intptr buffer_offset) override;
+	virtual void BlitFramebuffer(IFramebuffer* source_fbuf, ColorBuffer source_color_buf, int src_x0, int src_y0, int src_x1, int src_y1, IFramebuffer* dest_fbuf, int dest_x0, int dest_y0, int dest_x1, int dest_y1, uint buffers, TexFilter filter) override;
+	virtual void SwapBuffers() override;
+	virtual void SwapInterval(int interval) override;
 
 	// shaders
-	void SetVertexShader(gls::IVertexShader* shader);
-	void SetTessControlShader(gls::ITessControlShader* shader);
-	void SetTessEvaluationShader(gls::ITessEvaluationShader* shader);
-	void SetGeometryShader(gls::IGeometryShader* shader);
-	void SetFragmentShader(gls::IFragmentShader* shader);
-	void SetComputeShader(gls::IComputeShader* shader);
-	void SetUniformBuffer(gls::uint index, gls::IBuffer* buffer);
-	void SetUniformBuffer(gls::uint index, gls::IBuffer* buffer, size_t offset, size_t size);
-	void SetAtomicCounterBuffer(gls::uint index, gls::IBuffer* buffer);
-	void SetAtomicCounterBuffer(gls::uint index, gls::IBuffer* buffer, size_t offset, size_t size);
-	void SetStorageBuffer(gls::uint index, gls::IBuffer* buffer);
-	void SetStorageBuffer(gls::uint index, gls::IBuffer* buffer, size_t offset, size_t size);
-	void UniformSubroutine(gls::ShaderType shader_type, size_t count, const gls::uint* indices);
-	void SetImageTexture(gls::uint image_unit, gls::ITexture* texture, int level, bool layered, int layer, gls::BufferAccess access, gls::PixelFormat format);
-	bool ValidateShaderPipeline();
+	virtual void SetVertexShader(IVertexShader* shader) override;
+	virtual void SetTessControlShader(ITessControlShader* shader) override;
+	virtual void SetTessEvaluationShader(ITessEvaluationShader* shader) override;
+	virtual void SetGeometryShader(IGeometryShader* shader) override;
+	virtual void SetFragmentShader(IFragmentShader* shader) override;
+	virtual void SetComputeShader(IComputeShader* shader) override;
+	virtual void SetUniformBuffer(uint index, IBuffer* buffer) override;
+	virtual void SetUniformBuffer(uint index, IBuffer* buffer, intptr offset, sizeiptr size) override;
+	virtual void SetAtomicCounterBuffer(uint index, IBuffer* buffer) override;
+	virtual void SetAtomicCounterBuffer(uint index, IBuffer* buffer, intptr offset, sizeiptr size) override;
+	virtual void SetStorageBuffer(uint index, IBuffer* buffer) override;
+	virtual void SetStorageBuffer(uint index, IBuffer* buffer, intptr offset, sizeiptr size) override;
+	virtual void UniformSubroutine(ShaderType shader_type, sizei count, const uint* indices) override;
+	virtual void SetImageTexture(uint image_unit, ITexture* texture, int level, bool layered, int layer, BufferAccess access, PixelFormat format) override;
+	virtual bool ValidateShaderPipeline() override;
 
 	// textures and samplers
-	void SetSamplerTexture(int sampler, gls::ITexture* texture);
-	void SetSamplerState(int sampler, gls::ISamplerState* state);
-	void EnableSeamlessCubeMap(bool enable);
+	virtual void SetSamplerTexture(int sampler, ITexture* texture) override;
+	virtual void SetSamplerState(int sampler, ISamplerState* state) override;
+	virtual void EnableSeamlessCubeMap(bool enable) override;
 
 	// drawing commands
-	void Draw(gls::PrimitiveType prim, int first, size_t count);
-	void DrawInstanced(gls::PrimitiveType prim, int first, size_t count, gls::uint base_inst, size_t inst_count);
-	void DrawIndirect(gls::PrimitiveType prim, gls::IBuffer* buffer, size_t offset);
-	void MultiDrawIndirect(gls::PrimitiveType prim, gls::IBuffer* buffer, size_t offset, size_t count, size_t stride);
-	void DrawIndexed(gls::PrimitiveType prim, size_t index_start, int base_vertex, size_t count);
-	void DrawIndexed(gls::PrimitiveType prim, size_t start, size_t end, size_t index_start, int base_vertex, size_t count);
-	void DrawIndexedInstanced(gls::PrimitiveType prim, size_t index_start, int base_vertex, size_t count, gls::uint base_inst, size_t inst_count);
-	void DrawIndexedIndirect(gls::PrimitiveType prim, gls::IBuffer* buffer, size_t offset);
-	void MultiDrawIndexedIndirect(gls::PrimitiveType prim, gls::IBuffer* buffer, size_t offset, size_t count, size_t stride);
-	void DrawTransformFeedback(gls::PrimitiveType prim, gls::ITransformFeedback* transform_feedback, gls::uint stream);
-	void DrawTransformFeedbackInstanced(gls::PrimitiveType prim, gls::ITransformFeedback* transform_feedback, gls::uint stream, size_t inst_count);
+	virtual void Draw(PrimitiveType prim, int first, sizei count) override;
+	virtual void DrawInstanced(PrimitiveType prim, int first, sizei count, uint base_inst, sizei inst_count) override;
+	virtual void DrawIndirect(PrimitiveType prim, IBuffer* buffer, intptr offset) override;
+	virtual void MultiDrawIndirect(PrimitiveType prim, IBuffer* buffer, intptr offset, sizei count, sizei stride) override;
+	virtual void DrawIndexed(PrimitiveType prim, intptr index_start, int base_vertex, sizei count) override;
+	virtual void DrawIndexed(PrimitiveType prim, uint start, uint end, intptr index_start, int base_vertex, sizei count) override;
+	virtual void DrawIndexedInstanced(PrimitiveType prim, intptr index_start, int base_vertex, sizei count, uint base_inst, sizei inst_count) override;
+	virtual void DrawIndexedIndirect(PrimitiveType prim, IBuffer* buffer, intptr offset) override;
+	virtual void MultiDrawIndexedIndirect(PrimitiveType prim, IBuffer* buffer, intptr offset, sizei count, sizei stride) override;
+	virtual void DrawTransformFeedback(PrimitiveType prim, ITransformFeedback* transform_feedback, uint stream) override;
+	virtual void DrawTransformFeedbackInstanced(PrimitiveType prim, ITransformFeedback* transform_feedback, uint stream, sizei inst_count) override;
 
 	// compute commands
-	virtual void DispatchCompute(gls::uint num_groups_x, gls::uint num_groups_y, gls::uint num_groups_z);
-	virtual void DispatchComputeIndirect(gls::IBuffer* buffer, size_t offset);
+	virtual void DispatchCompute(uint num_groups_x, uint num_groups_y, uint num_groups_z) override;
+	virtual void DispatchComputeIndirect(IBuffer* buffer, intptr offset) override;
 
 	// synchronization
-	void Flush();
-	void Finish();
-	gls::SyncObject InsertFenceSync(gls::FenceSyncCondition condition, gls::uint flags);
-	void DeleteSync(gls::SyncObject sync);
-	gls::SyncWaitStatus ClientWaitSync(gls::SyncObject sync, gls::uint flags, gls::uint64 timeout);
-	void Wait(gls::SyncObject sync, gls::uint flags, gls::uint64 timeout);
-	void MemoryBarrier(gls::uint flags);
-	void MemoryBarrierByRegion(gls::uint flags);
-	void TextureBarrier();
+	virtual void Flush() override;
+	virtual void Finish() override;
+	virtual SyncObject InsertFenceSync(FenceSyncCondition condition, uint flags) override;
+	virtual void DeleteSync(SyncObject sync) override;
+	virtual SyncWaitStatus ClientWaitSync(SyncObject sync, uint flags, uint64 timeout) override;
+	virtual void Wait(SyncObject sync, uint flags, uint64 timeout) override;
+	virtual void MemoryBarrier(uint flags) override;
+	virtual void MemoryBarrierByRegion(uint flags) override;
+	virtual void TextureBarrier() override;
 
 	// buffer and image copying
-	void CopyBufferData(gls::IBuffer* source, size_t source_offset, gls::IBuffer* dest, size_t dest_offset, size_t size);
-	void CopyTextureData(
-		gls::ITexture* source, int source_level, int source_x, int source_y, int source_z, int width, int height, int depth,
-		gls::ITexture* dest, int dest_level, int dest_x, int dest_y, int dest_z);
-	void CopyRenderbufferData(gls::IRenderbuffer* source, int source_x, int source_y, int width, int height, gls::IRenderbuffer* dest, int dest_x, int dest_y);
+	virtual void CopyBufferData(IBuffer* source, intptr source_offset, IBuffer* dest, intptr dest_offset, sizeiptr size) override;
+	virtual void CopyTextureData(
+		ITexture* source, int source_level, int source_x, int source_y, int source_z, sizei width, sizei height, sizei depth,
+		ITexture* dest, int dest_level, int dest_x, int dest_y, int dest_z) override;
+	virtual void CopyRenderbufferData(IRenderbuffer* source, int source_x, int source_y, sizei width, sizei height, IRenderbuffer* dest, int dest_x, int dest_y) override;
 
 	// state queries
-	void GetViewport(int viewport[4]);
-	void GetViewport(float viewport[4]);
-	void GetViewportIndexed(gls::uint index, float viewport[4]);
-	gls::int64 GetGPUTimestamp();
-	bool GetTextureInternalFormatInfo(gls::TextureType type, gls::PixelFormat internal_format, gls::InternalFormatInfo& info);
-	bool GetRenderbufferInternalFormatInfo(gls::PixelFormat internal_format, gls::InternalFormatInfo& info);
-	gls::ErrorCode GetLastError();
+	virtual void GetViewport(int viewport[4]) override;
+	virtual void GetViewport(float viewport[4]) override;
+	virtual void GetViewportIndexed(uint index, float viewport[4]) override;
+	virtual int64 GetGPUTimestamp() override;
+	virtual bool GetTextureInternalFormatInfo(TextureType type, PixelFormat internal_format, InternalFormatInfo& info) override;
+	virtual bool GetRenderbufferInternalFormatInfo(PixelFormat internal_format, InternalFormatInfo& info) override;
+	virtual ErrorCode GetLastError() override;
 
 	// object creation
 
-	gls::IVertexFormat* CreateVertexFormat(int count, const gls::VertexAttribDesc* descriptors);
-	void DestroyVertexFormat(gls::IVertexFormat* vert_fmt);
+	virtual IVertexFormat* CreateVertexFormat(int count, const VertexAttribDesc* descriptors) override;
+	virtual void DestroyVertexFormat(IVertexFormat* vert_fmt) override;
 
-	gls::ISamplerState* CreateSamplerState(const gls::SamplerStateDesc& descriptor);
-	void DestroySamplerState(gls::ISamplerState* samp_state);
+	virtual ISamplerState* CreateSamplerState(const SamplerStateDesc& descriptor) override;
+	virtual void DestroySamplerState(ISamplerState* samp_state) override;
 
-	gls::ITexture1D* CreateTexture1D(size_t levels, gls::PixelFormat internal_format, int width);
-	gls::ITexture1D* CreateTexture1DView(gls::ITexture1D* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
-	gls::ITexture1D* CreateTexture1DView(gls::ITexture1DArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint layer);
+	virtual ITexture1D* CreateTexture1D(sizei levels, PixelFormat internal_format, int width) override;
+	virtual ITexture1D* CreateTexture1DView(ITexture1D* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) override;
+	virtual ITexture1D* CreateTexture1DView(ITexture1DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint layer) override;
 
-	gls::ITexture1DArray* CreateTexture1DArray(size_t levels, gls::PixelFormat internal_format, int width, int height);
-	gls::ITexture1DArray* CreateTexture1DArrayView(gls::ITexture1D* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
-	gls::ITexture1DArray* CreateTexture1DArrayView(gls::ITexture1DArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
+	virtual ITexture1DArray* CreateTexture1DArray(sizei levels, PixelFormat internal_format, int width, int height) override;
+	virtual ITexture1DArray* CreateTexture1DArrayView(ITexture1D* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) override;
+	virtual ITexture1DArray* CreateTexture1DArrayView(ITexture1DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) override;
 
-	gls::ITexture2D* CreateTexture2D(size_t levels, gls::PixelFormat internal_format, int width, int height);
-	gls::ITexture2D* CreateTexture2DView(gls::ITexture2D* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
-	gls::ITexture2D* CreateTexture2DView(gls::ITexture2DArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint layer);
-	gls::ITexture2D* CreateTexture2DView(gls::ITextureCube* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint layer);
-	gls::ITexture2D* CreateTexture2DView(gls::ITextureCubeArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint layer);
+	virtual ITexture2D* CreateTexture2D(sizei levels, PixelFormat internal_format, int width, int height) override;
+	virtual ITexture2D* CreateTexture2DView(ITexture2D* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) override;
+	virtual ITexture2D* CreateTexture2DView(ITexture2DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint layer) override;
+	virtual ITexture2D* CreateTexture2DView(ITextureCube* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint layer) override;
+	virtual ITexture2D* CreateTexture2DView(ITextureCubeArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint layer) override;
 
-	gls::ITexture2DArray* CreateTexture2DArray(size_t levels, gls::PixelFormat internal_format, int width, int height, int depth);
-	gls::ITexture2DArray* CreateTexture2DArrayView(gls::ITexture2D* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
-	gls::ITexture2DArray* CreateTexture2DArrayView(gls::ITexture2DArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
-	gls::ITexture2DArray* CreateTexture2DArrayView(gls::ITextureCube* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
-	gls::ITexture2DArray* CreateTexture2DArrayView(gls::ITextureCubeArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
+	virtual ITexture2DArray* CreateTexture2DArray(sizei levels, PixelFormat internal_format, int width, int height, int depth) override;
+	virtual ITexture2DArray* CreateTexture2DArrayView(ITexture2D* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) override;
+	virtual ITexture2DArray* CreateTexture2DArrayView(ITexture2DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) override;
+	virtual ITexture2DArray* CreateTexture2DArrayView(ITextureCube* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) override;
+	virtual ITexture2DArray* CreateTexture2DArrayView(ITextureCubeArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) override;
 
-	gls::ITexture2DMultisample* CreateTexture2DMultisample(int samples, gls::PixelFormat internal_format, int width, int height, bool fixed_sample_locations);
-	gls::ITexture2DMultisample* CreateTexture2DMultisampleView(gls::ITexture2DMultisample* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
-	gls::ITexture2DMultisample* CreateTexture2DMultisampleView(gls::ITexture2DMultisampleArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
+	virtual ITexture2DMultisample* CreateTexture2DMultisample(int samples, PixelFormat internal_format, int width, int height, bool fixed_sample_locations) override;
+	virtual ITexture2DMultisample* CreateTexture2DMultisampleView(ITexture2DMultisample* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) override;
+	virtual ITexture2DMultisample* CreateTexture2DMultisampleView(ITexture2DMultisampleArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) override;
 
-	gls::ITexture2DMultisampleArray* CreateTexture2DMultisampleArray(int samples, gls::PixelFormat internal_format, int width, int height, int depth, bool fixed_sample_locations);
-	gls::ITexture2DMultisampleArray* CreateTexture2DMultisampleArrayView(gls::ITexture2DMultisample* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
-	gls::ITexture2DMultisampleArray* CreateTexture2DMultisampleArrayView(gls::ITexture2DMultisampleArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
+	virtual ITexture2DMultisampleArray* CreateTexture2DMultisampleArray(int samples, PixelFormat internal_format, int width, int height, int depth, bool fixed_sample_locations) override;
+	virtual ITexture2DMultisampleArray* CreateTexture2DMultisampleArrayView(ITexture2DMultisample* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) override;
+	virtual ITexture2DMultisampleArray* CreateTexture2DMultisampleArrayView(ITexture2DMultisampleArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) override;
 
-	gls::ITexture3D* CreateTexture3D(size_t levels, gls::PixelFormat internal_format, int width, int height, int depth);
-	gls::ITexture3D* CreateTexture3DView(gls::ITexture3D* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
+	virtual ITexture3D* CreateTexture3D(sizei levels, PixelFormat internal_format, int width, int height, int depth) override;
+	virtual ITexture3D* CreateTexture3DView(ITexture3D* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) override;
 
-	gls::ITextureCube* CreateTextureCube(size_t levels, gls::PixelFormat internal_format, int width);
-	gls::ITextureCube* CreateTextureCubeView(gls::ITextureCube* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
-	gls::ITextureCube* CreateTextureCubeView(gls::ITextureCubeArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
-	gls::ITextureCube* CreateTextureCubeView(gls::ITexture2DArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
+	virtual ITextureCube* CreateTextureCube(sizei levels, PixelFormat internal_format, int width) override;
+	virtual ITextureCube* CreateTextureCubeView(ITextureCube* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) override;
+	virtual ITextureCube* CreateTextureCubeView(ITextureCubeArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) override;
+	virtual ITextureCube* CreateTextureCubeView(ITexture2DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) override;
 
-	gls::ITextureCubeArray* CreateTextureCubeArray(size_t levels, gls::PixelFormat internal_format, int width, int depth);
-	gls::ITextureCubeArray* CreateTextureCubeArrayView(gls::ITextureCube* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
-	gls::ITextureCubeArray* CreateTextureCubeArrayView(gls::ITextureCubeArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
-	gls::ITextureCubeArray* CreateTextureCubeArrayView(gls::ITexture2DArray* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels, gls::uint min_layer, gls::uint num_layers);
+	virtual ITextureCubeArray* CreateTextureCubeArray(sizei levels, PixelFormat internal_format, int width, int depth) override;
+	virtual ITextureCubeArray* CreateTextureCubeArrayView(ITextureCube* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) override;
+	virtual ITextureCubeArray* CreateTextureCubeArrayView(ITextureCubeArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) override;
+	virtual ITextureCubeArray* CreateTextureCubeArrayView(ITexture2DArray* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels, uint min_layer, uint num_layers) override;
 
-	gls::ITextureBuffer* CreateTextureBuffer();
+	virtual ITextureBuffer* CreateTextureBuffer() override;
 
-	gls::ITextureRectangle* CreateTextureRectangle(size_t levels, gls::PixelFormat internal_format, int width, int height);
-	gls::ITextureRectangle* CreateTextureRectangleView(gls::ITextureRectangle* orig_tex, gls::PixelFormat internal_format, gls::uint min_level, gls::uint num_levels);
+	virtual ITextureRectangle* CreateTextureRectangle(sizei levels, PixelFormat internal_format, int width, int height) override;
+	virtual ITextureRectangle* CreateTextureRectangleView(ITextureRectangle* orig_tex, PixelFormat internal_format, uint min_level, uint num_levels) override;
 
-	void DestroyTexture(gls::ITexture* texture);
+	virtual void DestroyTexture(ITexture* texture) override;
 
-	gls::IBuffer* CreateBuffer(size_t size, const void* data, gls::uint flags);
-	void DestroyBuffer(gls::IBuffer* buffer);
+	virtual IBuffer* CreateBuffer(sizeiptr size, const void* data, uint flags) override;
+	virtual void DestroyBuffer(IBuffer* buffer) override;
 
-	gls::IFramebuffer* CreateFramebuffer();
-	gls::IFramebuffer* CreateFramebufferWithoutAttachments(const gls::FramebufferParams& params);
-	void DestroyFramebuffer(gls::IFramebuffer* framebuffer);
-	gls::IRenderbuffer* CreateRenderbuffer(size_t samples, gls::PixelFormat internal_format, size_t width, size_t height);
-	void DestroyRenderbuffer(gls::IRenderbuffer* renderbuffer);
+	virtual IFramebuffer* CreateFramebuffer() override;
+	virtual IFramebuffer* CreateFramebufferWithoutAttachments(const FramebufferParams& params) override;
+	virtual void DestroyFramebuffer(IFramebuffer* framebuffer) override;
+	virtual IRenderbuffer* CreateRenderbuffer(sizei samples, PixelFormat internal_format, sizei width, sizei height) override;
+	virtual void DestroyRenderbuffer(IRenderbuffer* renderbuffer) override;
 
-	gls::IQuery* CreateQuery();
-	void DestroyQuery(gls::IQuery* query);
+	virtual IQuery* CreateQuery() override;
+	virtual void DestroyQuery(IQuery* query) override;
 
-	gls::IVertexShader* CreateVertexShader(size_t count, const char** source, bool& success);
-	gls::IVertexShader* CreateVertexShader(size_t size, const void* binary, gls::uint format, bool& success);
-	gls::IVertexShader* CreateVertexShaderWithTransformFeedback(size_t count, const char** source, size_t attrib_count, const char** attrib_names, bool& success);
-	gls::IVertexShader* CreateVertexShaderWithTransformFeedback(size_t size, const void* binary, gls::uint format, size_t attrib_count, const char** attrib_names, bool& success);
+	virtual IVertexShader* CreateVertexShader(sizei count, const char** source, bool& success) override;
+	virtual IVertexShader* CreateVertexShader(sizei size, const void* binary, uint format, bool& success) override;
+	virtual IVertexShader* CreateVertexShaderWithTransformFeedback(sizei count, const char** source, sizei attrib_count, const char** attrib_names, bool& success) override;
+	virtual IVertexShader* CreateVertexShaderWithTransformFeedback(sizei size, const void* binary, uint format, sizei attrib_count, const char** attrib_names, bool& success) override;
 
-	gls::ITessControlShader* CreateTessControlShader(size_t count, const char** source, bool& success);
-	gls::ITessControlShader* CreateTessControlShader(size_t size, const void* binary, gls::uint format, bool& success);
-	gls::ITessControlShader* CreateTessControlShaderWithTransformFeedback(size_t count, const char** source, size_t attrib_count, const char** attrib_names, bool& success);
-	gls::ITessControlShader* CreateTessControlShaderWithTransformFeedback(size_t size, const void* binary, gls::uint format, size_t attrib_count, const char** attrib_names, bool& success);
+	virtual ITessControlShader* CreateTessControlShader(sizei count, const char** source, bool& success) override;
+	virtual ITessControlShader* CreateTessControlShader(sizei size, const void* binary, uint format, bool& success) override;
+	virtual ITessControlShader* CreateTessControlShaderWithTransformFeedback(sizei count, const char** source, sizei attrib_count, const char** attrib_names, bool& success) override;
+	virtual ITessControlShader* CreateTessControlShaderWithTransformFeedback(sizei size, const void* binary, uint format, sizei attrib_count, const char** attrib_names, bool& success) override;
 
-	gls::ITessEvaluationShader* CreateTessEvaluationShader(size_t count, const char** source, bool& success);
-	gls::ITessEvaluationShader* CreateTessEvaluationShader(size_t size, const void* binary, gls::uint format, bool& success);
-	gls::ITessEvaluationShader* CreateTessEvaluationShaderWithTransformFeedback(size_t count, const char** source, size_t attrib_count, const char** attrib_names, bool& success);
-	gls::ITessEvaluationShader* CreateTessEvaluationShaderWithTransformFeedback(size_t size, const void* binary, gls::uint format, size_t attrib_count, const char** attrib_names, bool& success);
+	virtual ITessEvaluationShader* CreateTessEvaluationShader(sizei count, const char** source, bool& success) override;
+	virtual ITessEvaluationShader* CreateTessEvaluationShader(sizei size, const void* binary, uint format, bool& success) override;
+	virtual ITessEvaluationShader* CreateTessEvaluationShaderWithTransformFeedback(sizei count, const char** source, sizei attrib_count, const char** attrib_names, bool& success) override;
+	virtual ITessEvaluationShader* CreateTessEvaluationShaderWithTransformFeedback(sizei size, const void* binary, uint format, sizei attrib_count, const char** attrib_names, bool& success) override;
 
-	gls::IGeometryShader* CreateGeometryShader(size_t count, const char** source, bool& success);
-	gls::IGeometryShader* CreateGeometryShader(size_t size, const void* binary, gls::uint format, bool& success);
-	gls::IGeometryShader* CreateGeometryShaderWithTransformFeedback(size_t count, const char** source, size_t attrib_count, const char** attrib_names, bool& success);
-	gls::IGeometryShader* CreateGeometryShaderWithTransformFeedback(size_t size, const void* binary, gls::uint format, size_t attrib_count, const char** attrib_names, bool& success);
+	virtual IGeometryShader* CreateGeometryShader(sizei count, const char** source, bool& success) override;
+	virtual IGeometryShader* CreateGeometryShader(sizei size, const void* binary, uint format, bool& success) override;
+	virtual IGeometryShader* CreateGeometryShaderWithTransformFeedback(sizei count, const char** source, sizei attrib_count, const char** attrib_names, bool& success) override;
+	virtual IGeometryShader* CreateGeometryShaderWithTransformFeedback(sizei size, const void* binary, uint format, sizei attrib_count, const char** attrib_names, bool& success) override;
 
-	gls::IFragmentShader* CreateFragmentShader(size_t count, const char** source, bool& success);
-	gls::IFragmentShader* CreateFragmentShader(size_t size, const void* binary, gls::uint format, bool& success);
+	virtual IFragmentShader* CreateFragmentShader(sizei count, const char** source, bool& success) override;
+	virtual IFragmentShader* CreateFragmentShader(sizei size, const void* binary, uint format, bool& success) override;
 
-	gls::IComputeShader* CreateComputeShader(size_t count, const char** source, bool& success);
-	gls::IComputeShader* CreateComputeShader(size_t size, const void* binary, gls::uint format, bool& success);
-	
-	void DestroyShader(gls::IShader* shader);
+	virtual IComputeShader* CreateComputeShader(sizei count, const char** source, bool& success) override;
+	virtual IComputeShader* CreateComputeShader(sizei size, const void* binary, uint format, bool& success) override;
 
-	gls::ITransformFeedback* CreateTransformFeedback();
-	void DestroyTransformFeedback(gls::ITransformFeedback* transform_feedback);
+	virtual void DestroyShader(IShader* shader) override;
+
+	virtual ITransformFeedback* CreateTransformFeedback() override;
+	virtual void DestroyTransformFeedback(ITransformFeedback* transform_feedback) override;
 
 	// debugging
-	void EnableDebugOutput(bool enable, bool synchronous);
-	void EnableDebugMessages(gls::DebugMessageSource source, gls::DebugMessageType type, gls::DebugMessageSeverity severity, bool enable);
-	void EnableDebugMessages(gls::DebugMessageSource source, gls::DebugMessageType type, gls::uint id_count, uint* ids, bool enable);
-	void EnableDebugMessage(gls::DebugMessageSource source, gls::DebugMessageType type, gls::uint id, bool enable);
-	void InsertDebugMessage(gls::DebugMessageSource source, gls::DebugMessageType type, gls::uint id, gls::DebugMessageSeverity severity, const char* message);
-	void PushDebugGroup(gls::DebugMessageSource source, gls::uint id, const char* message);
-	void PopDebugGroup();
-	int GetDebugGroupStackDepth();
-	void ResourceDebugLabel(gls::IResource* resource, const char* label);
-	void SyncObjectDebugLabel(gls::SyncObject sync_object, const char* label);
+	virtual void EnableDebugOutput(bool enable, bool synchronous) override;
+	virtual void EnableDebugMessages(DebugMessageSource source, DebugMessageType type, DebugMessageSeverity severity, bool enable) override;
+	virtual void EnableDebugMessages(DebugMessageSource source, DebugMessageType type, uint id_count, uint* ids, bool enable) override;
+	virtual void EnableDebugMessage(DebugMessageSource source, DebugMessageType type, uint id, bool enable) override;
+	virtual void InsertDebugMessage(DebugMessageSource source, DebugMessageType type, uint id, DebugMessageSeverity severity, const char* message) override;
+	virtual void PushDebugGroup(DebugMessageSource source, uint id, const char* message) override;
+	virtual void PopDebugGroup() override;
+	virtual int GetDebugGroupStackDepth() override;
+	virtual void ResourceDebugLabel(IResource* resource, const char* label) override;
+	virtual void SyncObjectDebugLabel(SyncObject sync_object, const char* label) override;
 
 private:
-	GLRenderContext(const GLRenderContext&);
-
-	bool InitCommon(gls::uint version);
+	bool InitCommon(uint version);
 	void DeinitCommon();
-	bool CreateContext(gls::uint version, const gls::FramebufferFormat& format, bool debug_context, IRenderContext* shareContext);
+	bool CreateContext(uint version, const FramebufferFormat& format, bool debug_context, IRenderContext* shareContext);
 	void GetContextInfo();
-	bool LoadOpenGLExtensions(gls::uint version);
+	bool LoadOpenGLExtensions(uint version);
 	bool LoadPlatformOpenGLExtensions();
 	bool IsExtSupported(const char* extension);
 	void Clear();
 	void SetupDrawingState();
-	bool GetInternalFormatInfo(GLenum type, GLenum internal_format, gls::InternalFormatInfo& info);
-	void DebugMessage(gls::DebugMessageSource source, gls::DebugMessageType type, gls::DebugMessageSeverity severity, ErrorMessageId message_id, ...);
+	bool GetInternalFormatInfo(GLenum type, GLenum internal_format, InternalFormatInfo& info);
+	void DebugMessage(DebugMessageSource source, DebugMessageType type, DebugMessageSeverity severity, ErrorMessageId message_id, ...);
 
 	// Include declarations of extension loading functions.
 	// Declare platform specific data.
 #if defined(_WIN32)
 
-	#include "extensions/glext_windows_load_decl.h"
-	#include "extensions/wglext_load_decl.h"
+#include "extensions/glext_windows_load_decl.h"
+#include "extensions/wglext_load_decl.h"
 
 	HWND _hwnd;
 	HGLRC _hglrc;
@@ -362,8 +365,8 @@ private:
 
 #elif defined(__linux__)
 
-	#include "extensions/glext_linux_load_decl.h"
-	#include "extensions/glxext_load_decl.h"
+#include "extensions/glext_linux_load_decl.h"
+#include "extensions/glxext_load_decl.h"
 
 	Display* _display;
 	Window _window;
@@ -377,21 +380,21 @@ private:
 	struct VertexStream
 	{
 		GLBuffer* buffer;
-		size_t stride;
-		size_t offset;
+		sizei stride;
+		intptr offset;
 	};
 
 	struct VertexAttrib
 	{
 		GLBuffer* buffer;
-		size_t stride;
-		size_t bufferBase;
+		sizei stride;
+		intptr bufferBase;
 		int numComponents;
-		gls::DataType type;
+		DataType type;
 		bool integer;
 		bool normalized;
-		size_t offset;
-		gls::uint divisor;
+		sizei offset;
+		uint divisor;
 		bool enabled;
 	};
 
@@ -403,10 +406,10 @@ private:
 		GLenum removedTexTarget;
 	};
 
-	class NullLogger : public gls::IDebugLogger
+	class NullLogger : public IDebugLogger
 	{
 	public:
-		void DebugMessage(gls::DebugMessageSource source, gls::DebugMessageType type, gls::uint id, gls::DebugMessageSeverity severity, const char* message) { }
+		void DebugMessage(DebugMessageSource source, DebugMessageType type, uint id, DebugMessageSeverity severity, const char* message) { }
 	};
 
 	// current state
@@ -416,14 +419,15 @@ private:
 	VertexAttrib* _vertexAttribs;
 	int* _enabledVertexAttribs;
 	GLBuffer* _indexBuffer;
-	gls::DataType _indexType;
+	DataType _indexType;
 	GLFramebuffer* _framebuffer;
 	ImageUnit* _imageUnits;
 	int _highImageUnit;
 	GLuint _pipeline;
-	gls::IDebugLogger* _logger;
+	IDebugLogger* _logger;
 	NullLogger _nullLogger;
 };
 
+} // namespace gls::internals
 
 #endif // _GL_RENDER_CONTEXT_H_

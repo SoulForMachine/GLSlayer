@@ -6,16 +6,22 @@
 #include "GLCommon.h"
 
 
+namespace gls::internals
+{
 
-class GLVertexFormat : public gls::IVertexFormat
+class GLVertexFormat : public IVertexFormat
 {
 public:
 	GLVertexFormat();
 	~GLVertexFormat();
 
-	gls::VertexAttribDesc* _descriptors;
+	GLVertexFormat(const GLVertexFormat&) = delete;
+	GLVertexFormat& operator = (const GLVertexFormat&) = delete;
+
+	VertexAttribDesc* _descriptors;
 	int _count;
 };
 
+} // namespace gls::internals
 
 #endif // _GL_VERTEX_FORMAT_H_

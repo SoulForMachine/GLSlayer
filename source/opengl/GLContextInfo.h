@@ -10,7 +10,10 @@
 	#include "extensions/glxext_flags.h"
 #endif
 
-struct GLContextInfo : gls::ContextInfo
+namespace gls::internals
+{
+
+struct GLContextInfo : ContextInfo
 {
 	FeaturesGL		featuresGL;
 #if defined(_WIN32)
@@ -20,5 +23,6 @@ struct GLContextInfo : gls::ContextInfo
 #endif
 };
 
+} // namespace gls::internals
 
 #endif // _GL_CONTEXT_INFO_H_

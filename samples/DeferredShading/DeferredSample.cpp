@@ -395,37 +395,37 @@ void DeferredSample::DestroyFramebuffers()
 	if(_gbuffer)
 	{
 		_renderContext->DestroyFramebuffer(_gbuffer);
-		_gbuffer = 0;
+		_gbuffer = nullptr;
 	}
 
 	if(_depthBuffer)
 	{
 		_renderContext->DestroyTexture(_depthBuffer);
-		_depthBuffer = 0;
+		_depthBuffer = nullptr;
 	}
 
 	if(_texPosition)
 	{
 		_renderContext->DestroyTexture(_texPosition);
-		_texPosition = 0;
+		_texPosition = nullptr;
 	}
 
 	if(_texNormal)
 	{
 		_renderContext->DestroyTexture(_texNormal);
-		_texNormal = 0;
+		_texNormal = nullptr;
 	}
 
 	if(_texDiffuse)
 	{
 		_renderContext->DestroyTexture(_texDiffuse);
-		_texDiffuse = 0;
+		_texDiffuse = nullptr;
 	}
 
 	if(_sceneBuffer)
 	{
 		_renderContext->DestroyFramebuffer(_sceneBuffer);
-		_sceneBuffer = 0;
+		_sceneBuffer = nullptr;
 	}
 
 	if(_texSceneColor)
@@ -537,7 +537,7 @@ void DeferredSample::RenderLightingPass()
 	_renderContext->ClearColorBuffer(_sceneBuffer, 0, vec4f(0.0f, 0.0f, 0.0f, 0.0f));
 
 	_query->BeginQuery(QUERY_SAMPLES_PASSED);
-	_renderContext->DrawIndexedInstanced(PRIM_TRIANGLES, 0, 0, _sphereIndexCount, 0, _lights.size());
+	_renderContext->DrawIndexedInstanced(PRIM_TRIANGLES, 0, 0, _sphereIndexCount, 0, static_cast<sizei>(_lights.size()));
 	_query->EndQuery();
 	uint samples = _query->GetResultUI();
 	//_console.Print("samples - %d       \r", samples);

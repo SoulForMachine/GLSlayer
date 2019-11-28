@@ -2,8 +2,8 @@
 #include <cassert>
 #include "GLQuery.h"
 
-using namespace gls;
-
+namespace gls::internals
+{
 
 void GLQuery::Create()
 {
@@ -14,7 +14,7 @@ void GLQuery::Create()
 
 void GLQuery::Destroy()
 {
-	if(_id)
+	if (_id)
 	{
 		glDeleteQueries(1, &_id);
 		_id = 0;
@@ -28,7 +28,7 @@ void GLQuery::BeginQuery(QueryType type)
 	glBeginQuery(_target, _id);
 }
 
-void GLQuery::BeginQueryIndexed(QueryType type, int index)
+void GLQuery::BeginQueryIndexed(QueryType type, uint index)
 {
 	_type = type;
 	_target = GetGLEnum(type);
@@ -86,3 +86,5 @@ QueryType GLQuery::GetQueryType()
 {
 	return _type;
 }
+
+} // namespace gls::internals

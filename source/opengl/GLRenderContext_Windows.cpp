@@ -24,12 +24,12 @@ LRESULT CALLBACK TmpWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 IRenderContext* gls::CreateRenderContext(const CreateContextInfo& info)
 {
-	GLRenderContext* render_context = new GLRenderContext(info.logger);
+	gls::internals::GLRenderContext* render_context = new gls::internals::GLRenderContext(info.logger);
 	bool result = render_context->Create(info.version, info.instanceHandle, info.windowHandle, *info.format, info.debugContext, info.shareContext);
 	if(!result)
 	{
 		delete render_context;
-		render_context = 0;
+		render_context = nullptr;
 	}
 	return render_context;
 }
@@ -38,22 +38,25 @@ void gls::DestroyRenderContext(IRenderContext* render_context)
 {
 	if(render_context)
 	{
-		static_cast<GLRenderContext*>(render_context)->Destroy();
+		static_cast<gls::internals::GLRenderContext*>(render_context)->Destroy();
 		delete render_context;
 	}
 }
 
 bool gls::SetWindowCompatiblePixelFormat(IRenderContext* render_context, HWND windowHandle)
 {
-	auto rcImpl = static_cast<GLRenderContext*>(render_context);
+	auto rcImpl = static_cast<gls::internals::GLRenderContext*>(render_context);
 	return rcImpl->SetWindowCompatiblePixelFormat(windowHandle);
 }
 
 HWND gls::SetContextWindow(IRenderContext* render_context, HWND windowHandle)
 {
-	auto rcImpl = static_cast<GLRenderContext*>(render_context);
+	auto rcImpl = static_cast<gls::internals::GLRenderContext*>(render_context);
 	return rcImpl->SetContextWindow(windowHandle);
 }
+
+namespace gls::internals
+{
 
 bool GLRenderContext::SetWindowCompatiblePixelFormat(HWND windowHandle)
 {
@@ -121,10 +124,10 @@ HWND GLRenderContext::SetContextWindow(HWND windowHandle)
 
 bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND window_handle, const FramebufferFormat& format, bool debug_context, IRenderContext* shareContext)
 {
-	if(_initialized)
+	if (_initialized)
 		return false;
 
-	if(version < 330)
+	if (version < 330)
 	{
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_UNSUPPORTED_VERSION);
 		return false;
@@ -157,18 +160,18 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	wc.style = CS_OWNDC;
 
 	result = RegisterClass(&wc);
-	if(!result)
+	if (!result)
 	{
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "could not register window class");
 		return false;
 	}
 
-	HWND tmp_hwnd =	CreateWindow(	tmp_wnd_class, TEXT(""),
+	HWND tmp_hwnd = CreateWindow(tmp_wnd_class, TEXT(""),
 		WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-		0, 0, _instanceHandle, 0	);
+		0, 0, _instanceHandle, 0);
 
-	if(!tmp_hwnd)
+	if (!tmp_hwnd)
 	{
 		UnregisterClass(tmp_wnd_class, _instanceHandle);
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "could not create window");
@@ -186,7 +189,7 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	pfd.cDepthBits = 16;
 
 	HDC tmp_dc = GetDC(tmp_hwnd);
-	if(!tmp_dc)
+	if (!tmp_dc)
 	{
 		DestroyWindow(tmp_hwnd);
 		UnregisterClass(tmp_wnd_class, _instanceHandle);
@@ -195,7 +198,7 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	}
 
 	int pixel_format = ChoosePixelFormat(tmp_dc, &pfd);
-	if(!pixel_format)
+	if (!pixel_format)
 	{
 		DestroyWindow(tmp_hwnd);
 		UnregisterClass(tmp_wnd_class, _instanceHandle);
@@ -204,7 +207,7 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	}
 
 	result = SetPixelFormat(tmp_dc, pixel_format, &pfd);
-	if(!result)
+	if (!result)
 	{
 		DestroyWindow(tmp_hwnd);
 		UnregisterClass(tmp_wnd_class, _instanceHandle);
@@ -213,7 +216,7 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	}
 
 	HGLRC tmp_rc = wglCreateContext(tmp_dc);
-	if(!tmp_rc)
+	if (!tmp_rc)
 	{
 		DestroyWindow(tmp_hwnd);
 		UnregisterClass(tmp_wnd_class, _instanceHandle);
@@ -222,7 +225,7 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	}
 
 	result = wglMakeCurrent(tmp_dc, tmp_rc);
-	if(!result)
+	if (!result)
 	{
 		wglDeleteContext(tmp_rc);
 		DestroyWindow(tmp_hwnd);
@@ -239,13 +242,13 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	DestroyWindow(tmp_hwnd);
 	UnregisterClass(tmp_wnd_class, _instanceHandle);
 
-	if(!result)
+	if (!result)
 	{
 		return false;
 	}
 
 	result = wglMakeCurrent(_hdc, _hglrc);
-	if(!result)
+	if (!result)
 	{
 		Destroy();
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "wglMakeCurrent");
@@ -259,7 +262,7 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 {
 	BOOL result;
 	HDC hdc = GetDC(_hwnd);
-	if(!hdc)
+	if (!hdc)
 	{
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "could not get window DC");
 		return false;
@@ -273,13 +276,13 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 	}
 
 	// create rendering context with WGL_ARB_pixel_format extension
-	if(!IsExtSupported("WGL_ARB_pixel_format"))
+	if (!IsExtSupported("WGL_ARB_pixel_format"))
 	{
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "WGL_ARB_pixel_format not supported.");
 		return false;
 	}
 
-	if(!glextLoad_WGL_ARB_pixel_format())
+	if (!glextLoad_WGL_ARB_pixel_format())
 	{
 		DebugMessage(
 			DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version,
@@ -297,19 +300,19 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 		WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
 		WGL_DRAW_TO_WINDOW_ARB, TRUE,
 		WGL_SUPPORT_OPENGL_ARB, TRUE,
-		WGL_DOUBLE_BUFFER_ARB, format.doubleBuffer? 1 : 0,
+		WGL_DOUBLE_BUFFER_ARB, format.doubleBuffer ? 1 : 0,
 		WGL_SWAP_METHOD_ARB, (int)GetGLEnum(format.swapMethod),
 		WGL_PIXEL_TYPE_ARB, (int)GetGLEnum(format.colorBufferType),
 		WGL_COLOR_BITS_ARB, format.colorBits,
 		WGL_DEPTH_BITS_ARB, format.depthBits,
 		WGL_STENCIL_BITS_ARB, format.stencilBits,
-		WGL_SAMPLE_BUFFERS_ARB, format.multisampleSamples? 1 : 0,
+		WGL_SAMPLE_BUFFERS_ARB, format.multisampleSamples ? 1 : 0,
 		WGL_SAMPLES_ARB, format.multisampleSamples,
-		(sRGB? WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT: 0), (sRGB? (format.sRGB? GL_TRUE: GL_FALSE): 0),
+		(sRGB ? WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT : 0), (sRGB ? (format.sRGB ? GL_TRUE : GL_FALSE) : 0),
 		0, 0
 	};
 	result = ptr_wglChoosePixelFormatARB(hdc, int_atribs, 0, 1, &pixel_format, &num_formats);
-	if(!result || num_formats < 1)
+	if (!result || num_formats < 1)
 	{
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "wglChoosePixelFormatARB");
 		return false;
@@ -317,32 +320,33 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 
 	PIXELFORMATDESCRIPTOR pfd;
 	result = DescribePixelFormat(hdc, pixel_format, sizeof(pfd), &pfd);
-	if(!result)
+	if (!result)
 	{
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "DescribePixelFormat");
 		return false;
 	}
 
 	result = SetPixelFormat(hdc, pixel_format, &pfd);
-	if(!result)
+	if (!result)
 	{
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "SetPixelFormat");
 		return false;
 	}
 
 	HGLRC hglrc = 0;
-	if(	IsExtSupported("WGL_ARB_create_context") &&
+	if (IsExtSupported("WGL_ARB_create_context") &&
 		glextLoad_WGL_ARB_create_context() &&
-		ptr_wglCreateContextAttribsARB != 0 )
+		ptr_wglCreateContextAttribsARB != nullptr)
 	{
 		int context_flags = (version >= 300) ? WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB : 0;
-		if(debug_context)
+		if (debug_context)
 			context_flags |= WGL_CONTEXT_DEBUG_BIT_ARB;
 		int attribs[] =
 		{
 			WGL_CONTEXT_MAJOR_VERSION_ARB, (int)version / 100,
 			WGL_CONTEXT_MINOR_VERSION_ARB, (int)version % 100 / 10,
 			WGL_CONTEXT_FLAGS_ARB, context_flags,
+			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 			0
 		};
 
@@ -356,7 +360,7 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 			"extension WGL_ARB_create_context not supported, cannot create forward compatible context");
 	}
 
-	if(hglrc)
+	if (hglrc)
 	{
 		_hglrc = hglrc;
 		_hdc = hdc;
@@ -374,9 +378,9 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 
 void GLRenderContext::Destroy()
 {
-	if(_hglrc)
+	if (_hglrc)
 	{
-		if(wglGetCurrentContext() == _hglrc)
+		if (wglGetCurrentContext() == _hglrc)
 		{
 			wglMakeCurrent(0, 0);
 		}
@@ -404,29 +408,29 @@ bool GLRenderContext::LoadPlatformOpenGLExtensions()
 
 bool GLRenderContext::IsExtSupported(const char* extension)
 {
-	if(!extension || !extension[0])
+	if (!extension || !extension[0])
 		return false;
 
 	PFNGLGETSTRINGIPROC ptr_glGetStringi = (PFNGLGETSTRINGIPROC)wglGetProcAddress("glGetStringi");
 
-	if(ptr_glGetStringi)
+	if (ptr_glGetStringi)
 	{
 		GLint count = 0;
 		glGetIntegerv(GL_NUM_EXTENSIONS, &count);
-		for(int i = 0; i < count; ++i)
+		for (int i = 0; i < count; ++i)
 		{
 			const char* ext_string = (const char*)ptr_glGetStringi(GL_EXTENSIONS, i);
 
-			if(ext_string && !strcmp(ext_string, extension))
+			if (ext_string && !strcmp(ext_string, extension))
 				return true;
 		}
 	}
 
 	PFNWGLGETEXTENSIONSSTRINGARBPROC ptr_wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
-	if(ptr_wglGetExtensionsStringARB)
+	if (ptr_wglGetExtensionsStringARB)
 	{
 		const char* ext_string = (const char*)ptr_wglGetExtensionsStringARB(wglGetCurrentDC());
-		if(ext_string && strstr(ext_string, extension))
+		if (ext_string && strstr(ext_string, extension))
 			return true;
 	}
 
@@ -454,3 +458,5 @@ void GLRenderContext::SwapInterval(int interval)
 {
 	wglSwapIntervalEXT(interval);
 }
+
+} // namespace gls::internals

@@ -12,7 +12,7 @@ namespace gls
 	class IResource
 	{
 	public:
-		virtual ~IResource() { }
+		virtual ~IResource() = 0 { }
 
 		virtual void* DynamicCast(int type_id) = 0;
 		virtual ResourceType GetType() const = 0;

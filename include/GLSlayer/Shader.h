@@ -23,12 +23,12 @@ namespace gls
 		};
 
 		char* name;
-		size_t dataSize;
-		size_t variableCount;
+		sizei dataSize;
+		sizei variableCount;
 		VariableInfo* variables;
 
 		template <typename _T>
-		_T& GetVariableInBuffer(void* bufferPtr, size_t posIndex)
+		_T& GetVariableInBuffer(void* bufferPtr, sizei posIndex)
 		{
 			return *reinterpret_cast<_T*>(
 				reinterpret_cast<uint8_t*>(bufferPtr) + variables[posIndex].offset);
@@ -46,7 +46,7 @@ namespace gls
 		virtual int GetInfoLogLength() = 0;
 		virtual bool Validate() = 0;
 		virtual uint GetSubroutineIndex(const char* name) = 0;
-		virtual bool GetBinary(uint& format, size_t buffer_size, void* buffer) = 0;
+		virtual bool GetBinary(uint& format, sizei buffer_size, void* buffer) = 0;
 		virtual int GetBinarySize() = 0;
 		virtual const ShaderBlockInfo* GetUniformBlockInfo(const char* blockName) = 0;
 		virtual const ShaderBlockInfo* GetStorageBlockInfo(const char* blockName) = 0;
@@ -56,7 +56,7 @@ namespace gls
 	class IVertexShader : public IShader
 	{
 	public:
-		virtual void TransformFeedbackVaryings(size_t count, const char** varyings, TransformFeedbackBufferMode mode) = 0;
+		virtual void TransformFeedbackVaryings(sizei count, const char** varyings, TransformFeedbackBufferMode mode) = 0;
 	};
 
 
@@ -81,7 +81,7 @@ namespace gls
 	{
 	public:
 		virtual int GetInvocations() = 0;
-		virtual void TransformFeedbackVaryings(size_t count, const char** varyings, TransformFeedbackBufferMode mode) = 0;
+		virtual void TransformFeedbackVaryings(sizei count, const char** varyings, TransformFeedbackBufferMode mode) = 0;
 	};
 
 

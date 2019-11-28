@@ -25,7 +25,7 @@ namespace gls
 		DataType type;
 		bool integer;
 		bool normalized;
-		size_t offset;
+		uint offset;
 		uint divisor;
 	};
 

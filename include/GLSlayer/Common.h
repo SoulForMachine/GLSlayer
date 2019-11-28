@@ -853,7 +853,10 @@ namespace gls
 	typedef unsigned char ubyte;
 	typedef uint64_t uint64;
 	typedef int64_t int64;
-
+	typedef ptrdiff_t intptr;
+	typedef ptrdiff_t sizeiptr;
+	typedef int sizei;
+	
 	struct PixelStore
 	{
 		PixelStore()

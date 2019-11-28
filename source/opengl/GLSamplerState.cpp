@@ -2,9 +2,9 @@
 #include <cassert>
 #include "GLSamplerState.h"
 
-using namespace gls;
 
-
+namespace gls::internals
+{
 
 GLSamplerState::GLSamplerState()
 {
@@ -15,11 +15,11 @@ GLSamplerState::GLSamplerState()
 
 bool GLSamplerState::Create(const SamplerStateDesc& desc)
 {
-	if(_id)
+	if (_id)
 		return false;
 
 	glGenSamplers(1, &_id);
-	if(!_id)
+	if (!_id)
 		return false;
 
 	glSamplerParameteri(_id, GL_TEXTURE_WRAP_S, GetGLEnum(desc.addressU));
@@ -35,7 +35,7 @@ bool GLSamplerState::Create(const SamplerStateDesc& desc)
 	glSamplerParameteri(_id, GL_TEXTURE_COMPARE_FUNC, GetGLEnum(desc.texCmpFunc));
 	glSamplerParameterf(_id, GL_TEXTURE_MAX_ANISOTROPY_EXT, desc.maxAnisotropy);
 
-	if(glGetError() != GL_NO_ERROR)
+	if (glGetError() != GL_NO_ERROR)
 		return false;
 
 	return true;
@@ -43,8 +43,10 @@ bool GLSamplerState::Create(const SamplerStateDesc& desc)
 
 void GLSamplerState::Destroy()
 {
-	if(_id != 0)
+	if (_id != 0)
 	{
 		glDeleteSamplers(1, &_id);
 	}
 }
+
+} // namespace gls::internals

@@ -13,7 +13,7 @@ namespace gls
 		virtual ~IQuery() {}
 
 		virtual void BeginQuery(QueryType type) = 0;
-		virtual void BeginQueryIndexed(QueryType type, int index) = 0;
+		virtual void BeginQueryIndexed(QueryType type, uint index) = 0;
 		virtual void EndQuery() = 0;
 		virtual void QueryCounter(QueryType type) = 0;
 		virtual bool ResultAvailable() = 0;

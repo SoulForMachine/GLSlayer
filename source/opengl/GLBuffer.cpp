@@ -2,8 +2,6 @@
 #include <cassert>
 #include "GLBuffer.h"
 
-using namespace gls;
-
 
 #define STATE_MACHINE_HACK \
 	if(_id != _glState->copyWriteBuffer) \
@@ -13,16 +11,12 @@ using namespace gls;
 	}
 
 
-
-GLBuffer::GLBuffer()
+namespace gls::internals
 {
-	_size = 0;
-	_glState = nullptr;
-}
 
-bool GLBuffer::Create(GLState* gl_state, size_t size, const void* data, uint flags)
+bool GLBuffer::Create(GLState* gl_state, sizeiptr size, const void* data, uint flags)
 {
-	if(_id || size == 0)
+	if (_id || size == 0)
 		return false;
 
 	_glState = gl_state;
@@ -33,7 +27,7 @@ bool GLBuffer::Create(GLState* gl_state, size_t size, const void* data, uint fla
 
 	glGenBuffers(1, &_id);
 
-	if(!_id)
+	if (!_id)
 		return false;
 
 	glBindBuffer(GL_COPY_WRITE_BUFFER, _id);
@@ -56,7 +50,7 @@ bool GLBuffer::Create(GLState* gl_state, size_t size, const void* data, uint fla
 
 	glBufferStorage(GL_COPY_WRITE_BUFFER, size, data, glFlags);
 
-	if(glGetError() != GL_NO_ERROR)
+	if (glGetError() != GL_NO_ERROR)
 	{
 		Destroy();
 		return false;
@@ -67,29 +61,29 @@ bool GLBuffer::Create(GLState* gl_state, size_t size, const void* data, uint fla
 
 void GLBuffer::Destroy()
 {
-	if(_id)
+	if (_id)
 	{
-		if(_id == _glState->copyWriteBuffer)
+		if (_id == _glState->copyWriteBuffer)
 		{
 			glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
 			_glState->copyWriteBuffer = 0;
 		}
 
 		glDeleteBuffers(1, &_id);
-		
+
 		_id = 0;
 		_size = 0;
 	}
 }
 
-void GLBuffer::BufferSubData(size_t offset, size_t size, const void* data)
+void GLBuffer::BufferSubData(intptr offset, sizeiptr size, const void* data)
 {
 	assert(_id);
 	STATE_MACHINE_HACK
 	glBufferSubData(GL_COPY_WRITE_BUFFER, offset, size, data);
 }
 
-void GLBuffer::GetBufferSubData(size_t offset, size_t size, void* data)
+void GLBuffer::GetBufferSubData(intptr offset, sizeiptr size, void* data)
 {
 	assert(_id);
 	STATE_MACHINE_HACK
@@ -104,31 +98,31 @@ void* GLBuffer::Map(uint map_flags)
 /*
 	map_flags is a combination of BufferMapFlags
 */
-void* GLBuffer::MapRange(size_t offset, size_t length, uint map_flags)
+void* GLBuffer::MapRange(intptr offset, sizeiptr length, uint map_flags)
 {
 	assert(_id);
 	STATE_MACHINE_HACK
 
 	GLbitfield bits = 0;
 
-	if(map_flags & MAP_READ_BIT)
+	if (map_flags & MAP_READ_BIT)
 		bits |= GL_MAP_READ_BIT;
-	if(map_flags & MAP_WRITE_BIT)
+	if (map_flags & MAP_WRITE_BIT)
 		bits |= GL_MAP_WRITE_BIT;
-	if(map_flags & MAP_INVALIDATE_RANGE_BIT)
+	if (map_flags & MAP_INVALIDATE_RANGE_BIT)
 		bits |= GL_MAP_INVALIDATE_RANGE_BIT;
-	if(map_flags & MAP_INVALIDATE_BUFFER_BIT)
+	if (map_flags & MAP_INVALIDATE_BUFFER_BIT)
 		bits |= GL_MAP_INVALIDATE_BUFFER_BIT;
-	if(map_flags & MAP_FLUSH_EXPLICIT_BIT)
+	if (map_flags & MAP_FLUSH_EXPLICIT_BIT)
 		bits |= GL_MAP_FLUSH_EXPLICIT_BIT;
-	if(map_flags & MAP_UNSYNCHRONIZED_BIT)
+	if (map_flags & MAP_UNSYNCHRONIZED_BIT)
 		bits |= GL_MAP_UNSYNCHRONIZED_BIT;
 
 	void* ptr = glMapBufferRange(GL_COPY_WRITE_BUFFER, offset, length, bits);
 	return ptr;
 }
 
-void GLBuffer::FlushMappedRange(size_t offset, size_t length)
+void GLBuffer::FlushMappedRange(intptr offset, sizeiptr length)
 {
 	assert(_id);
 	STATE_MACHINE_HACK
@@ -150,7 +144,7 @@ void GLBuffer::ClearData(PixelFormat internal_format, ImageFormat format, DataTy
 	glClearBufferData(GL_COPY_WRITE_BUFFER, GetGLEnum(internal_format), GetGLEnum(format), GetGLEnum(type), data);
 }
 
-void GLBuffer::ClearSubData(PixelFormat internal_format, ImageFormat format, DataType type, size_t offset, size_t size, const void* data)
+void GLBuffer::ClearSubData(PixelFormat internal_format, ImageFormat format, DataType type, intptr offset, sizeiptr size, const void* data)
 {
 	assert(_id);
 	STATE_MACHINE_HACK
@@ -163,8 +157,10 @@ void GLBuffer::InvalidateData()
 	glInvalidateBufferData(_id);
 }
 
-void GLBuffer::InvalidateSubData(size_t offset, size_t size)
+void GLBuffer::InvalidateSubData(intptr offset, sizeiptr size)
 {
 	assert(_id);
 	glInvalidateBufferSubData(_id, offset, size);
 }
+
+} // namespace gls::internals

@@ -1,6 +1,8 @@
 
 #include "GLVertexFormat.h"
 
+namespace gls::internals
+{
 
 GLVertexFormat::GLVertexFormat()
 {
@@ -13,3 +15,5 @@ GLVertexFormat::~GLVertexFormat()
 	delete[] _descriptors;
 	_count = 0;
 }
+
+} // namespace gls::internals

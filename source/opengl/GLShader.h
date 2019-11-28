@@ -8,68 +8,69 @@
 
 
 #define IMPLEMENT_ISHADER \
-	gls::ShaderType GetShaderType() { return GLShader::GetShaderType(); } \
-	const char* GetInfoLog() { return GLShader::GetInfoLog(); } \
-	int GetInfoLogLength() { return GLShader::GetInfoLogLength(); } \
-	bool Validate() { return GLShader::Validate(); } \
-	gls::uint GetSubroutineIndex(const char* name) { return GLShader::GetSubroutineIndex(name); } \
-	bool GetBinary(gls::uint& format, size_t buffer_size, void* buffer) { return GLShader::GetBinary(format, buffer_size, buffer); } \
-	int GetBinarySize() { return GLShader::GetBinarySize(); } \
-	const gls::ShaderBlockInfo* GetUniformBlockInfo(const char* blockName) { return GLShader::GetUniformBlockInfo(blockName); } \
-	const gls::ShaderBlockInfo* GetStorageBlockInfo(const char* blockName) { return GLShader::GetStorageBlockInfo(blockName); }
+	virtual ShaderType GetShaderType() override { return GLShader::GetShaderType(); } \
+	virtual const char* GetInfoLog() override { return GLShader::GetInfoLog(); } \
+	virtual int GetInfoLogLength() override { return GLShader::GetInfoLogLength(); } \
+	virtual bool Validate() override { return GLShader::Validate(); } \
+	virtual uint GetSubroutineIndex(const char* name) override { return GLShader::GetSubroutineIndex(name); } \
+	virtual bool GetBinary(uint& format, sizei buffer_size, void* buffer) override { return GLShader::GetBinary(format, buffer_size, buffer); } \
+	virtual int GetBinarySize() override { return GLShader::GetBinarySize(); } \
+	virtual const ShaderBlockInfo* GetUniformBlockInfo(const char* blockName) override { return GLShader::GetUniformBlockInfo(blockName); } \
+	virtual const ShaderBlockInfo* GetStorageBlockInfo(const char* blockName) override { return GLShader::GetStorageBlockInfo(blockName); }
 
 
+namespace gls::internals
+{
 
 class GLShader : public GLResource
 {
 public:
-	IMPLEMENT_IRESOURCE
-
 	static const int typeID = TYPE_ID_SHADER;
 
 	GLShader();
 	~GLShader() = 0;
 
-	bool Create(size_t count, const char** source);
-	bool Create(size_t size, const void* binary, gls::uint format);
-	bool CreateWithTransformFeedback(size_t count, const char** source, size_t attrib_count, const char** attrib_names);
-	bool CreateWithTransformFeedback(size_t size, const void* binary, gls::uint format, size_t attrib_count, const char** attrib_names);
+	GLShader(const GLShader&) = delete;
+	GLShader& operator = (const GLShader&) = delete;
+
+	bool Create(sizei count, const char** source);
+	bool Create(sizei size, const void* binary, uint format);
+	bool CreateWithTransformFeedback(sizei count, const char** source, sizei attrib_count, const char** attrib_names);
+	bool CreateWithTransformFeedback(sizei size, const void* binary, uint format, sizei attrib_count, const char** attrib_names);
 	void Destroy();
 
-	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_SHADER) ? this : GLResource::DynamicCast(type_id); }
-	gls::ShaderType GetShaderType();
+	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_SHADER) ? this : GLResource::DynamicCast(type_id); }
+	ShaderType GetShaderType();
 	const char* GetInfoLog();
 	int GetInfoLogLength();
 	bool Validate();
-	gls::uint GetSubroutineIndex(const char* name);
-	bool GetBinary(gls::uint& format, size_t buffer_size, void* buffer);
+	uint GetSubroutineIndex(const char* name);
+	bool GetBinary(uint& format, sizei buffer_size, void* buffer);
 	int GetBinarySize();
-	const gls::ShaderBlockInfo* GetUniformBlockInfo(const char* blockName);
-	const gls::ShaderBlockInfo* GetStorageBlockInfo(const char* blockName);
+	const ShaderBlockInfo* GetUniformBlockInfo(const char* blockName);
+	const ShaderBlockInfo* GetStorageBlockInfo(const char* blockName);
 
 protected:
-	gls::ShaderType _shaderType;
+	ShaderType _shaderType;
 
 private:
-	GLShader(const GLShader&);
-	GLShader& operator = (const GLShader&);
 	void RetrieveLog();
 	void RetrieveLog2(GLuint program, GLuint shader);
 
 	char* _logInfo;
 	int _logInfoLength;
 
-	size_t _uniformBlockCount;
-	size_t _uniformBlockArraySize;
-	gls::ShaderBlockInfo* _uniformBlockInfos;
+	sizei _uniformBlockCount;
+	sizei _uniformBlockArraySize;
+	ShaderBlockInfo* _uniformBlockInfos;
 
-	size_t _storageBlockCount;
-	size_t _storageBlockArraySize;
-	gls::ShaderBlockInfo* _storageBlockInfos;
+	sizei _storageBlockCount;
+	sizei _storageBlockArraySize;
+	ShaderBlockInfo* _storageBlockInfos;
 };
 
 
-class GLVertexShader : public gls::IVertexShader, public GLShader
+class GLVertexShader : public IVertexShader, public GLShader
 {
 public:
 	IMPLEMENT_IRESOURCE
@@ -79,12 +80,15 @@ public:
 
 	GLVertexShader();
 
-	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_VERTEX_SHADER) ? this : GLShader::DynamicCast(type_id); }
-	void TransformFeedbackVaryings(size_t count, const char** varyings, gls::TransformFeedbackBufferMode mode);
+	GLVertexShader(const GLVertexShader&) = delete;
+	GLVertexShader& operator = (const GLVertexShader&) = delete;
+
+	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_VERTEX_SHADER) ? this : GLShader::DynamicCast(type_id); }
+	virtual void TransformFeedbackVaryings(sizei count, const char** varyings, TransformFeedbackBufferMode mode) override;
 };
 
 
-class GLTessControlShader : public gls::ITessControlShader, public GLShader
+class GLTessControlShader : public ITessControlShader, public GLShader
 {
 public:
 	IMPLEMENT_IRESOURCE
@@ -94,12 +98,15 @@ public:
 
 	GLTessControlShader();
 
-	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_TESS_CONTROL_SHADER) ? this : GLShader::DynamicCast(type_id); }
-	int GetOutputVertexCount();
+	GLTessControlShader(const GLTessControlShader&) = delete;
+	GLTessControlShader& operator = (const GLTessControlShader&) = delete;
+
+	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_TESS_CONTROL_SHADER) ? this : GLShader::DynamicCast(type_id); }
+	virtual int GetOutputVertexCount() override;
 };
 
 
-class GLTessEvaluationShader : public gls::ITessEvaluationShader, public GLShader
+class GLTessEvaluationShader : public ITessEvaluationShader, public GLShader
 {
 public:
 	IMPLEMENT_IRESOURCE
@@ -109,15 +116,18 @@ public:
 
 	GLTessEvaluationShader();
 
-	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_TESS_EVAL_SHADER) ? this : GLShader::DynamicCast(type_id); }
-	gls::TessGenPrimitiveType GetMode();
-	gls::TessGenSpacing GetSpacing();
-	gls::VertexOrder GetVertexOrder();
-	bool GetPointMode();
+	GLTessEvaluationShader(const GLTessEvaluationShader&) = delete;
+	GLTessEvaluationShader& operator = (const GLTessEvaluationShader&) = delete;
+
+	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_TESS_EVAL_SHADER) ? this : GLShader::DynamicCast(type_id); }
+	virtual TessGenPrimitiveType GetMode() override;
+	virtual TessGenSpacing GetSpacing() override;
+	virtual VertexOrder GetVertexOrder() override;
+	virtual bool GetPointMode() override;
 };
 
 
-class GLGeometryShader : public gls::IGeometryShader, public GLShader
+class GLGeometryShader : public IGeometryShader, public GLShader
 {
 public:
 	IMPLEMENT_IRESOURCE
@@ -127,13 +137,16 @@ public:
 
 	GLGeometryShader();
 
-	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_GEOMETRY_SHADER) ? this : GLShader::DynamicCast(type_id); }
-	void TransformFeedbackVaryings(size_t count, const char** varyings, gls::TransformFeedbackBufferMode mode);
-	int GetInvocations();
+	GLGeometryShader(const GLGeometryShader&) = delete;
+	GLGeometryShader& operator = (const GLGeometryShader&) = delete;
+
+	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_GEOMETRY_SHADER) ? this : GLShader::DynamicCast(type_id); }
+	virtual void TransformFeedbackVaryings(sizei count, const char** varyings, TransformFeedbackBufferMode mode) override;
+	virtual int GetInvocations() override;
 };
 
 
-class GLFragmentShader : public gls::IFragmentShader, public GLShader
+class GLFragmentShader : public IFragmentShader, public GLShader
 {
 public:
 	IMPLEMENT_IRESOURCE
@@ -143,11 +156,14 @@ public:
 
 	GLFragmentShader();
 
-	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_FRAGMENT_SHADER) ? this : GLShader::DynamicCast(type_id); }
+	GLFragmentShader(const GLFragmentShader&) = delete;
+	GLFragmentShader& operator = (const GLFragmentShader&) = delete;
+
+	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_FRAGMENT_SHADER) ? this : GLShader::DynamicCast(type_id); }
 };
 
 
-class GLComputeShader : public gls::IComputeShader, public GLShader
+class GLComputeShader : public IComputeShader, public GLShader
 {
 public:
 	IMPLEMENT_IRESOURCE
@@ -157,9 +173,13 @@ public:
 
 	GLComputeShader();
 
-	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_COMPUTE_SHADER) ? this : GLShader::DynamicCast(type_id); }
-	void GetWorkGroupSize(int work_group_size[3]);
+	GLComputeShader(const GLComputeShader&) = delete;
+	GLComputeShader& operator = (const GLComputeShader&) = delete;
+
+	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_COMPUTE_SHADER) ? this : GLShader::DynamicCast(type_id); }
+	virtual void GetWorkGroupSize(int work_group_size[3]) override;
 };
 
+} // namespace gls::internals
 
 #endif // _GL_SHADER_H_

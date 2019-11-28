@@ -1,6 +1,9 @@
 
 #include "GLSlayerMessages.h"
 
+namespace gls::internals
+{
+
 const char* messageTable[] =
 {
 	"Version number must be at least 330.",
@@ -17,3 +20,5 @@ const char* GetMessageString(ErrorMessageId message_id)
 {
 	return (message_id < MESSAGE_COUNT) ? messageTable[message_id] : nullptr;
 }
+
+} // namespace gls::internals

@@ -6,60 +6,58 @@
 #include "GLResource.h"
 
 
+namespace gls::internals
+{
 
-class GLTexture;
-
-
-class GLRenderbuffer : public gls::IRenderbuffer, public GLResource
+class GLRenderbuffer : public IRenderbuffer, public GLResource
 {
 public:
 	IMPLEMENT_IRESOURCE
 
 	static const int typeID = TYPE_ID_RENDERBUFFER;
 
-	GLRenderbuffer() {}
+	GLRenderbuffer() = default;
+	GLRenderbuffer(const GLRenderbuffer&) = delete;
+	GLRenderbuffer& operator = (const GLRenderbuffer&) = delete;
 
-	bool Create(GLState* gl_state, size_t samples, gls::PixelFormat internal_format, size_t width, size_t height);
+	bool Create(GLState* gl_state, sizei samples, PixelFormat internal_format, sizei width, sizei height);
 	void Destroy();
 
-	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_RENDERBUFFER) ? this : GLResource::DynamicCast(type_id); }
+	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_RENDERBUFFER) ? this : GLResource::DynamicCast(type_id); }
 
 private:
-	GLRenderbuffer(const GLRenderbuffer&);
-	GLRenderbuffer& operator = (const GLRenderbuffer&);
-
 	GLState* _glState;
 };
 
 
-class GLFramebuffer : public gls::IFramebuffer, public GLResource
+class GLFramebuffer : public IFramebuffer, public GLResource
 {
 public:
 	IMPLEMENT_IRESOURCE
 
 	static const int typeID = TYPE_ID_FRAMEBUFFER;
 
-	GLFramebuffer() {}
+	GLFramebuffer() = default;
+	GLFramebuffer(const GLFramebuffer&) = delete;
+	GLFramebuffer& operator = (const GLFramebuffer&) = delete;
 
 	bool Create(GLState* gl_state);
-	bool CreateWithoutAttachments(GLState* gl_state, const gls::FramebufferParams& params);
+	bool CreateWithoutAttachments(GLState* gl_state, const FramebufferParams& params);
 	void Destroy();
 
-	void* DynamicCast(int type_id)	{ return (type_id == TYPE_ID_FRAMEBUFFER) ? this : GLResource::DynamicCast(type_id); }
-	void AttachTexture(gls::AttachmentBuffer attachment, gls::ITexture* texture, int level);
-	void AttachTextureLayer(gls::AttachmentBuffer attachment, gls::ITexture* texture, int level, int layer);
-	void AttachTextureFace(gls::AttachmentBuffer attachment, gls::ITexture* texture, int level, gls::CubeFace face);
-	void AttachRenderbuffer(gls::AttachmentBuffer attachment, gls::IRenderbuffer* renderbuffer);
-	gls::FramebufferStatus CheckStatus();
-	void InvalidateFramebuffer(int num_attachments, const gls::AttachmentBuffer* attachments);
-	void InvalidateSubFramebuffer(int num_attachments, const gls::AttachmentBuffer* attachments, int x, int y, int width, int height);
+	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_FRAMEBUFFER) ? this : GLResource::DynamicCast(type_id); }
+	virtual void AttachTexture(AttachmentBuffer attachment, ITexture* texture, int level) override;
+	virtual void AttachTextureLayer(AttachmentBuffer attachment, ITexture* texture, int level, int layer) override;
+	virtual void AttachTextureFace(AttachmentBuffer attachment, ITexture* texture, int level, CubeFace face) override;
+	virtual void AttachRenderbuffer(AttachmentBuffer attachment, IRenderbuffer* renderbuffer) override;
+	virtual FramebufferStatus CheckStatus() override;
+	virtual void InvalidateFramebuffer(int num_attachments, const AttachmentBuffer* attachments) override;
+	virtual void InvalidateSubFramebuffer(int num_attachments, const AttachmentBuffer* attachments, int x, int y, int width, int height) override;
 
 private:
-	GLFramebuffer(const GLFramebuffer&);
-	GLFramebuffer& operator = (const GLFramebuffer&);
-
 	GLState* _glState;
 };
 
+} // namespace gls::internals
 
 #endif // _GL_FRAMEBUFFER_H_

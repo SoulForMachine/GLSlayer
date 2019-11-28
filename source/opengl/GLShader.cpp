@@ -4,10 +4,9 @@
 #include <cstring>
 #include <algorithm>
 
-using namespace std;
-using namespace gls;
 
-
+namespace gls::internals
+{
 
 GLShader::GLShader()
 {
@@ -27,11 +26,11 @@ GLShader::~GLShader()
 {
 	delete[] _logInfo;
 
-	for (size_t i = 0; i < _uniformBlockCount; ++i)
+	for (sizei i = 0; i < _uniformBlockCount; ++i)
 	{
 		delete[] _uniformBlockInfos[i].name;
 
-		for (size_t u = 0; u < _uniformBlockInfos[i].variableCount; ++u)
+		for (sizei u = 0; u < _uniformBlockInfos[i].variableCount; ++u)
 			delete[] _uniformBlockInfos[i].variables[u].name;
 
 		delete[] _uniformBlockInfos[i].variables;
@@ -39,11 +38,11 @@ GLShader::~GLShader()
 
 	delete[] _uniformBlockInfos;
 
-	for (size_t i = 0; i < _storageBlockCount; ++i)
+	for (sizei i = 0; i < _storageBlockCount; ++i)
 	{
 		delete[] _storageBlockInfos[i].name;
 
-		for (size_t u = 0; u < _storageBlockInfos[i].variableCount; ++u)
+		for (sizei u = 0; u < _storageBlockInfos[i].variableCount; ++u)
 			delete[] _storageBlockInfos[i].variables[u].name;
 
 		delete[] _storageBlockInfos[i].variables;
@@ -52,12 +51,12 @@ GLShader::~GLShader()
 	delete[] _storageBlockInfos;
 }
 
-bool GLShader::Create(size_t count, const char** source)
+bool GLShader::Create(sizei count, const char** source)
 {
 	GLint linked = GL_FALSE;
-	_id = glCreateShaderProgramv(_target, (GLsizei)count, source);
+	_id = glCreateShaderProgramv(_target, count, source);
 
-	if(_id)
+	if (_id)
 	{
 		glGetProgramiv(_id, GL_LINK_STATUS, &linked);
 
@@ -67,14 +66,14 @@ bool GLShader::Create(size_t count, const char** source)
 	return (glGetError() == GL_NO_ERROR && linked == GL_TRUE);
 }
 
-bool GLShader::Create(size_t size, const void* binary, uint format)
+bool GLShader::Create(sizei size, const void* binary, uint format)
 {
 	GLint linked = GL_FALSE;
 	_id = glCreateProgram();
-	if(_id)
+	if (_id)
 	{
 		glProgramParameteri(_id, GL_PROGRAM_SEPARABLE, GL_TRUE);
-		glProgramBinary(_id, format, binary, (GLsizei)size);
+		glProgramBinary(_id, format, binary, size);
 
 		glGetProgramiv(_id, GL_LINK_STATUS, &linked);
 
@@ -84,25 +83,25 @@ bool GLShader::Create(size_t size, const void* binary, uint format)
 	return (glGetError() == GL_NO_ERROR && linked == GL_TRUE);
 }
 
-bool GLShader::CreateWithTransformFeedback(size_t count, const char** source, size_t attrib_count, const char** attrib_names)
+bool GLShader::CreateWithTransformFeedback(sizei count, const char** source, sizei attrib_count, const char** attrib_names)
 {
 	GLint linked = GL_FALSE;
 	GLuint shader = glCreateShader(_target);
-	if(shader)
+	if (shader)
 	{
-		glShaderSource(shader, (GLsizei)count, source, 0);
+		glShaderSource(shader, count, source, 0);
 		glCompileShader(shader);
 		GLuint program = glCreateProgram();
-		if(program)
+		if (program)
 		{
 			GLint compiled = GL_FALSE;
 			glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
 			glProgramParameteri(program, GL_PROGRAM_SEPARABLE, GL_TRUE);
-			if(compiled)
+			if (compiled)
 			{
 				glAttachShader(program, shader);
 
-				glTransformFeedbackVaryings(program, (GLsizei)attrib_count, attrib_names, GL_INTERLEAVED_ATTRIBS);
+				glTransformFeedbackVaryings(program, attrib_count, attrib_names, GL_INTERLEAVED_ATTRIBS);
 
 				glLinkProgram(program);
 				glDetachShader(program, shader);
@@ -117,16 +116,16 @@ bool GLShader::CreateWithTransformFeedback(size_t count, const char** source, si
 	return (glGetError() == GL_NO_ERROR && linked == GL_TRUE);
 }
 
-bool GLShader::CreateWithTransformFeedback(size_t size, const void* binary, uint format, size_t attrib_count, const char** attrib_names)
+bool GLShader::CreateWithTransformFeedback(sizei size, const void* binary, uint format, sizei attrib_count, const char** attrib_names)
 {
 	GLint linked = GL_FALSE;
 	_id = glCreateProgram();
-	if(_id)
+	if (_id)
 	{
 		glProgramParameteri(_id, GL_PROGRAM_SEPARABLE, GL_TRUE);
-		glTransformFeedbackVaryings(_id, (GLsizei)attrib_count, attrib_names, GL_INTERLEAVED_ATTRIBS);
+		glTransformFeedbackVaryings(_id, attrib_count, attrib_names, GL_INTERLEAVED_ATTRIBS);
 
-		glProgramBinary(_id, format, binary, (GLsizei)size);
+		glProgramBinary(_id, format, binary, size);
 		glGetProgramiv(_id, GL_LINK_STATUS, &linked);
 
 		RetrieveLog();
@@ -137,7 +136,7 @@ bool GLShader::CreateWithTransformFeedback(size_t size, const void* binary, uint
 
 void GLShader::Destroy()
 {
-	if(_id)
+	if (_id)
 	{
 		glDeleteProgram(_id);
 		_id = 0;
@@ -178,7 +177,7 @@ uint GLShader::GetSubroutineIndex(const char* name)
 	return index;
 }
 
-bool GLShader::GetBinary(gls::uint& format, size_t buffer_size, void* buffer)
+bool GLShader::GetBinary(uint& format, sizei buffer_size, void* buffer)
 {
 	/*glProgramParameteri(_id, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
 
@@ -196,7 +195,7 @@ bool GLShader::GetBinary(gls::uint& format, size_t buffer_size, void* buffer)
 
 	GLsizei length;
 	GLenum gl_fmt;
-	glGetProgramBinary(_id, (GLsizei)buffer_size, &length, &gl_fmt, buffer);
+	glGetProgramBinary(_id, buffer_size, &length, &gl_fmt, buffer);
 
 	format = gl_fmt;
 	return (glGetError() == GL_NO_ERROR);
@@ -214,7 +213,7 @@ const ShaderBlockInfo* GLShader::GetUniformBlockInfo(const char* blockName)
 	if (!_id || !blockName || !*blockName)
 		return nullptr;
 
-	for (size_t i = 0; i < _uniformBlockCount; ++i)
+	for (sizei i = 0; i < _uniformBlockCount; ++i)
 	{
 		if (strcmp(blockName, _uniformBlockInfos[i].name) == 0)
 			return &_uniformBlockInfos[i];
@@ -257,11 +256,11 @@ const ShaderBlockInfo* GLShader::GetUniformBlockInfo(const char* blockName)
 	blockInfo.name = new char[strlen(blockName) + 1];
 	strcpy(blockInfo.name, blockName);
 
-	blockInfo.dataSize = static_cast<size_t>(blockDataSize);
-	blockInfo.variableCount = static_cast<size_t>(uniformCount);
+	blockInfo.dataSize = static_cast<sizei>(blockDataSize);
+	blockInfo.variableCount = static_cast<sizei>(uniformCount);
 	blockInfo.variables = new ShaderBlockInfo::VariableInfo[uniformCount];
 
-	for (size_t i = 0; i < blockInfo.variableCount; ++i)
+	for (sizei i = 0; i < blockInfo.variableCount; ++i)
 	{
 		blockInfo.variables[i].name = new char[uniformNameLengths[i]];
 		glGetActiveUniformName(_id, uniformIndices[i], uniformNameLengths[i], nullptr, blockInfo.variables[i].name);
@@ -278,7 +277,7 @@ const ShaderBlockInfo* GLShader::GetUniformBlockInfo(const char* blockName)
 	// Resize the info array if necessary.
 	if (_uniformBlockInfos == nullptr || _uniformBlockCount == _uniformBlockArraySize)
 	{
-		size_t newSize = _uniformBlockArraySize + 5;
+		sizei newSize = _uniformBlockArraySize + 5;
 		ShaderBlockInfo* newArr = new ShaderBlockInfo[newSize];
 
 		if (_uniformBlockInfos != nullptr)
@@ -314,9 +313,9 @@ void GLShader::RetrieveLog()
 
 	_logInfoLength = log_len;
 	delete[] _logInfo;
-	_logInfo = new char[max(log_len, 1)];
+	_logInfo = new char[std::max(log_len, 1)];
 	_logInfo[0] = '\0';
-	if(log_len > 1)
+	if (log_len > 1)
 	{
 		glGetProgramInfoLog(_id, log_len, 0, _logInfo);
 	}
@@ -332,17 +331,17 @@ void GLShader::RetrieveLog2(GLuint program, GLuint shader)
 
 	_logInfoLength = prog_log_len + shader_log_len;
 	delete[] _logInfo;
-	_logInfo = new char[max(_logInfoLength, 1)];
+	_logInfo = new char[std::max(_logInfoLength, 1)];
 	_logInfo[0] = '\0';
 
-	if(prog_log_len > 1)
+	if (prog_log_len > 1)
 	{
 		glGetProgramInfoLog(program, prog_log_len, 0, _logInfo);
 	}
 
-	if(shader_log_len > 1)
+	if (shader_log_len > 1)
 	{
-		GLint append_index = max(prog_log_len - 1, 0);
+		GLint append_index = std::max(prog_log_len - 1, 0);
 		glGetShaderInfoLog(shader, shader_log_len, 0, &_logInfo[append_index]);
 	}
 }
@@ -356,9 +355,9 @@ GLVertexShader::GLVertexShader()
 	_target = GL_VERTEX_SHADER;
 }
 
-void GLVertexShader::TransformFeedbackVaryings(size_t count, const char** varyings, TransformFeedbackBufferMode mode)
+void GLVertexShader::TransformFeedbackVaryings(sizei count, const char** varyings, TransformFeedbackBufferMode mode)
 {
-	glTransformFeedbackVaryings(_id, (GLsizei)count, varyings, GetGLEnum(mode));
+	glTransformFeedbackVaryings(_id, count, varyings, GetGLEnum(mode));
 }
 
 //================================ GLTessControlShader ==============================================
@@ -423,9 +422,9 @@ GLGeometryShader::GLGeometryShader()
 	_target = GL_GEOMETRY_SHADER;
 }
 
-void GLGeometryShader::TransformFeedbackVaryings(size_t count, const char** varyings, TransformFeedbackBufferMode mode)
+void GLGeometryShader::TransformFeedbackVaryings(sizei count, const char** varyings, TransformFeedbackBufferMode mode)
 {
-	glTransformFeedbackVaryings(_id, (GLsizei)count, varyings, GetGLEnum(mode));
+	glTransformFeedbackVaryings(_id, count, varyings, GetGLEnum(mode));
 }
 
 int GLGeometryShader::GetInvocations()
@@ -457,3 +456,5 @@ void GLComputeShader::GetWorkGroupSize(int work_group_size[3])
 {
 	glGetProgramiv(_id, GL_COMPUTE_WORK_GROUP_SIZE, work_group_size);
 }
+
+} // namespace gls::internals
