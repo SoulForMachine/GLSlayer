@@ -34,7 +34,7 @@ public:
 	static const int typeID = TYPE_ID_TEXTURE;
 
 	GLTexture() = default;
-	virtual ~GLTexture() = 0 { }
+	virtual ~GLTexture() = 0;
 
 	GLTexture(const GLTexture&) = delete;
 	GLTexture& operator = (const GLTexture&) = delete;
@@ -62,6 +62,10 @@ protected:
 	int _maxLevel = 1000;
 	TextureType _textureType;
 };
+
+inline GLTexture::~GLTexture()
+{
+}
 
 
 class GLTexture1D : public ITexture1D, public GLTexture

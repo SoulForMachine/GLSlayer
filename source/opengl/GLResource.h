@@ -19,7 +19,7 @@ public:
 
 	GLResource()
 		{ _id = 0; }
-	virtual ~GLResource() = 0 { }
+	virtual ~GLResource() = 0;
 
 	GLResource(const GLResource&) = delete;
 	GLResource& operator = (const GLResource&) = delete;
@@ -34,6 +34,10 @@ protected:
 	GLenum _target;
 	ResourceType _resType;
 };
+
+inline GLResource::~GLResource()
+{
+}
 
 
 } // namespace gls::internals
