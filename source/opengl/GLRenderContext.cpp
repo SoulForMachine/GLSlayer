@@ -4,8 +4,8 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
-#include <malloc.h>
 #include <cstdarg>
+#include <cstdio>
 #include "GLRenderContext.h"
 
 
@@ -1016,7 +1016,7 @@ void GLRenderContext::ActiveColorBuffers(IFramebuffer* fbuf, sizei count, const 
 
 	if(count > 0 && buffers != nullptr)
 	{
-		GLenum* enums = (GLenum*)_malloca(sizeof(GLenum) * count);
+		GLenum enums[32];
 		for(sizei i = 0; i < count; ++i)
 			enums[i] = GetGLEnum(buffers[i]);
 

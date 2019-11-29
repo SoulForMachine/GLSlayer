@@ -140,6 +140,9 @@ Window gls::SetContextWindow(gls::IRenderContext* render_context, Window window)
 	return rcImpl->SetContextWindow(window);
 }
 
+namespace gls::internals
+{
+
 Window GLRenderContext::SetContextWindow(Window window)
 {
 	Window old = _window;
@@ -295,3 +298,6 @@ void GLRenderContext::SwapInterval(int interval)
 {
 	glXSwapIntervalEXT(_display, _window, interval);
 }
+
+} // namespace gls::internals
+
