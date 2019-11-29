@@ -143,6 +143,9 @@ Window gls::SetContextWindow(IRenderContext* render_context, Window window)
 	return rcImpl->SetContextWindow(window);
 }
 
+namespace gls::internals
+{
+
 Window GLRenderContext::SetContextWindow(Window window)
 {
 	Window old = _window;
@@ -152,10 +155,10 @@ Window GLRenderContext::SetContextWindow(Window window)
 
 bool GLRenderContext::Create(uint version, Display* display, Window window, const FramebufferFormat& format, bool debug_context, IRenderContext* shareContext)
 {
-	if(_initialized)
+	if (_initialized)
 		return false;
 
-	if(version < 330)
+	if (version < 330)
 	{
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_UNSUPPORTED_VERSION);
 		return false;
@@ -164,13 +167,13 @@ bool GLRenderContext::Create(uint version, Display* display, Window window, cons
 	_window = window;
 	_display = display;
 
-	if(!CreateContext(version, format, debug_context, shareContext))
+	if (!CreateContext(version, format, debug_context, shareContext))
 	{
 		return false;
 	}
 
 	Bool result = glXMakeCurrent(_display, _window, _context);
-	if(!result)
+	if (!result)
 	{
 		Destroy();
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "glXMakeCurrent");
@@ -186,7 +189,7 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 	int (*oldHandler)(Display*, XErrorEvent*) = XSetErrorHandler(&ctxErrorHandler);
 
 	GLXFBConfig fb_config = GetFBConfig(_display, format);
-	if(!fb_config)
+	if (!fb_config)
 	{
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "failed to get GLXFBConfig.");
 		return false;
@@ -200,12 +203,12 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 	}
 
 	GLXContext context = 0;
-	if( IsExtSupported("GLX_ARB_create_context") &&
+	if (IsExtSupported("GLX_ARB_create_context") &&
 		glextLoad_GLX_ARB_create_context() &&
-		glXCreateContextAttribsARB )
+		glXCreateContextAttribsARB)
 	{
 		int context_flags = (version >= 300) ? GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB : 0;
-		if(debug_context)
+		if (debug_context)
 			context_flags |= GLX_CONTEXT_DEBUG_BIT_ARB;
 		int attribs[] =
 		{
@@ -229,7 +232,7 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 	XSync(_display, False);
 	XSetErrorHandler(oldHandler);
 
-	if(!ctxErrorOccurred && context)
+	if (!ctxErrorOccurred && context)
 	{
 		_context = context;
 		_info.framebufferFormat = format;
@@ -245,9 +248,9 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 
 void GLRenderContext::Destroy()
 {
-	if(_context)
+	if (_context)
 	{
-		if(glXGetCurrentContext() == _context)
+		if (glXGetCurrentContext() == _context)
 		{
 			glXMakeCurrent(_display, 0, 0);
 		}
@@ -298,3 +301,5 @@ void GLRenderContext::SwapInterval(int interval)
 {
 	glXSwapIntervalEXT(_display, _window, interval);
 }
+
+} // namespace gls::internals
