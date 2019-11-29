@@ -4,8 +4,8 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
-#include <malloc.h>
 #include <cstdarg>
+#include <cstdio>
 #include "GLRenderContext.h"
 
 
