@@ -5,9 +5,6 @@
 #include "GLRenderContext.h"
 
 
-using namespace gls;
-
-
 static bool ctxErrorOccurred = false;
 static int ctxErrorHandler( Display *dpy, XErrorEvent *ev )
 {
@@ -45,7 +42,7 @@ bool IsExtSupported(const char* extension, Display* display)
 }
 
 static
-GLXFBConfig GetFBConfig(Display* display, const FramebufferFormat& format)
+GLXFBConfig GetFBConfig(Display* display, const gls::FramebufferFormat& format)
 {
 	// check if sRGB framebuffer is supported
 	bool sRGB = IsExtSupported("GLX_EXT_framebuffer_sRGB", display);
@@ -54,7 +51,7 @@ GLXFBConfig GetFBConfig(Display* display, const FramebufferFormat& format)
 	{
 		GLX_X_RENDERABLE    , True,
 		GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
-		GLX_RENDER_TYPE     , (int)GetGLEnum(format.colorBufferType),
+		GLX_RENDER_TYPE     , (int)gls::internals::GetGLEnum(format.colorBufferType),
 		GLX_X_VISUAL_TYPE   , GLX_TRUE_COLOR,
 		GLX_TRANSPARENT_TYPE, GLX_NONE,
 		GLX_CONFIG_CAVEAT	, GLX_NONE,
@@ -100,9 +97,9 @@ GLXFBConfig GetFBConfig(Display* display, const FramebufferFormat& format)
 }
 
 
-IRenderContext* gls::CreateRenderContext(const CreateContextInfo& info)
+gls::IRenderContext* gls::CreateRenderContext(const gls::CreateContextInfo& info)
 {
-	GLRenderContext* render_context = new GLRenderContext(info.logger);
+	gls::internals::GLRenderContext* render_context = new gls::internals::GLRenderContext(info.logger);
 	bool result = render_context->Create(info.version, info.display, info.window, *info.format, info.debugContext, info.shareContext);
 	if(!result)
 	{
@@ -112,7 +109,7 @@ IRenderContext* gls::CreateRenderContext(const CreateContextInfo& info)
 	return render_context;
 }
 
-bool gls::GetXVisualInfo(Display* display, const FramebufferFormat& format, XVisualInfo& visual_info)
+bool gls::GetXVisualInfo(Display* display, const gls::FramebufferFormat& format, XVisualInfo& visual_info)
 {
 	GLXFBConfig fbc = GetFBConfig(display, format);
 	if(!fbc)
@@ -128,18 +125,18 @@ bool gls::GetXVisualInfo(Display* display, const FramebufferFormat& format, XVis
 	return true;
 }
 
-void gls::DestroyRenderContext(IRenderContext* render_context)
+void gls::DestroyRenderContext(gls::IRenderContext* render_context)
 {
 	if(render_context)
 	{
-		static_cast<GLRenderContext*>(render_context)->Destroy();
+		static_cast<gls::internals::GLRenderContext*>(render_context)->Destroy();
 		delete render_context;
 	}
 }
 
-Window gls::SetContextWindow(IRenderContext* render_context, Window window)
+Window gls::SetContextWindow(gls::IRenderContext* render_context, Window window)
 {
-	auto rcImpl = static_cast<GLRenderContext*>(render_context);
+	auto rcImpl = static_cast<gls::internals::GLRenderContext*>(render_context);
 	return rcImpl->SetContextWindow(window);
 }
 
