@@ -250,11 +250,11 @@ bool DeferredSample::Init(CreateContextInfo& info)
 	_lightBoundsMax = _modelBoundsMax + (_modelBoundsMax - _modelBoundsMin) * 0.3f;
 	CreateRandomLights(MAX_LIGHTS, _lightBoundsMin, _lightBoundsMax);
 
-	_lightMatrixBuf = _renderContext->CreateBuffer(MAX_LIGHTS * sizeof(mat4f), 0, BUFFER_DYNAMIC_STORAGE_BIT);
+	_lightMatrixBuf = _renderContext->CreateBuffer(MAX_LIGHTS * sizeof(mat4f), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
 	_lightMatrixTex = _renderContext->CreateTextureBuffer();
 	_lightMatrixTex->TexBuffer(PIXEL_FORMAT_RGBA32F, _lightMatrixBuf);
 
-	_lightInfoBuf = _renderContext->CreateBuffer(MAX_LIGHTS * sizeof(vec4f) * 2, 0, BUFFER_DYNAMIC_STORAGE_BIT);
+	_lightInfoBuf = _renderContext->CreateBuffer(MAX_LIGHTS * sizeof(vec4f) * 2, nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
 	_lightInfoTex = _renderContext->CreateTextureBuffer();
 	_lightInfoTex->TexBuffer(PIXEL_FORMAT_RGBA32F, _lightInfoBuf);
 
@@ -514,8 +514,8 @@ void DeferredSample::RenderLightingPass()
 	_renderContext->VertexSource(0, _sphereVertBuf, sizeof(vec3f), 0);
 	_renderContext->IndexSource(_sphereIndexBuf, TYPE_UNSIGNED_SHORT);
 
-	_renderContext->SetSamplerState(0, 0);
-	_renderContext->SetSamplerState(1, 0);
+	_renderContext->SetSamplerState(0, nullptr);
+	_renderContext->SetSamplerState(1, nullptr);
 	_renderContext->SetSamplerState(2, _samplerLight);
 	_renderContext->SetSamplerState(3, _samplerLight);
 	_renderContext->SetSamplerState(4, _samplerLight);
@@ -591,7 +591,7 @@ void DeferredSample::RenderGBuffer()
 
 	_renderContext->SetSamplerState(0, _samplerGBuffer);
 
-	_renderContext->ClearColorBuffer(0, 0, vec4f(0.1f, 0.3f, 0.3f, 1.0f));
+	_renderContext->ClearColorBuffer(nullptr, 0, vec4f(0.1f, 0.3f, 0.3f, 1.0f));
 
 	_renderContext->SetSamplerTexture(0, _texDiffuse);
 	_renderContext->Draw(PRIM_TRIANGLES, 0, 6);
@@ -713,9 +713,9 @@ void DeferredSample::CreateSphere(float radius, int slices, int stacks)
 	int num_tris = slices * 2 * (stacks - 1);
 	_sphereIndexCount = num_tris * 3;
 
-	_sphereVertBuf = _renderContext->CreateBuffer(_sphereVertCount * sizeof(vec3f), 0, BUFFER_MAP_WRITE_BIT);
+	_sphereVertBuf = _renderContext->CreateBuffer(_sphereVertCount * sizeof(vec3f), nullptr, BUFFER_MAP_WRITE_BIT);
 	vec3f* vertices =  (vec3f*)_sphereVertBuf->Map(MAP_WRITE_BIT);
-	_sphereIndexBuf = _renderContext->CreateBuffer(_sphereIndexCount * sizeof(ushort), 0, BUFFER_MAP_WRITE_BIT);
+	_sphereIndexBuf = _renderContext->CreateBuffer(_sphereIndexCount * sizeof(ushort), nullptr, BUFFER_MAP_WRITE_BIT);
 	ushort* indices = (ushort*)_sphereIndexBuf->Map(MAP_WRITE_BIT);
 
 	int i;
