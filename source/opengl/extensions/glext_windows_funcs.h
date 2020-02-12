@@ -2279,6 +2279,16 @@ inline void glVertexAttribLFormat(GLuint attribindex, GLint size, GLenum type, G
 #endif
 }
 
+inline void glVertexAttribBinding(GLuint attribindex, GLuint bindingindex)
+{
+	assert(ptr_glVertexAttribBinding);
+	ptr_glVertexAttribBinding(attribindex, bindingindex);
+#if defined(DEBUG_GL_CHECK_FOR_ERROR)
+	GLenum error;
+	assert((error = glGetError()) == GL_NO_ERROR);
+#endif
+}
+
 inline void glVertexBindingDivisor(GLuint bindingindex, GLuint divisor)
 {
 	assert(ptr_glVertexBindingDivisor);

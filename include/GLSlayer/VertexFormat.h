@@ -26,7 +26,6 @@ namespace gls
 		bool integer;
 		bool normalized;
 		uint offset;
-		uint divisor;
 	};
 
 	class IVertexFormat

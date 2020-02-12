@@ -982,6 +982,7 @@ bool GLRenderContext::glextLoad_GL_ARB_vertex_attrib_binding()
 	INIT_FUNC_PTR(glVertexAttribFormat);
 	INIT_FUNC_PTR(glVertexAttribIFormat);
 	INIT_FUNC_PTR(glVertexAttribLFormat);
+	INIT_FUNC_PTR(glVertexAttribBinding);
 	INIT_FUNC_PTR(glVertexBindingDivisor);
 	_info.featuresGL.ARB_vertex_attrib_binding = result;
 	return result;

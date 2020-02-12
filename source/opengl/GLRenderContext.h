@@ -55,7 +55,7 @@ public:
 	virtual const ContextInfo& GetInfo() const override;
 
 	// vertex stream
-	virtual void VertexSource(int stream, IBuffer* buffer, sizei stride, intptr offset) override;
+	virtual void VertexSource(int stream, IBuffer* buffer, sizei stride, intptr offset, uint divisor) override;
 	virtual void IndexSource(IBuffer* buffer, DataType index_type) override;
 	virtual void ActiveVertexFormat(IVertexFormat* format) override;
 	virtual void EnablePrimitiveRestart(bool enable) override;
@@ -347,7 +347,7 @@ private:
 	bool LoadPlatformOpenGLExtensions();
 	bool IsExtSupported(const char* extension);
 	void Clear();
-	void SetupDrawingState();
+	void DelayedDrawingStateSetup();
 	bool GetInternalFormatInfo(GLenum type, GLenum internal_format, InternalFormatInfo& info);
 	void DebugMessage(DebugMessageSource source, DebugMessageType type, DebugMessageSeverity severity, ErrorMessageId message_id, ...);
 
@@ -382,6 +382,7 @@ private:
 		GLBuffer* buffer;
 		sizei stride;
 		intptr offset;
+		uint divisor;
 	};
 
 	struct VertexAttrib
@@ -398,14 +399,6 @@ private:
 		bool enabled;
 	};
 
-	struct ImageUnit
-	{
-		GLSamplerState* sampler;
-		GLTexture* texture;
-		bool texRemoved;
-		GLenum removedTexTarget;
-	};
-
 	class NullLogger : public IDebugLogger
 	{
 	public:
@@ -418,11 +411,8 @@ private:
 	GLVertexFormat* _vertexFormat;
 	VertexAttrib* _vertexAttribs;
 	int* _enabledVertexAttribs;
-	GLBuffer* _indexBuffer;
 	DataType _indexType;
-	GLFramebuffer* _framebuffer;
-	ImageUnit* _imageUnits;
-	int _highImageUnit;
+	GLuint* _lastBoundTexTargets;
 	GLuint _pipeline;
 	IDebugLogger* _logger;
 	NullLogger _nullLogger;

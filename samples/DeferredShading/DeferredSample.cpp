@@ -454,7 +454,7 @@ void DeferredSample::RenderGeometryPass()
 	_renderContext->SetVertexShader(_vertShaderGbuffer);
 	_renderContext->SetFragmentShader(_fragShaderGBuffer);
 	_renderContext->ActiveVertexFormat(_vertexFormat);
-	_renderContext->VertexSource(0, _vertexBuffer, sizeof(ObjLoader::ObjVertex), 0);
+	_renderContext->VertexSource(0, _vertexBuffer, sizeof(ObjLoader::ObjVertex), 0, 0);
 	_renderContext->IndexSource(_indexBuffer, TYPE_UNSIGNED_SHORT);
 
 	_renderContext->SetFramebuffer(_gbuffer);
@@ -511,7 +511,7 @@ void DeferredSample::RenderLightingPass()
 	_renderContext->SetVertexShader(_vertShaderLight);
 	_renderContext->SetFragmentShader(_fragShaderLight);
 	_renderContext->ActiveVertexFormat(_vertFmtSphere);
-	_renderContext->VertexSource(0, _sphereVertBuf, sizeof(vec3f), 0);
+	_renderContext->VertexSource(0, _sphereVertBuf, sizeof(vec3f), 0, 0);
 	_renderContext->IndexSource(_sphereIndexBuf, TYPE_UNSIGNED_SHORT);
 
 	_renderContext->SetSamplerState(0, nullptr);
@@ -560,7 +560,7 @@ void DeferredSample::RenderGBuffer()
 	_renderContext->SetVertexShader(_vertShaderScreenSpace);
 	_renderContext->SetFragmentShader(_fragShaderSimpleTex);
 	_renderContext->ActiveVertexFormat(_vertFmtScreenRect);
-	_renderContext->VertexSource(0, _rectVertBuf, sizeof(SSRectVertex), 0);
+	_renderContext->VertexSource(0, _rectVertBuf, sizeof(SSRectVertex), 0, 0);
 
 	float x1 = vsData.viewport.x;
 	float y1 = vsData.viewport.y;

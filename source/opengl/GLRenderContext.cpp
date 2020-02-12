@@ -246,15 +246,20 @@ bool GLRenderContext::InitCommon(uint version)
 
 	GetContextInfo();
 
-	_vertexStreams = new VertexStream[_info.maxVertexAttribBindings];
-	memset(_vertexStreams, 0, sizeof(*_vertexStreams) * _info.maxVertexAttribBindings);
-	_vertexAttribs = new VertexAttrib[_info.maxVertexAttribs];
-	memset(_vertexAttribs, 0, sizeof(*_vertexAttribs) * _info.maxVertexAttribs);
+	if (!_info.featuresGL.ARB_vertex_attrib_binding)
+	{
+		// We use these only if we don't have the ARB_vertex_attrib_binding extension to keep track of the current streams (buffer bindings) and attributes.
+		_vertexStreams = new VertexStream[_info.maxVertexAttribBindings];
+		memset(_vertexStreams, 0, sizeof(*_vertexStreams) * _info.maxVertexAttribBindings);
+		_vertexAttribs = new VertexAttrib[_info.maxVertexAttribs];
+		memset(_vertexAttribs, 0, sizeof(*_vertexAttribs) * _info.maxVertexAttribs);
+	}
+
 	// Array of enabled vertex attribute indices always needs to end with -1.
 	_enabledVertexAttribs = new int[_info.maxVertexAttribs + 1];
 	_enabledVertexAttribs[0] = -1;
-	_imageUnits = new ImageUnit[_info.maxCombinedTextureImageUnits];
-	memset(_imageUnits, 0, sizeof(*_imageUnits) * _info.maxCombinedTextureImageUnits);
+	_lastBoundTexTargets = new GLuint[_info.maxCombinedTextureImageUnits];
+	memset(_lastBoundTexTargets, 0, sizeof(*_lastBoundTexTargets) * _info.maxCombinedTextureImageUnits);
 	_glState.imageUnits = new GLState::SamplerState[_info.maxCombinedTextureImageUnits];
 	memset(_glState.imageUnits, 0, sizeof(*_glState.imageUnits) * _info.maxCombinedTextureImageUnits);
 
@@ -276,7 +281,7 @@ void GLRenderContext::DeinitCommon()
 	delete[] _vertexStreams;
 	delete[] _vertexAttribs;
 	delete[] _enabledVertexAttribs;
-	delete[] _imageUnits;
+	delete[] _lastBoundTexTargets;
 	delete[] _glState.imageUnits;
 	Clear();
 }
@@ -549,11 +554,8 @@ void GLRenderContext::Clear()
 	_vertexFormat = nullptr;
 	_vertexAttribs = nullptr;
 	_enabledVertexAttribs = nullptr;
-	_indexBuffer = nullptr;
 	_indexType = TYPE_NONE;
-	_framebuffer = nullptr;
-	_imageUnits = nullptr;
-	_highImageUnit = -1;
+	_lastBoundTexTargets = nullptr;
 	_pipeline = 0;
 	_logger = nullptr;
 }
@@ -563,17 +565,36 @@ const ContextInfo& GLRenderContext::GetInfo() const
 	return _info;
 }
 
-void GLRenderContext::VertexSource(int stream, IBuffer* buffer, sizei stride, intptr offset)
+void GLRenderContext::VertexSource(int stream, IBuffer* buffer, sizei stride, intptr offset, uint divisor)
 {
-	assert(stream >= 0 && stream < _info.maxVertexAttribBindings);
-	_vertexStreams[stream].buffer = dyn_cast_ptr<GLBuffer*>(buffer);
-	_vertexStreams[stream].stride = stride;
-	_vertexStreams[stream].offset = offset;
+	if (_info.featuresGL.ARB_vertex_attrib_binding)
+	{
+		glBindVertexBuffer(stream, dyn_cast_ptr<GLBuffer*>(buffer)->GetID(), offset, stride);
+
+		// Set the divisor for this stream.
+		glVertexBindingDivisor(stream, divisor);
+	}
+	else
+	{
+		assert(stream >= 0 && stream < _info.maxVertexAttribBindings);
+		_vertexStreams[stream].buffer = dyn_cast_ptr<GLBuffer*>(buffer);
+		_vertexStreams[stream].stride = stride;
+		_vertexStreams[stream].offset = offset;
+		_vertexStreams[stream].divisor = divisor;
+	}
 }
 
 void GLRenderContext::IndexSource(IBuffer* buffer, DataType index_type)
 {
-	_indexBuffer = dyn_cast_ptr<GLBuffer*>(buffer);
+	GLBuffer* buf = dyn_cast_ptr<GLBuffer*>(buffer);
+	GLuint bufId = (buf != nullptr) ? buf->GetID() : 0;
+
+	if (bufId != _glState.indexBuf)
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufId);
+		_glState.indexBuf = bufId;
+	}
+
 	_indexType = index_type;
 }
 
@@ -588,47 +609,38 @@ void GLRenderContext::ActiveVertexFormat(IVertexFormat* format)
 		while(*vert_attrib_index != -1)
 		{
 			glDisableVertexAttribArray(*vert_attrib_index);
-			_vertexAttribs[*vert_attrib_index].enabled = false;
 			++vert_attrib_index;
 		}
 
 		vert_attrib_index = _enabledVertexAttribs;
 
-		for(int i = 0; i < _vertexFormat->_count; ++i)
+		if (_vertexFormat != nullptr)
 		{
-			VertexAttribDesc& desc = _vertexFormat->_descriptors[i];
-			VertexAttrib& vattrib = _vertexAttribs[desc.attribute];
-			assert((int)desc.attribute < _info.maxVertexAttribs);
-			assert(desc.stream >= 0 && desc.stream < _info.maxVertexAttribBindings);
+			for (int i = 0; i < _vertexFormat->_count; ++i)
+			{
+				VertexAttribDesc& desc = _vertexFormat->_descriptors[i];
+				assert((int)desc.attribute < _info.maxVertexAttribs);
+				assert(desc.stream >= 0 && desc.stream < _info.maxVertexAttribBindings);
 
-			if(desc.type == TYPE_DOUBLE)
-			{
-				glVertexAttribLFormat(desc.attribute, desc.numComponents, GetGLEnum(desc.type), (GLuint)desc.offset);
-			}
-			else
-			{
-				if(desc.integer)
-					glVertexAttribIFormat(desc.attribute, desc.numComponents, GetGLEnum(desc.type), (GLuint)desc.offset);
+				if (desc.type == TYPE_DOUBLE)
+				{
+					glVertexAttribLFormat(desc.attribute, desc.numComponents, GetGLEnum(desc.type), (GLuint)desc.offset);
+				}
 				else
-					glVertexAttribFormat(desc.attribute, desc.numComponents, GetGLEnum(desc.type), desc.normalized, (GLuint)desc.offset);
-			}
-			
-			if(desc.divisor != vattrib.divisor)
-			{
-				glVertexBindingDivisor(desc.attribute, desc.divisor);
-				vattrib.divisor = desc.divisor;
-			}
+				{
+					if (desc.integer)
+						glVertexAttribIFormat(desc.attribute, desc.numComponents, GetGLEnum(desc.type), (GLuint)desc.offset);
+					else
+						glVertexAttribFormat(desc.attribute, desc.numComponents, GetGLEnum(desc.type), desc.normalized, (GLuint)desc.offset);
+				}
 
-			vattrib.numComponents = desc.numComponents;
-			vattrib.type = desc.type;
-			vattrib.integer = desc.integer;
-			vattrib.normalized = desc.normalized;
-			vattrib.offset = desc.offset;
-			vattrib.enabled = true;
+				// Bind this attribute index to the index of the stream from which it gets the data.
+				glVertexAttribBinding(desc.attribute, desc.stream);
 
-			*vert_attrib_index = desc.attribute;
-			++vert_attrib_index;
-			glEnableVertexAttribArray(desc.attribute);
+				*vert_attrib_index = desc.attribute;
+				++vert_attrib_index;
+				glEnableVertexAttribArray(desc.attribute);
+			}
 		}
 
 		*vert_attrib_index = -1;
@@ -996,7 +1008,14 @@ void GLRenderContext::LogicOperation(LogicOp op)
 */
 void GLRenderContext::SetFramebuffer(IFramebuffer* fbuf)
 {
-	_framebuffer = fbuf ? dyn_cast_ptr<GLFramebuffer*>(fbuf) : nullptr;
+	GLFramebuffer* framebuffer = dyn_cast_ptr<GLFramebuffer*>(fbuf);
+	GLuint fbufId = framebuffer ? framebuffer->GetID() : 0;
+
+	if (fbufId != _glState.drawFbuf)
+	{
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbufId);
+		_glState.drawFbuf = fbufId;
+	}
 }
 
 void GLRenderContext::ActiveColorBuffers(IFramebuffer* fbuf, sizei count, const ColorBuffer* buffers)
@@ -1344,27 +1363,43 @@ bool GLRenderContext::ValidateShaderPipeline()
 void GLRenderContext::SetSamplerTexture(int sampler, ITexture* texture)
 {
 	assert(sampler >= 0 && sampler < _info.maxCombinedTextureImageUnits);
-	if(texture)
-	{
-		_imageUnits[sampler].texture = dyn_cast_ptr<GLTexture*>(texture);
-		_imageUnits[sampler].texRemoved = false;
-	}
-	else if(_imageUnits[sampler].texture != nullptr)
-	{
-		_imageUnits[sampler].removedTexTarget = _imageUnits[sampler].texture->GetTarget();
-		_imageUnits[sampler].texRemoved = true;
-		_imageUnits[sampler].texture = nullptr;
-	}
 
-	if(sampler > _highImageUnit)
-		_highImageUnit = sampler;
+	GLTexture* newTexture = dyn_cast_ptr<GLTexture*>(texture);
+	GLuint newTextureId = (newTexture != nullptr) ? newTexture->GetID() : 0;
+
+	if (newTextureId != _glState.imageUnits[sampler].texture)
+	{
+		glActiveTexture(GL_TEXTURE0 + sampler);
+		if (newTexture != nullptr)
+		{
+			glBindTexture(newTexture->GetTarget(), newTextureId);
+			_lastBoundTexTargets[sampler] = newTexture->GetTarget();
+		}
+		else
+		{
+			if (_lastBoundTexTargets[sampler] != 0)
+			{
+				glBindTexture(_lastBoundTexTargets[sampler], 0);
+				_lastBoundTexTargets[sampler] = 0;
+			}
+		}
+		
+		_glState.imageUnits[sampler].texture = newTextureId;
+	}
 }
 
 void GLRenderContext::SetSamplerState(int sampler, ISamplerState* state)
 {
 	assert(sampler >= 0 && sampler < _info.maxCombinedTextureImageUnits);
 
-	_imageUnits[sampler].sampler = state ? dyn_cast_ptr<GLSamplerState*>(state) : 0;
+	GLSamplerState* newSampler = dyn_cast_ptr<GLSamplerState*>(state);
+	GLuint newSamplerId = (newSampler != nullptr) ? newSampler->GetID() : 0;
+
+	if (newSamplerId != _glState.imageUnits[sampler].sampler)
+	{
+		glBindSampler(sampler, newSamplerId);
+		_glState.imageUnits[sampler].sampler = newSamplerId;
+	}
 }
 
 void GLRenderContext::EnableSeamlessCubeMap(bool enable)
@@ -1377,31 +1412,22 @@ void GLRenderContext::EnableSeamlessCubeMap(bool enable)
 
 void GLRenderContext::Draw(PrimitiveType prim, int first, sizei count)
 {
-	if(!_vertexFormat)
-		return;
-
-	SetupDrawingState();
+	DelayedDrawingStateSetup();
 	glDrawArrays(GetGLEnum(prim), first, count);
 }
 
 void GLRenderContext::DrawInstanced(PrimitiveType prim, int first, sizei count, uint base_inst, sizei inst_count)
 {
-	if(!_vertexFormat)
-		return;
-
-	SetupDrawingState();
-
+	DelayedDrawingStateSetup();
 	glDrawArraysInstancedBaseInstance(GetGLEnum(prim), first, count, inst_count, base_inst);
 }
 
 // Same as DrawInstanced(), but parameters are sourced from the buffer (struct DrawIndirectData).
 void GLRenderContext::DrawIndirect(PrimitiveType prim, IBuffer* buffer, intptr offset)
 {
-	if(!_vertexFormat)
-		return;
+	DelayedDrawingStateSetup();
 
-	SetupDrawingState();
-
+	assert(buffer != nullptr);
 	GLuint buf_id = dyn_cast_ptr<GLBuffer*>(buffer)->GetID();
 	if(buf_id != _glState.drawIndirectBuf)
 	{
@@ -1418,10 +1444,7 @@ void GLRenderContext::MultiDrawIndirect(PrimitiveType prim, IBuffer* buffer, int
 {
 	assert((stride & 3) == 0); // stride must be multiple of 4
 
-	if(!_vertexFormat)
-		return;
-
-	SetupDrawingState();
+	DelayedDrawingStateSetup();
 
 	GLuint buf_id = dyn_cast_ptr<GLBuffer*>(buffer)->GetID();
 	if(buf_id != _glState.drawIndirectBuf)
@@ -1441,17 +1464,7 @@ void GLRenderContext::MultiDrawIndirect(PrimitiveType prim, IBuffer* buffer, int
 */
 void GLRenderContext::DrawIndexed(PrimitiveType prim, intptr index_start, int base_vertex, sizei count)
 {
-	if(!_vertexFormat || !_indexBuffer)
-		return;
-
-	SetupDrawingState();
-
-	if(_indexBuffer->GetID() != _glState.indexBuf)
-	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer->GetID());
-		_glState.indexBuf = _indexBuffer->GetID();
-	}
-
+	DelayedDrawingStateSetup();
 	glDrawElementsBaseVertex(GetGLEnum(prim), count, GetGLEnum(_indexType), BUFFER_OFFSET(index_start), base_vertex);
 }
 
@@ -1463,49 +1476,20 @@ void GLRenderContext::DrawIndexed(PrimitiveType prim, intptr index_start, int ba
 */
 void GLRenderContext::DrawIndexed(PrimitiveType prim, uint start, uint end, intptr index_start, int base_vertex, sizei count)
 {
-	if(!_vertexFormat || !_indexBuffer)
-		return;
-
-	SetupDrawingState();
-
-	if(_indexBuffer->GetID() != _glState.indexBuf)
-	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer->GetID());
-		_glState.indexBuf = _indexBuffer->GetID();
-	}
-
+	DelayedDrawingStateSetup();
 	glDrawRangeElementsBaseVertex(GetGLEnum(prim), start, end, count, GetGLEnum(_indexType), BUFFER_OFFSET(index_start), base_vertex);
 }
 
 void GLRenderContext::DrawIndexedInstanced(PrimitiveType prim, intptr index_start, int base_vertex, sizei count, uint base_inst, sizei inst_count)
 {
-	if(!_vertexFormat || !_indexBuffer)
-		return;
-
-	SetupDrawingState();
-
-	if(_indexBuffer->GetID() != _glState.indexBuf)
-	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer->GetID());
-		_glState.indexBuf = _indexBuffer->GetID();
-	}
-
+	DelayedDrawingStateSetup();
 	glDrawElementsInstancedBaseVertexBaseInstance(GetGLEnum(prim), count, GetGLEnum(_indexType), BUFFER_OFFSET(index_start), inst_count, base_vertex, base_inst);
 }
 
 // Same as DrawIndexedInstanced(), but parameters are sourced from the buffer (struct DrawIndexedIndirectData).
 void GLRenderContext::DrawIndexedIndirect(PrimitiveType prim, IBuffer* buffer, intptr offset)
 {
-	if(!_vertexFormat)
-		return;
-
-	SetupDrawingState();
-
-	if(_indexBuffer->GetID() != _glState.indexBuf)
-	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer->GetID());
-		_glState.indexBuf = _indexBuffer->GetID();
-	}
+	DelayedDrawingStateSetup();
 
 	GLuint buf_id = dyn_cast_ptr<GLBuffer*>(buffer)->GetID();
 	if(buf_id != _glState.drawIndirectBuf)
@@ -1523,16 +1507,7 @@ void GLRenderContext::MultiDrawIndexedIndirect(PrimitiveType prim, IBuffer* buff
 {
 	assert((stride & 3) == 0); // stride must be multiple of 4
 
-	if(!_vertexFormat)
-		return;
-
-	SetupDrawingState();
-
-	if(_indexBuffer->GetID() != _glState.indexBuf)
-	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer->GetID());
-		_glState.indexBuf = _indexBuffer->GetID();
-	}
+	DelayedDrawingStateSetup();
 
 	GLuint buf_id = dyn_cast_ptr<GLBuffer*>(buffer)->GetID();
 	if(buf_id != _glState.drawIndirectBuf)
@@ -1546,10 +1521,7 @@ void GLRenderContext::MultiDrawIndexedIndirect(PrimitiveType prim, IBuffer* buff
 
 void GLRenderContext::DrawTransformFeedback(PrimitiveType prim, ITransformFeedback* transform_feedback, uint stream)
 {
-	if(!_vertexFormat)
-		return;
-
-	SetupDrawingState();
+	DelayedDrawingStateSetup();
 
 	GLuint tf_id = dyn_cast_ptr<GLTransformFeedback*>(transform_feedback)->GetID();
 	if(tf_id != _glState.transformFeedback)
@@ -1563,10 +1535,7 @@ void GLRenderContext::DrawTransformFeedback(PrimitiveType prim, ITransformFeedba
 
 void GLRenderContext::DrawTransformFeedbackInstanced(PrimitiveType prim, ITransformFeedback* transform_feedback, uint stream, sizei inst_count)
 {
-	if(!_vertexFormat)
-		return;
-
-	SetupDrawingState();
+	DelayedDrawingStateSetup();
 
 	GLuint tf_id = dyn_cast_ptr<GLTransformFeedback*>(transform_feedback)->GetID();
 	if(tf_id != _glState.transformFeedback)
@@ -1742,37 +1711,9 @@ void GLRenderContext::CopyRenderbufferData(IRenderbuffer* source, int source_x, 
 		width, height, 0);
 }
 
-void GLRenderContext::SetupDrawingState()
+void GLRenderContext::DelayedDrawingStateSetup()
 {
-	// set current draw framebuffer
-	GLuint fbuf_id = _framebuffer? _framebuffer->GetID(): 0;
-	if(fbuf_id != _glState.drawFbuf)
-	{
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbuf_id);
-		_glState.drawFbuf = fbuf_id;
-	}
-
-	if(_info.featuresGL.ARB_vertex_attrib_binding)
-	{
-		for(int i = 0; i < _vertexFormat->_count; ++i)
-		{
-			VertexAttribDesc& desc = _vertexFormat->_descriptors[i];
-			VertexStream& vstream = _vertexStreams[desc.stream];
-			VertexAttrib& vattrib = _vertexAttribs[desc.attribute];
-
-			if(	vstream.buffer != vattrib.buffer ||
-				vstream.stride != vattrib.stride ||
-				vstream.offset != vattrib.bufferBase )
-			{
-				glBindVertexBuffer(static_cast<GLuint>(i), vstream.buffer->GetID(), vstream.offset, vstream.stride);
-
-				vattrib.buffer = vstream.buffer;
-				vattrib.stride = vstream.stride;
-				vattrib.bufferBase = vstream.offset;
-			}
-		}
-	}
-	else
+	if(!_info.featuresGL.ARB_vertex_attrib_binding)
 	{
 		int* vert_attrib_index = _enabledVertexAttribs;
 
@@ -1786,101 +1727,74 @@ void GLRenderContext::SetupDrawingState()
 		vert_attrib_index = _enabledVertexAttribs;
 
 		// setup vertex attribute pointers
-		for(int i = 0; i < _vertexFormat->_count; ++i)
+		if (_vertexFormat != nullptr)
 		{
-			VertexAttribDesc& desc = _vertexFormat->_descriptors[i];
-
-			assert(desc.stream >= 0 && desc.stream < _info.maxVertexAttribBindings);
-			assert(desc.attribute < (uint)_info.maxVertexAttribs);
-
-			VertexStream& vstream = _vertexStreams[desc.stream];
-			VertexAttrib& vattrib = _vertexAttribs[desc.attribute];
-
-			if(vstream.buffer)
+			for (int i = 0; i < _vertexFormat->_count; ++i)
 			{
-				if(	vstream.buffer != vattrib.buffer ||
-					vstream.stride != vattrib.stride ||
-					vstream.offset != vattrib.bufferBase ||
-					desc.numComponents != vattrib.numComponents ||
-					desc.type != vattrib.type ||
-					desc.integer != vattrib.integer ||
-					desc.normalized != vattrib.normalized ||
-					desc.offset != vattrib.offset )
-				{
-					if(vstream.buffer->GetID() != _glState.vertexBuf)
-					{
-						glBindBuffer(GL_ARRAY_BUFFER, vstream.buffer->GetID());
-						_glState.vertexBuf = vstream.buffer->GetID();
-					}
+				VertexAttribDesc& desc = _vertexFormat->_descriptors[i];
 
-					if(desc.type == TYPE_DOUBLE)
+				assert(desc.stream >= 0 && desc.stream < _info.maxVertexAttribBindings);
+				assert(desc.attribute < (uint)_info.maxVertexAttribs);
+
+				VertexStream& vstream = _vertexStreams[desc.stream];
+				VertexAttrib& vattrib = _vertexAttribs[desc.attribute];
+
+				if (vstream.buffer)
+				{
+					if (vstream.buffer != vattrib.buffer ||
+						vstream.stride != vattrib.stride ||
+						vstream.offset != vattrib.bufferBase ||
+						desc.numComponents != vattrib.numComponents ||
+						desc.type != vattrib.type ||
+						desc.integer != vattrib.integer ||
+						desc.normalized != vattrib.normalized ||
+						desc.offset != vattrib.offset)
 					{
-						glVertexAttribLPointer(desc.attribute, desc.numComponents, GL_DOUBLE, (GLsizei)vstream.stride, BUFFER_OFFSET(vstream.offset + desc.offset));
-					}
-					else
-					{
-						if(desc.integer)
-							glVertexAttribIPointer(desc.attribute, desc.numComponents, GetGLEnum(desc.type), (GLsizei)vstream.stride, BUFFER_OFFSET(vstream.offset + desc.offset));
+						if (vstream.buffer->GetID() != _glState.vertexBuf)
+						{
+							glBindBuffer(GL_ARRAY_BUFFER, vstream.buffer->GetID());
+							_glState.vertexBuf = vstream.buffer->GetID();
+						}
+
+						if (desc.type == TYPE_DOUBLE)
+						{
+							glVertexAttribLPointer(desc.attribute, desc.numComponents, GL_DOUBLE, (GLsizei)vstream.stride, BUFFER_OFFSET(vstream.offset + desc.offset));
+						}
 						else
-							glVertexAttribPointer(desc.attribute, desc.numComponents, GetGLEnum(desc.type), desc.normalized, (GLsizei)vstream.stride, BUFFER_OFFSET(vstream.offset + desc.offset));
+						{
+							if (desc.integer)
+								glVertexAttribIPointer(desc.attribute, desc.numComponents, GetGLEnum(desc.type), (GLsizei)vstream.stride, BUFFER_OFFSET(vstream.offset + desc.offset));
+							else
+								glVertexAttribPointer(desc.attribute, desc.numComponents, GetGLEnum(desc.type), desc.normalized, (GLsizei)vstream.stride, BUFFER_OFFSET(vstream.offset + desc.offset));
+						}
+
+						vattrib.buffer = vstream.buffer;
+						vattrib.stride = vstream.stride;
+						vattrib.bufferBase = vstream.offset;
+						vattrib.numComponents = desc.numComponents;
+						vattrib.type = desc.type;
+						vattrib.integer = desc.integer;
+						vattrib.normalized = desc.normalized;
+						vattrib.offset = desc.offset;
 					}
 
-					vattrib.buffer = vstream.buffer;
-					vattrib.stride = vstream.stride;
-					vattrib.bufferBase = vstream.offset;
-					vattrib.numComponents = desc.numComponents;
-					vattrib.type = desc.type;
-					vattrib.integer = desc.integer;
-					vattrib.normalized = desc.normalized;
-					vattrib.offset = desc.offset;
+					if (vstream.divisor != vattrib.divisor)
+					{
+						glVertexAttribDivisor(desc.attribute, vstream.divisor);
+						vattrib.divisor = vstream.divisor;
+					}
+
+					vattrib.enabled = true;
+
+					*vert_attrib_index = desc.attribute;
+					++vert_attrib_index;
+					glEnableVertexAttribArray(desc.attribute);
 				}
-
-				if(desc.divisor != vattrib.divisor)
-				{
-					glVertexAttribDivisor(desc.attribute, desc.divisor);
-					vattrib.divisor = desc.divisor;
-				}
-
-				vattrib.enabled = true;
-
-				*vert_attrib_index = desc.attribute;
-				++vert_attrib_index;
-				glEnableVertexAttribArray(desc.attribute);
 			}
 		}
 
 		*vert_attrib_index = -1;		
 	}
-
-	// set textures
-	for(int i = 0; i <= _highImageUnit; ++i)
-	{
-		ImageUnit& img_unit = _imageUnits[i];
-
-		// Set texture
-		if(img_unit.texture && img_unit.texture->GetID() != _glState.imageUnits[i].texture)
-		{
-			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(img_unit.texture->GetTarget(), img_unit.texture->GetID());
-			_glState.imageUnits[i].texture = img_unit.texture->GetID();
-		}
-		else if(img_unit.texRemoved)
-		{
-			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(img_unit.removedTexTarget, 0);
-			_glState.imageUnits[i].texture = 0;
-			img_unit.texRemoved = false;
-		}
-
-		// Set sampler
-		GLuint sampler_id = img_unit.sampler ? img_unit.sampler->GetID() : 0;
-		if(sampler_id != _glState.imageUnits[i].sampler)
-		{
-			glBindSampler(i, sampler_id);
-			_glState.imageUnits[i].sampler = sampler_id;
-		}
-	}
-	glActiveTexture(GL_TEXTURE0);
 }
 
 bool GLRenderContext::GetInternalFormatInfo(GLenum type, GLenum internal_format, InternalFormatInfo& info)
@@ -2196,10 +2110,6 @@ void GLRenderContext::DestroySamplerState(ISamplerState* samp_state)
 
 		for(int i = 0; i < _info.maxCombinedTextureImageUnits; ++i)
 		{
-			if(_imageUnits[i].sampler == gl_sampl)
-			{
-				_imageUnits[i].sampler = nullptr;
-			}
 			if(_glState.imageUnits[i].sampler == gl_sampl->GetID())
 			{
 				_glState.imageUnits[i].sampler = 0;
@@ -2642,15 +2552,8 @@ void GLRenderContext::DestroyTexture(ITexture* texture)
 	{
 		GLTexture* gl_tex = dyn_cast_ptr<GLTexture*>(texture);
 		// remove sampler references to this texture
-		for(int i = 0; i <= _highImageUnit; ++i)
+		for(int i = 0; i <= _info.maxCombinedTextureImageUnits; ++i)
 		{
-			if(_imageUnits[i].texture == gl_tex)
-			{
-				_imageUnits[i].texture = nullptr;
-				_imageUnits[i].texRemoved = true;
-				_imageUnits[i].removedTexTarget = gl_tex->GetTarget();
-			}
-
 			if (_glState.imageUnits[i].texture == gl_tex->GetID())
 			{
 				GLint active_tex;
@@ -2659,6 +2562,7 @@ void GLRenderContext::DestroyTexture(ITexture* texture)
 				glBindTexture(gl_tex->GetTarget(), 0);
 				glActiveTexture(active_tex);
 				_glState.imageUnits[i].texture = 0;
+				_lastBoundTexTargets[i] = 0;
 			}
 		}
 
@@ -2688,33 +2592,33 @@ void GLRenderContext::DestroyBuffer(IBuffer* buffer)
 		// arrays that use it.
 		GLBuffer* gl_buf = dyn_cast_ptr<GLBuffer*>(buffer);
 			
-		for(int i = 0; i < _info.maxVertexAttribBindings; ++i)
+		if (!_info.featuresGL.ARB_vertex_attrib_binding)
 		{
-			if(_vertexStreams[i].buffer == gl_buf)
+			for (int i = 0; i < _info.maxVertexAttribBindings; ++i)
 			{
-				_vertexStreams[i].buffer = nullptr;
-				if(_info.featuresGL.ARB_vertex_attrib_binding)
+				if (_vertexStreams[i].buffer == gl_buf)
 				{
-					glBindVertexBuffer(i, 0, 0, 0);
+					_vertexStreams[i].buffer = nullptr;
+					if (_info.featuresGL.ARB_vertex_attrib_binding)
+					{
+						glBindVertexBuffer(i, 0, 0, 0);
+					}
+				}
+			}
+
+			for (int i = 0; i < _info.maxVertexAttribs; ++i)
+			{
+				if (_vertexAttribs[i].buffer == gl_buf)
+				{
+					_vertexAttribs[i].buffer = nullptr;
+					if (_vertexAttribs[i].enabled)
+					{
+						_vertexAttribs[i].enabled = false;
+						glDisableVertexAttribArray(i);
+					}
 				}
 			}
 		}
-
-		for(int i = 0; i < _info.maxVertexAttribs; ++i)
-		{
-			if(_vertexAttribs[i].buffer == gl_buf)
-			{
-				_vertexAttribs[i].buffer = nullptr;
-				if(_vertexAttribs[i].enabled)
-				{
-					_vertexAttribs[i].enabled = false;
-					glDisableVertexAttribArray(i);
-				}
-			}
-		}
-
-		if(_indexBuffer == gl_buf)
-			_indexBuffer = nullptr;
 
 		if (_glState.vertexBuf == gl_buf->GetID())
 			_glState.vertexBuf = 0;
@@ -2793,8 +2697,6 @@ void GLRenderContext::DestroyFramebuffer(IFramebuffer* framebuffer)
 	{
 		GLFramebuffer* gl_fbuf = dyn_cast_ptr<GLFramebuffer*>(framebuffer);
 		assert(gl_fbuf);
-		if(_framebuffer == gl_fbuf)
-			_framebuffer = nullptr;
 
 		if (_glState.drawFbuf == gl_fbuf->GetID())
 			_glState.drawFbuf = 0;

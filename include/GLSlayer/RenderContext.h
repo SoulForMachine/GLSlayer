@@ -252,7 +252,7 @@ namespace gls
 		virtual const ContextInfo& GetInfo() const = 0;
 
 		// vertex stream
-		virtual void VertexSource(int stream, IBuffer* buffer, sizei stride, intptr offset) = 0;
+		virtual void VertexSource(int stream, IBuffer* buffer, sizei stride, intptr offset, uint divisor) = 0;
 		virtual void IndexSource(IBuffer* buffer, DataType index_type) = 0;
 		virtual void ActiveVertexFormat(IVertexFormat* format) = 0;
 		virtual void EnablePrimitiveRestart(bool enable) = 0;
