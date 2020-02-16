@@ -237,7 +237,7 @@ GLRenderContext::~GLRenderContext()
 
 bool GLRenderContext::InitCommon(uint version)
 {
-	if(!LoadOpenGLExtensions(version))
+	if (!LoadOpenGLExtensions(version))
 	{
 		Destroy();
 		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "not all required extensions are available");
@@ -249,25 +249,21 @@ bool GLRenderContext::InitCommon(uint version)
 	if (!_info.featuresGL.ARB_vertex_attrib_binding)
 	{
 		// We use these only if we don't have the ARB_vertex_attrib_binding extension to keep track of the current streams (buffer bindings) and attributes.
-		_vertexStreams = new VertexStream[_info.maxVertexAttribBindings];
-		memset(_vertexStreams, 0, sizeof(*_vertexStreams) * _info.maxVertexAttribBindings);
-		_vertexAttribs = new VertexAttrib[_info.maxVertexAttribs];
-		memset(_vertexAttribs, 0, sizeof(*_vertexAttribs) * _info.maxVertexAttribs);
+		_vertexStreams = new VertexStream[_info.maxVertexAttribBindings] { };
+		_vertexAttribs = new VertexAttrib[_info.maxVertexAttribs] { };
 	}
 
-	// Array of enabled vertex attribute indices always needs to end with -1.
-	_enabledVertexAttribs = new int[_info.maxVertexAttribs + 1];
-	_enabledVertexAttribs[0] = -1;
-	_lastBoundTexTargets = new GLuint[_info.maxCombinedTextureImageUnits];
-	memset(_lastBoundTexTargets, 0, sizeof(*_lastBoundTexTargets) * _info.maxCombinedTextureImageUnits);
-	_glState.imageUnits = new GLState::SamplerState[_info.maxCombinedTextureImageUnits];
-	memset(_glState.imageUnits, 0, sizeof(*_glState.imageUnits) * _info.maxCombinedTextureImageUnits);
+	_vertAttribEnabledState = new VertexAttribEnabledState[_info.maxVertexAttribs] { };
+	_lastBoundTexTargets = new GLuint[_info.maxCombinedTextureImageUnits] { };
+	_glState.imageUnits = new GLState::SamplerState[_info.maxCombinedTextureImageUnits] { };
 
-	// required for OpenGL 3.0 and above
+	// OpenGL 3.0 and above requires a vertex array object to be bound.
+	// We'll use a single VAO.
 	GLuint vao = 0;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
+	// We'll use a single program pipeline.
 	glGenProgramPipelines(1, &_pipeline);
 	glBindProgramPipeline(_pipeline);
 
@@ -280,7 +276,7 @@ void GLRenderContext::DeinitCommon()
 {
 	delete[] _vertexStreams;
 	delete[] _vertexAttribs;
-	delete[] _enabledVertexAttribs;
+	delete[] _vertAttribEnabledState;
 	delete[] _lastBoundTexTargets;
 	delete[] _glState.imageUnits;
 	Clear();
@@ -448,6 +444,7 @@ void GLRenderContext::GetContextInfo()
 		glGetIntegerv(GL_MAX_DEBUG_GROUP_STACK_DEPTH, &_info.maxDebugGroupStackDepth);
 		glGetIntegerv(GL_MAX_LABEL_LENGTH, &_info.maxLabelLength);
 		glGetIntegerv(GL_MAX_VERTEX_ATTRIB_BINDINGS, &_info.maxVertexAttribBindings);
+		glGetIntegerv(GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET, &_info.maxVertexAttribRelativeOffset);
 	}
 	
 	if (ver_num >= 450)
@@ -553,7 +550,7 @@ void GLRenderContext::Clear()
 	_vertexStreams = nullptr;
 	_vertexFormat = nullptr;
 	_vertexAttribs = nullptr;
-	_enabledVertexAttribs = nullptr;
+	_vertAttribEnabledState = nullptr;
 	_indexType = TYPE_NONE;
 	_lastBoundTexTargets = nullptr;
 	_pipeline = 0;
@@ -604,21 +601,14 @@ void GLRenderContext::ActiveVertexFormat(IVertexFormat* format)
 
 	if(_info.featuresGL.ARB_vertex_attrib_binding)
 	{
-		int* vert_attrib_index = _enabledVertexAttribs;
-
-		while(*vert_attrib_index != -1)
-		{
-			glDisableVertexAttribArray(*vert_attrib_index);
-			++vert_attrib_index;
-		}
-
-		vert_attrib_index = _enabledVertexAttribs;
-
 		if (_vertexFormat != nullptr)
 		{
-			for (int i = 0; i < _vertexFormat->_count; ++i)
+			int descCount = _vertexFormat->GetDescriptorCount();
+			const VertexAttribDesc* descriptors = _vertexFormat->GetDescriptors();
+
+			for (int i = 0; i < descCount; ++i)
 			{
-				VertexAttribDesc& desc = _vertexFormat->_descriptors[i];
+				const VertexAttribDesc& desc = descriptors[i];
 				assert((int)desc.attribute < _info.maxVertexAttribs);
 				assert(desc.stream >= 0 && desc.stream < _info.maxVertexAttribBindings);
 
@@ -637,13 +627,30 @@ void GLRenderContext::ActiveVertexFormat(IVertexFormat* format)
 				// Bind this attribute index to the index of the stream from which it gets the data.
 				glVertexAttribBinding(desc.attribute, desc.stream);
 
-				*vert_attrib_index = desc.attribute;
-				++vert_attrib_index;
-				glEnableVertexAttribArray(desc.attribute);
+				_vertAttribEnabledState[desc.attribute].newState = true;	// Set this flag for the next loop.
 			}
 		}
 
-		*vert_attrib_index = -1;
+		for (int i = 0; i < _info.maxVertexAttribs; ++i)
+		{
+			if (_vertAttribEnabledState[i].newState == true)
+			{
+				if (_vertAttribEnabledState[i].currentState == false)
+				{
+					glEnableVertexAttribArray(i);
+					_vertAttribEnabledState[i].currentState = true;
+				}
+				_vertAttribEnabledState[i].newState = false;	// Reset this flag after changing the state.
+			}
+			else
+			{
+				if (_vertAttribEnabledState[i].currentState == true)
+				{
+					glDisableVertexAttribArray(i);
+					_vertAttribEnabledState[i].currentState = false;
+				}
+			}
+		}
 	}
 }
 
@@ -1715,23 +1722,15 @@ void GLRenderContext::DelayedDrawingStateSetup()
 {
 	if(!_info.featuresGL.ARB_vertex_attrib_binding)
 	{
-		int* vert_attrib_index = _enabledVertexAttribs;
-
-		while(*vert_attrib_index != -1)
-		{
-			glDisableVertexAttribArray(*vert_attrib_index);
-			_vertexAttribs[*vert_attrib_index].enabled = false;
-			++vert_attrib_index;
-		}
-
-		vert_attrib_index = _enabledVertexAttribs;
-
-		// setup vertex attribute pointers
+		// Setup vertex attribute pointers.
 		if (_vertexFormat != nullptr)
 		{
-			for (int i = 0; i < _vertexFormat->_count; ++i)
+			int descCount = _vertexFormat->GetDescriptorCount();
+			const VertexAttribDesc* descriptors = _vertexFormat->GetDescriptors();
+
+			for (int i = 0; i < descCount; ++i)
 			{
-				VertexAttribDesc& desc = _vertexFormat->_descriptors[i];
+				const VertexAttribDesc& desc = descriptors[i];
 
 				assert(desc.stream >= 0 && desc.stream < _info.maxVertexAttribBindings);
 				assert(desc.attribute < (uint)_info.maxVertexAttribs);
@@ -1784,16 +1783,31 @@ void GLRenderContext::DelayedDrawingStateSetup()
 						vattrib.divisor = vstream.divisor;
 					}
 
-					vattrib.enabled = true;
-
-					*vert_attrib_index = desc.attribute;
-					++vert_attrib_index;
-					glEnableVertexAttribArray(desc.attribute);
+					_vertAttribEnabledState[desc.attribute].newState = true;	// Set this flag for the next loop.
 				}
 			}
 		}
 
-		*vert_attrib_index = -1;		
+		for (int i = 0; i < _info.maxVertexAttribs; ++i)
+		{
+			if (_vertAttribEnabledState[i].newState == true)
+			{
+				if (_vertAttribEnabledState[i].currentState == false)
+				{
+					glEnableVertexAttribArray(i);
+					_vertAttribEnabledState[i].currentState = true;
+				}
+				_vertAttribEnabledState[i].newState = false;	// Reset this flag after changing the state.
+			}
+			else
+			{
+				if (_vertAttribEnabledState[i].currentState == true)
+				{
+					glDisableVertexAttribArray(i);
+					_vertAttribEnabledState[i].currentState = false;
+				}
+			}
+		}
 	}
 }
 
@@ -2009,19 +2023,19 @@ bool GLRenderContext::GetInternalFormatInfo(GLenum type, GLenum internal_format,
 
 void GLRenderContext::DebugMessage(DebugMessageSource source, DebugMessageType type, DebugMessageSeverity severity, ErrorMessageId message_id, ...)
 {
-	const char* message = GetMessageString(message_id);
-	if(message)
+	if (_logger)
 	{
-		va_list args;
-		va_start(args, message_id);
-
-		char buf[1024];
-		vsnprintf(buf, 1024, message, args);
-
-		va_end(args);
-
-		if(_logger)
+		const char* message = GetMessageString(message_id);
+		if (message)
 		{
+			va_list args;
+			va_start(args, message_id);
+
+			char buf[1024];
+			vsnprintf(buf, 1024, message, args);
+
+			va_end(args);
+
 			_logger->DebugMessage(source, type, message_id, severity, buf);
 		}
 	}
@@ -2065,18 +2079,13 @@ ErrorCode GLRenderContext::GetLastError()
 	return GetFromGLEnum<ErrorCode>(error);
 }
 
-IVertexFormat* GLRenderContext::CreateVertexFormat(int count, const VertexAttribDesc* descriptors)
+IVertexFormat* GLRenderContext::CreateVertexFormat(const VertexAttribDesc* descriptors, int count)
 {
-	if(count <= 0 || !descriptors)
-		return nullptr;
-
 	GLVertexFormat* vformat = new GLVertexFormat;
-	vformat->_count = count;
-	vformat->_descriptors = new VertexAttribDesc[count];
-
-	for(int i = 0; i < count; ++i)
+	if (!vformat->Create(_info, descriptors, count))
 	{
-		vformat->_descriptors[i] = descriptors[i];
+		delete vformat;
+		return nullptr;
 	}
 
 	return vformat;
@@ -2611,10 +2620,10 @@ void GLRenderContext::DestroyBuffer(IBuffer* buffer)
 				if (_vertexAttribs[i].buffer == gl_buf)
 				{
 					_vertexAttribs[i].buffer = nullptr;
-					if (_vertexAttribs[i].enabled)
+					if (_vertAttribEnabledState[i].currentState)
 					{
-						_vertexAttribs[i].enabled = false;
 						glDisableVertexAttribArray(i);
+						_vertAttribEnabledState[i].currentState = false;
 					}
 				}
 			}

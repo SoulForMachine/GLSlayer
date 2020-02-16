@@ -97,10 +97,10 @@ bool TriangleSample::Init(gls::CreateContextInfo& info)
 	_vertShaderUniforms = _renderContext->CreateBuffer(sizeof(mat4f), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
 
 	VertexAttribDesc vert_desc[] = {
-		{ 0, 0, 3, gls::TYPE_FLOAT, false, false, 0, 0 },
-		{ 0, 1, 4, gls::TYPE_FLOAT, false, false, 12, 0 },
+		{ 0, 0, 3, gls::TYPE_FLOAT, false, false, offsetof(Vertex, position) },
+		{ 0, 1, 4, gls::TYPE_FLOAT, false, false, offsetof(Vertex, color) },
 	};
-	_vertFormat = _renderContext->CreateVertexFormat(2, vert_desc);
+	_vertFormat = _renderContext->CreateVertexFormat(vert_desc, CountOf(vert_desc));
 
 	return true;
 }
@@ -143,7 +143,7 @@ void TriangleSample::Render(int frame_time)
 		return;
 
 	_renderContext->ClearColorBuffer(nullptr, 0, vec4f(0.0f, 0.0f, 0.0f, 0.0f));
-	_renderContext->VertexSource(0, _vertexBuffer, sizeof(Vertex), 0);
+	_renderContext->VertexSource(0, _vertexBuffer, sizeof(Vertex), 0, 0);
 	_renderContext->ActiveVertexFormat(_vertFormat);
 	_renderContext->SetVertexShader(_vertexShader);
 	_renderContext->SetFragmentShader(_fragmentShader);

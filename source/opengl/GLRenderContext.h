@@ -229,7 +229,7 @@ public:
 
 	// object creation
 
-	virtual IVertexFormat* CreateVertexFormat(int count, const VertexAttribDesc* descriptors) override;
+	virtual IVertexFormat* CreateVertexFormat(const VertexAttribDesc* descriptors, int count) override;
 	virtual void DestroyVertexFormat(IVertexFormat* vert_fmt) override;
 
 	virtual ISamplerState* CreateSamplerState(const SamplerStateDesc& descriptor) override;
@@ -396,7 +396,12 @@ private:
 		bool normalized;
 		sizei offset;
 		uint divisor;
-		bool enabled;
+	};
+
+	struct VertexAttribEnabledState
+	{
+		bool currentState;
+		bool newState;
 	};
 
 	class NullLogger : public IDebugLogger
@@ -408,9 +413,9 @@ private:
 	// current state
 	GLState _glState;
 	VertexStream* _vertexStreams;
-	GLVertexFormat* _vertexFormat;
 	VertexAttrib* _vertexAttribs;
-	int* _enabledVertexAttribs;
+	GLVertexFormat* _vertexFormat;
+	VertexAttribEnabledState* _vertAttribEnabledState;
 	DataType _indexType;
 	GLuint* _lastBoundTexTargets;
 	GLuint _pipeline;

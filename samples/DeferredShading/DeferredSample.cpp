@@ -267,14 +267,14 @@ bool DeferredSample::Init(CreateContextInfo& info)
 		{ 0, 0, 3, TYPE_FLOAT, false, false, 0 },
 		{ 0, 1, 3, TYPE_FLOAT, false, false, 12 },
 	};
-	_vertexFormat = _renderContext->CreateVertexFormat(sizeof(vert_desc) / sizeof(*vert_desc), vert_desc);
+	_vertexFormat = _renderContext->CreateVertexFormat(vert_desc, CountOf(vert_desc));
 
 	VertexAttribDesc rect_vert_desc[] =
 	{
 		{ 0, 0, 2, TYPE_FLOAT, false, false, 0 },
 		{ 0, 1, 2, TYPE_FLOAT, false, false, 8 },
 	};
-	_vertFmtScreenRect = _renderContext->CreateVertexFormat(sizeof(rect_vert_desc) / sizeof(*rect_vert_desc), rect_vert_desc);
+	_vertFmtScreenRect = _renderContext->CreateVertexFormat(rect_vert_desc, CountOf(rect_vert_desc));
 
 	// uniform buffers
 
@@ -798,7 +798,7 @@ void DeferredSample::CreateSphere(float radius, int slices, int stacks)
 	{
 		{ 0, 0, 3, TYPE_FLOAT, false, false, 0 },
 	};
-	_vertFmtSphere = _renderContext->CreateVertexFormat(sizeof(desc) / sizeof(*desc), desc);
+	_vertFmtSphere = _renderContext->CreateVertexFormat(desc, CountOf(desc));
 }
 
 void DeferredSample::DestroySphere()

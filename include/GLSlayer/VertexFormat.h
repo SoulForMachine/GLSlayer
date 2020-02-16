@@ -9,13 +9,11 @@ namespace gls
 {
 
 	/*
-		Normalized flag is used only if integer flag is false.
-		If integer is true, type must be one of integer types,
-		and data is treated as pure integers. If integer is false
-		and type is one of integer types, data is converted to
-		float directly if normalized is false, or converted to
-		normalized float ([0,1] for unsigned or [-1,1] for signed
-		types) if normalized flag is true.
+		- Normalized flag is used only if integer flag is false.
+		- If integer is true, type must be one of integer types and data is treated as pure integers.
+		- If integer is false and type is one of integer types, then:
+			- If normalized is false, data is converted to float directly.
+			- If normalized flag is true, data is converted to normalized float ([0,1] for unsigned or [-1,1] for signed types).
 	*/
 	struct VertexAttribDesc
 	{

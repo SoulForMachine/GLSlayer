@@ -9,6 +9,8 @@
 namespace gls::internals
 {
 
+struct GLContextInfo;
+
 class GLVertexFormat : public IVertexFormat
 {
 public:
@@ -18,6 +20,12 @@ public:
 	GLVertexFormat(const GLVertexFormat&) = delete;
 	GLVertexFormat& operator = (const GLVertexFormat&) = delete;
 
+	bool Create(const GLContextInfo& ctxInfo, const VertexAttribDesc* descriptors, int count);
+
+	const VertexAttribDesc* GetDescriptors() const { return _descriptors; }
+	int GetDescriptorCount() const { return _count; }
+
+private:
 	VertexAttribDesc* _descriptors;
 	int _count;
 };

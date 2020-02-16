@@ -144,6 +144,7 @@ namespace gls
 		int maxDebugGroupStackDepth;
 		int maxLabelLength;
 		int maxVertexAttribBindings;
+		int maxVertexAttribRelativeOffset;
 		int maxCullDistances;
 		int maxCombinedClipAndCullDistances;
 	};
@@ -426,7 +427,7 @@ namespace gls
 
 		// object creation
 
-		virtual IVertexFormat* CreateVertexFormat(int count, const VertexAttribDesc* descriptors) = 0;
+		virtual IVertexFormat* CreateVertexFormat(const VertexAttribDesc* descriptors, int count) = 0;
 		virtual void DestroyVertexFormat(IVertexFormat* vert_fmt) = 0;
 
 		virtual ISamplerState* CreateSamplerState(const SamplerStateDesc& descriptor) = 0;

@@ -10,6 +10,9 @@
 	#include "extensions/glxext_flags.h"
 #endif
 
+#include "GLSlayer/RenderContext.h"
+
+
 namespace gls::internals
 {
 
