@@ -61,6 +61,7 @@ private:
 	gls::IBuffer* _ubufVertShaderGBuffer;
 	gls::IBuffer* _ubufFragShaderGBuffer;
 	gls::IBuffer* _ubufVertShaderSSpace;
+	gls::IBuffer* _ubufFragShaderSimpleTex;
 	gls::IBuffer* _ubufFragShaderLighting;
 	gls::IBuffer* _rectVertBuf;
 	gls::IBuffer* _sphereVertBuf;

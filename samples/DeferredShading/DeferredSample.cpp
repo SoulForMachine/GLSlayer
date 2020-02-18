@@ -37,6 +37,13 @@ struct VSScreenSpaceData
 {
 	vec4f viewport;
 };
+
+struct FSSimpleTextureData
+{
+	vec4f rangeMin;
+	vec4f rangeMax;
+	int texComponents;
+};
 #pragma pack(pop)
 
 
@@ -68,6 +75,7 @@ DeferredSample::DeferredSample()
 	_ubufVertShaderGBuffer = nullptr;
 	_ubufFragShaderGBuffer = nullptr;
 	_ubufVertShaderSSpace = nullptr;
+	_ubufFragShaderSimpleTex = nullptr;
 	_ubufFragShaderLighting = nullptr;
 	_rectVertBuf = nullptr;
 	_sphereVertBuf = nullptr;
@@ -282,6 +290,7 @@ bool DeferredSample::Init(CreateContextInfo& info)
 	_ubufFragShaderGBuffer = _renderContext->CreateBuffer(sizeof(GBufferFragData), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
 
 	_ubufVertShaderSSpace = _renderContext->CreateBuffer(sizeof(VSScreenSpaceData), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
+	_ubufFragShaderSimpleTex = _renderContext->CreateBuffer(sizeof(FSSimpleTextureData), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
 	_ubufFragShaderLighting = _renderContext->CreateBuffer(sizeof(vec4f), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
 
 	_rectVertBuf = _renderContext->CreateBuffer(2 * 2 * 6 * sizeof(SSRectVertex), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
@@ -334,6 +343,7 @@ void DeferredSample::Deinit()
 		_renderContext->DestroyBuffer(_ubufVertShaderGBuffer);
 		_renderContext->DestroyBuffer(_ubufFragShaderGBuffer);
 		_renderContext->DestroyBuffer(_ubufVertShaderSSpace);
+		_renderContext->DestroyBuffer(_ubufFragShaderSimpleTex);
 		_renderContext->DestroyBuffer(_ubufFragShaderLighting);
 		_renderContext->DestroySamplerState(_samplerGBuffer);
 		_renderContext->DestroySamplerState(_samplerLight);
@@ -557,6 +567,7 @@ void DeferredSample::RenderGBuffer()
 
 	_ubufVertShaderSSpace->BufferSubData(0, sizeof(VSScreenSpaceData), &vsData);
 	_renderContext->SetUniformBuffer(0, _ubufVertShaderSSpace);
+	_renderContext->SetUniformBuffer(1, _ubufFragShaderSimpleTex);
 	_renderContext->SetVertexShader(_vertShaderScreenSpace);
 	_renderContext->SetFragmentShader(_fragShaderSimpleTex);
 	_renderContext->ActiveVertexFormat(_vertFmtScreenRect);
@@ -593,14 +604,35 @@ void DeferredSample::RenderGBuffer()
 
 	_renderContext->ClearColorBuffer(nullptr, 0, vec4f(0.1f, 0.3f, 0.3f, 1.0f));
 
+	FSSimpleTextureData fsData;
+	fsData.texComponents = 3;
+	fsData.rangeMin.set(0.0f, 0.0f, 0.0f);
+	fsData.rangeMax.set(1.0f, 1.0f, 1.0f);
+	_ubufFragShaderSimpleTex->BufferSubData(0, sizeof(FSSimpleTextureData), &fsData);
+
 	_renderContext->SetSamplerTexture(0, _texDiffuse);
 	_renderContext->Draw(PRIM_TRIANGLES, 0, 6);
+
+	fsData.texComponents = 3;
+	fsData.rangeMin.set(_modelBoundsMin, 0.0f);
+	fsData.rangeMax.set(_modelBoundsMax, 0.0f);
+	_ubufFragShaderSimpleTex->BufferSubData(0, sizeof(FSSimpleTextureData), &fsData);
 
 	_renderContext->SetSamplerTexture(0, _texPosition);
 	_renderContext->Draw(PRIM_TRIANGLES, 6, 6);
 
+	fsData.texComponents = 3;
+	fsData.rangeMin.set(-1.0f, -1.0f, -1.0f);
+	fsData.rangeMax.set(1.0f, 1.0f, 1.0f);
+	_ubufFragShaderSimpleTex->BufferSubData(0, sizeof(FSSimpleTextureData), &fsData);
+
 	_renderContext->SetSamplerTexture(0, _texNormal);
 	_renderContext->Draw(PRIM_TRIANGLES, 12, 6);
+
+	fsData.texComponents = 1;
+	fsData.rangeMin.set(0.92f, 0.92f, 0.92f);
+	fsData.rangeMax.set(1.0f, 1.0f, 1.0f);
+	_ubufFragShaderSimpleTex->BufferSubData(0, sizeof(FSSimpleTextureData), &fsData);
 
 	_renderContext->SetSamplerTexture(0, _depthBuffer);
 	_renderContext->Draw(PRIM_TRIANGLES, 18, 6);
