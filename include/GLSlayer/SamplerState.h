@@ -12,37 +12,18 @@ namespace gls
 
 	struct SamplerStateDesc
 	{
-		SamplerStateDesc()
-		{
-			addressU = TEX_ADDRESS_REPEAT;
-			addressV = TEX_ADDRESS_REPEAT;
-			addressW = TEX_ADDRESS_REPEAT;
-			minFilter = TEX_FILTER_NEAREST_MIPMAP_LINEAR;
-			magFilter = TEX_FILTER_LINEAR;
-			borderColor[0] = 0.0f;
-			borderColor[1] = 0.0f;
-			borderColor[2] = 0.0f;
-			borderColor[3] = 0.0f;
-			minLOD = -1000.0f;
-			maxLOD = 1000.0f;
-			lodBias = 0.0f;
-			texCmpMode = DEPTH_CMP_NONE;
-			texCmpFunc = FUNC_LEQUAL;
-			maxAnisotropy = 1.0f;
-		}
-
-		TexAddressMode addressU;
-		TexAddressMode addressV;
-		TexAddressMode addressW;
-		TexFilter minFilter;
-		TexFilter magFilter;
-		float borderColor[4];
-		float minLOD;
-		float maxLOD;
-		float lodBias;
-		TexCompareMode texCmpMode;
-		CompareFunc texCmpFunc;
-		float maxAnisotropy;
+		TexAddressMode addressU = TexAddressMode::Repeat;
+		TexAddressMode addressV = TexAddressMode::Repeat;
+		TexAddressMode addressW = TexAddressMode::Repeat;
+		TexFilter minFilter = TexFilter::NearestMipmapLinear;
+		TexFilter magFilter = TexFilter::Linear;
+		float borderColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		float minLOD = -1000.0f;
+		float maxLOD = 1000.0f;
+		float lodBias = 0.0f;
+		TexCompareMode texCmpMode = TexCompareMode::None;
+		CompareFunc texCmpFunc = CompareFunc::LessOrEqual;
+		float maxAnisotropy = 1.0f;
 	};
 
 

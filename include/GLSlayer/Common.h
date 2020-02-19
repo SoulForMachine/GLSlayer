@@ -27,338 +27,338 @@
 namespace gls
 {
 
-	enum ResourceType
+	enum class ResourceType
 	{
-		RES_BUFFER,
-		RES_SHADER,
-		RES_TEXTURE,
-		RES_FRAMEBUFFER,
-		RES_RENDERBUFFER,
-		RES_TRANSFORM_FEEDBACK,
-		RES_SAMPLER_STATE,
+		Buffer,
+		Shader,
+		Texture,
+		Framebuffer,
+		Renderbuffer,
+		TransformFeedback,
+		SamplerState,
 	};
 
-	enum BufferType
+	enum class BufferType
 	{
-		VERTEX_BUFFER,
-		INDEX_BUFFER,
-		PIXEL_PACK_BUFFER,
-		PIXEL_UNPACK_BUFFER,
-		TEXTURE_BUFFER,
-		UNIFORM_BUFFER,
-		TRANSFORM_FEEDBACK_BUFFER,
-		DRAW_INDIRECT_BUFFER,
-		DISPATCH_INDIRECT_BUFFER,
-		ATOMIC_COUNTER_BUFFER,
-		SHADER_STORAGE_BUFFER,
-		QUERY_BUFFER,
+		Vertex,
+		Index,
+		PixelPack,
+		PixelUnpack,
+		Texture,
+		Uniform,
+		TransformFeedback,
+		DrawIndirect,
+		DispatchIndirect,
+		AtomicCounter,
+		ShaderStorage,
+		Query,
 	};
 
-	enum ShaderType
+	enum class ShaderType
 	{
-		VERTEX_SHADER,
-		GEOMETRY_SHADER,
-		TESS_CONTROL_SHADER,
-		TESS_EVALUATION_SHADER,
-		FRAGMENT_SHADER,
-		COMPUTE_SHADER,
+		Vertex,
+		Geometry,
+		TessControl,
+		TessEvaluation,
+		Fragment,
+		Compute,
 	};
 
-	enum TextureType
+	enum class TextureType
 	{
-		TEXTURE_1D,
-		TEXTURE_2D,
-		TEXTURE_2D_MULTISAMPLE,
-		TEXTURE_3D,
-		TEXTURE_CUBE,
-		TEXTURE_1D_ARRAY,
-		TEXTURE_2D_ARRAY,
-		TEXTURE_2D_MULTISAMPLE_ARRAY,
-		TEXTURE_CUBE_ARRAY,
-		TEXTURE_RECTANGLE,
-		TEXTURE_BUFFER_DATA,
+		Tex1D,
+		Tex2D,
+		Tex2DMultisample,
+		Tex3D,
+		TexCube,
+		Tex1DArray,
+		Tex2DArray,
+		Tex2DMultisampleArray,
+		TexCubeArray,
+		TexRectangle,
+		TexBuffer,
 	};
 
-	enum QueryType
+	enum class QueryType
 	{
-		QUERY_UNDEFINED,
-		QUERY_SAMPLES_PASSED,
-		QUERY_ANY_SAMPLES_PASSED,
-		QUERY_ANY_SAMPLES_PASSED_CONSERVATIVE,
-		QUERY_PRIMITIVES_GENERATED,
-		QUERY_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN,
-		QUERY_TIME_ELAPSED,
-		QUERY_TIMESTAMP,
+		Undefined,
+		SamplesPassed,
+		AnySamplesPassed,
+		AnySamplesPassedConservative,
+		PrimitivesGenerated,
+		TransformFeedbackPrimitivesWritten,
+		TimeElapsed,
+		Timestamp,
 	};
 
-	enum DataType
+	enum class DataType
 	{
-		TYPE_NONE,
-		TYPE_UNSIGNED_BYTE,
-		TYPE_BYTE,
-		TYPE_UNSIGNED_SHORT,
-		TYPE_SHORT,
-		TYPE_UNSIGNED_INT,
-		TYPE_INT,
-		TYPE_INT_2_10_10_10_REV,
-		TYPE_HALF_FLOAT,
-		TYPE_FLOAT,
-		TYPE_DOUBLE,
-		TYPE_FIXED,
-		TYPE_UNSIGNED_BYTE_3_3_2,
-		TYPE_UNSIGNED_BYTE_2_3_2_REV,
-		TYPE_UNSIGNED_SHORT_5_6_5,
-		TYPE_UNSIGNED_SHORT_5_6_5_REV,
-		TYPE_UNSIGNED_SHORT_4_4_4_4,
-		TYPE_UNSIGNED_SHORT_4_4_4_4_REV,
-		TYPE_UNSIGNED_SHORT_5_5_5_1,
-		TYPE_UNSIGNED_SHORT_1_5_5_5_REV,
-		TYPE_UNSIGNED_INT_8_8_8_8,
-		TYPE_UNSIGNED_INT_8_8_8_8_REV,
-		TYPE_UNSIGNED_INT_10_10_10_2,
-		TYPE_UNSIGNED_INT_2_10_10_10_REV,
-		TYPE_UNSIGNED_INT_24_8,
-		TYPE_UNSIGNED_INT_10F_11F_11F_REV,
-		TYPE_UNSIGNED_INT_5_9_9_9_REV,
-		TYPE_FLOAT_32_UNSIGNED_INT_24_8_REV,
+		None,
+		UnsignedByte,
+		Byte,
+		UnsignedShort,
+		Short,
+		UnsignedInt,
+		Int,
+		Int_2_10_10_10_Rev,
+		HalfFloat,
+		Float,
+		Double,
+		Fixed,
+		UnsignedByte_3_3_2,
+		UnsignedByte_2_3_2_Rev,
+		UnsignedShort_5_6_5,
+		UnsignedShort_5_6_5_Rev,
+		UnsignedShort_4_4_4_4,
+		UnsignedShort_4_4_4_4_Rev,
+		UnsignedShort_5_5_5_1,
+		UnsignedShort_1_5_5_5_Rev,
+		UnsignedInt_8_8_8_8,
+		UnsignedInt_8_8_8_8_Rev,
+		UnsignedInt_10_10_10_2,
+		UnsignedInt_2_10_10_10_Rev,
+		UnsignedInt_24_8,
+		UnsignedInt_10F_11F_11F_Rev,
+		UnsignedInt_5_9_9_9_Rev,
+		Float_32_UnsignedInt_24_8_Rev,
 	};
 
-	enum ShaderDataType
+	enum class ShaderDataType
 	{
-		SHADER_TYPE_FLOAT,
-		SHADER_TYPE_FLOAT_VEC2,
-		SHADER_TYPE_FLOAT_VEC3,
-		SHADER_TYPE_FLOAT_VEC4,
-		SHADER_TYPE_DOUBLE,
-		SHADER_TYPE_DOUBLE_VEC2,
-		SHADER_TYPE_DOUBLE_VEC3,
-		SHADER_TYPE_DOUBLE_VEC4,
-		SHADER_TYPE_INT,
-		SHADER_TYPE_INT_VEC2,
-		SHADER_TYPE_INT_VEC3,
-		SHADER_TYPE_INT_VEC4,
-		SHADER_TYPE_UNSIGNED_INT,
-		SHADER_TYPE_UNSIGNED_INT_VEC2,
-		SHADER_TYPE_UNSIGNED_INT_VEC3,
-		SHADER_TYPE_UNSIGNED_INT_VEC4,
-		SHADER_TYPE_BOOL,
-		SHADER_TYPE_BOOL_VEC2,
-		SHADER_TYPE_BOOL_VEC3,
-		SHADER_TYPE_BOOL_VEC4,
-		SHADER_TYPE_FLOAT_MAT2,
-		SHADER_TYPE_FLOAT_MAT3,
-		SHADER_TYPE_FLOAT_MAT4,
-		SHADER_TYPE_FLOAT_MAT2x3,
-		SHADER_TYPE_FLOAT_MAT2x4,
-		SHADER_TYPE_FLOAT_MAT3x2,
-		SHADER_TYPE_FLOAT_MAT3x4,
-		SHADER_TYPE_FLOAT_MAT4x2,
-		SHADER_TYPE_FLOAT_MAT4x3,
-		SHADER_TYPE_DOUBLE_MAT2,
-		SHADER_TYPE_DOUBLE_MAT3,
-		SHADER_TYPE_DOUBLE_MAT4,
-		SHADER_TYPE_DOUBLE_MAT2x3,
-		SHADER_TYPE_DOUBLE_MAT2x4,
-		SHADER_TYPE_DOUBLE_MAT3x2,
-		SHADER_TYPE_DOUBLE_MAT3x4,
-		SHADER_TYPE_DOUBLE_MAT4x2,
-		SHADER_TYPE_DOUBLE_MAT4x3,
-		SHADER_TYPE_SAMPLER_1D,
-		SHADER_TYPE_SAMPLER_2D,
-		SHADER_TYPE_SAMPLER_3D,
-		SHADER_TYPE_SAMPLER_CUBE,
-		SHADER_TYPE_SAMPLER_1D_SHADOW,
-		SHADER_TYPE_SAMPLER_2D_SHADOW,
-		SHADER_TYPE_SAMPLER_1D_ARRAY,
-		SHADER_TYPE_SAMPLER_2D_ARRAY,
-		SHADER_TYPE_SAMPLER_1D_ARRAY_SHADOW,
-		SHADER_TYPE_SAMPLER_2D_ARRAY_SHADOW,
-		SHADER_TYPE_SAMPLER_2D_MULTISAMPLE,
-		SHADER_TYPE_SAMPLER_2D_MULTISAMPLE_ARRAY,
-		SHADER_TYPE_SAMPLER_CUBE_SHADOW,
-		SHADER_TYPE_SAMPLER_BUFFER,
-		SHADER_TYPE_SAMPLER_2D_RECT,
-		SHADER_TYPE_SAMPLER_2D_RECT_SHADOW,
-		SHADER_TYPE_INT_SAMPLER_1D,
-		SHADER_TYPE_INT_SAMPLER_2D,
-		SHADER_TYPE_INT_SAMPLER_3D,
-		SHADER_TYPE_INT_SAMPLER_CUBE,
-		SHADER_TYPE_INT_SAMPLER_1D_ARRAY,
-		SHADER_TYPE_INT_SAMPLER_2D_ARRAY,
-		SHADER_TYPE_INT_SAMPLER_2D_MULTISAMPLE,
-		SHADER_TYPE_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,
-		SHADER_TYPE_INT_SAMPLER_BUFFER,
-		SHADER_TYPE_INT_SAMPLER_2D_RECT,
-		SHADER_TYPE_UNSIGNED_INT_SAMPLER_1D,
-		SHADER_TYPE_UNSIGNED_INT_SAMPLER_2D,
-		SHADER_TYPE_UNSIGNED_INT_SAMPLER_3D,
-		SHADER_TYPE_UNSIGNED_INT_SAMPLER_CUBE,
-		SHADER_TYPE_UNSIGNED_INT_SAMPLER_1D_ARRAY,
-		SHADER_TYPE_UNSIGNED_INT_SAMPLER_2D_ARRAY,
-		SHADER_TYPE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE,
-		SHADER_TYPE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,
-		SHADER_TYPE_UNSIGNED_INT_SAMPLER_BUFFER,
-		SHADER_TYPE_UNSIGNED_INT_SAMPLER_2D_RECT,
+		Float,
+		FloatVec2,
+		FloatVec3,
+		FloatVec4,
+		Double,
+		DoubleVec2,
+		DoubleVec3,
+		DoubleVec4,
+		Int,
+		IntVec2,
+		IntVec3,
+		IntVec4,
+		UnsignedInt,
+		UnsignedIntVec2,
+		UnsignedIntVec3,
+		UnsignedIntVec4,
+		Bool,
+		BoolVec2,
+		BoolVec3,
+		BoolVec4,
+		FloatMat2,
+		FloatMat3,
+		FloatMat4,
+		FloatMat2x3,
+		FloatMat2x4,
+		FloatMat3x2,
+		FloatMat3x4,
+		FloatMat4x2,
+		FloatMat4x3,
+		DoubleMat2,
+		DoubleMat3,
+		DoubleMat4,
+		DoubleMat2x3,
+		DoubleMat2x4,
+		DoubleMat3x2,
+		DoubleMat3x4,
+		DoubleMat4x2,
+		DoubleMat4x3,
+		Sampler1D,
+		Sampler2D,
+		Sampler3D,
+		SamplerCube,
+		Sampler1DShadow,
+		Sampler2DShadow,
+		Sampler1DArray,
+		Sampler2DArray,
+		Sampler1DArrayShadow,
+		Sampler2DArrayShadow,
+		Sampler2DMultisample,
+		Sampler2DMultisampleArray,
+		SamplerCubeShadow,
+		SamplerBuffer,
+		Sampler2DRect,
+		Sampler2DRectShadow,
+		IntSampler1D,
+		IntSampler2D,
+		IntSampler3D,
+		IntSamplerCube,
+		IntSampler1DArray,
+		IntSampler2DArray,
+		IntSampler2DMultisample,
+		IntSampler2DMultisampleArray,
+		IntSamplerBuffer,
+		IntSampler2DRect,
+		UnsignedIntSampler1D,
+		UnsignedIntSampler2D,
+		UnsignedIntSampler3D,
+		UnsignedIntSamplerCube,
+		UnsignedIntSampler1DArray,
+		UnsignedIntSampler2DArray,
+		UnsignedIntSampler2DMultisample,
+		UnsignedIntSampler2DMultisampleArray,
+		UnsignedIntSamplerBuffer,
+		UnsignedIntSampler2DRect,
 	};
 
-	enum ImageFormat
+	enum class ImageFormat
 	{
-		IMAGE_FORMAT_NONE,
-		IMAGE_FORMAT_DEPTH,
-		IMAGE_FORMAT_DEPTH_STENCIL,
-		IMAGE_FORMAT_STENCIL,
-		IMAGE_FORMAT_RED,
-		IMAGE_FORMAT_GREEN,
-		IMAGE_FORMAT_BLUE,
-		IMAGE_FORMAT_RG,
-		IMAGE_FORMAT_RGB,
-		IMAGE_FORMAT_RGBA,
-		IMAGE_FORMAT_BGR,
-		IMAGE_FORMAT_BGRA,
-		IMAGE_FORMAT_RED_INTEGER,
-		IMAGE_FORMAT_GREEN_INTEGER,
-		IMAGE_FORMAT_BLUE_INTEGER,
-		IMAGE_FORMAT_RG_INTEGER,
-		IMAGE_FORMAT_RGB_INTEGER,
-		IMAGE_FORMAT_RGBA_INTEGER,
-		IMAGE_FORMAT_BGR_INTEGER,
-		IMAGE_FORMAT_BGRA_INTEGER,
+		None,
+		Depth,
+		DepthStencil,
+		Stencil,
+		Red,
+		Green,
+		Blue,
+		RG,
+		RGB,
+		RGBA,
+		BGR,
+		BGRA,
+		RedInteger,
+		GreenInteger,
+		BlueInteger,
+		RG_Integer,
+		RGB_Integer,
+		RGBA_Integer,
+		BGR_Integer,
+		BGRA_Integer,
 	};
 
-	enum PixelFormat
+	enum class PixelFormat
 	{
-		PIXEL_FORMAT_NONE,
+		None,
 
 		// integer formats
-		PIXEL_FORMAT_R8,
-		PIXEL_FORMAT_R16,
-		PIXEL_FORMAT_RG8,
-		PIXEL_FORMAT_RG16,
-		PIXEL_FORMAT_R3_G3_B2,
-		PIXEL_FORMAT_RGB4,
-		PIXEL_FORMAT_RGB5,
-		PIXEL_FORMAT_RGB8,
-		PIXEL_FORMAT_RGB10,
-		PIXEL_FORMAT_RGB12,
-		PIXEL_FORMAT_RGB16,
-		PIXEL_FORMAT_RGBA2,
-		PIXEL_FORMAT_RGBA4,
-		PIXEL_FORMAT_RGB5_A1,
-		PIXEL_FORMAT_RGBA8,
-		PIXEL_FORMAT_RGB10_A2,
-		PIXEL_FORMAT_RGBA12,
-		PIXEL_FORMAT_RGBA16,
-		PIXEL_FORMAT_SRGB8,
-		PIXEL_FORMAT_SRGB8_A8,
+		R8,
+		R16,
+		RG8,
+		RG16,
+		R3_G3_B2,
+		RGB4,
+		RGB5,
+		RGB8,
+		RGB10,
+		RGB12,
+		RGB16,
+		RGBA2,
+		RGBA4,
+		RGB5_A1,
+		RGBA8,
+		RGB10_A2,
+		RGBA12,
+		RGBA16,
+		SRGB8,
+		SRGB8_A8,
 
 		// signed normalized integer formats
-		PIXEL_FORMAT_RED_SNORM,
-		PIXEL_FORMAT_RG_SNORM,
-		PIXEL_FORMAT_RGB_SNORM,
-		PIXEL_FORMAT_RGBA_SNORM,
-		PIXEL_FORMAT_R8_SNORM,
-		PIXEL_FORMAT_RG8_SNORM,
-		PIXEL_FORMAT_RGB8_SNORM,
-		PIXEL_FORMAT_RGBA8_SNORM,
-		PIXEL_FORMAT_R16_SNORM,
-		PIXEL_FORMAT_RG16_SNORM,
-		PIXEL_FORMAT_RGB16_SNORM,
-		PIXEL_FORMAT_RGBA16_SNORM,
+		Red_SNorm,
+		RG_SNorm,
+		RGB_SNorm,
+		RGBA_SNorm,
+		R8_SNorm,
+		RG8_SNorm,
+		RGB8_SNorm,
+		RGBA8_SNorm,
+		R16_SNorm,
+		RG16_SNorm,
+		RGB16_SNorm,
+		RGBA16_SNorm,
 
 		// floating point formats
-		PIXEL_FORMAT_R16F,
-		PIXEL_FORMAT_RG16F,
-		PIXEL_FORMAT_RGB16F,
-		PIXEL_FORMAT_RGBA16F,
-		PIXEL_FORMAT_R32F,
-		PIXEL_FORMAT_RG32F,
-		PIXEL_FORMAT_RGB32F,
-		PIXEL_FORMAT_RGBA32F,
-		PIXEL_FORMAT_R11F_G11F_B10F,
-		PIXEL_FORMAT_RGB9_E5,
+		R16F,
+		RG16F,
+		RGB16F,
+		RGBA16F,
+		R32F,
+		RG32F,
+		RGB32F,
+		RGBA32F,
+		R11F_G11F_B10F,
+		RGB9_E5,
 
 		// pure integer formats
-		PIXEL_FORMAT_R8I,
-		PIXEL_FORMAT_R8UI,
-		PIXEL_FORMAT_R16I,
-		PIXEL_FORMAT_R16UI,
-		PIXEL_FORMAT_R32I,
-		PIXEL_FORMAT_R32UI,
-		PIXEL_FORMAT_RG8I,
-		PIXEL_FORMAT_RG8UI,
-		PIXEL_FORMAT_RG16I,
-		PIXEL_FORMAT_RG16UI,
-		PIXEL_FORMAT_RG32I,
-		PIXEL_FORMAT_RG32UI,
-		PIXEL_FORMAT_RGB8I,
-		PIXEL_FORMAT_RGB8UI,
-		PIXEL_FORMAT_RGB16I,
-		PIXEL_FORMAT_RGB16UI,
-		PIXEL_FORMAT_RGB32I,
-		PIXEL_FORMAT_RGB32UI,
-		PIXEL_FORMAT_RGBA8I,
-		PIXEL_FORMAT_RGBA8UI,
-		PIXEL_FORMAT_RGB10_A2UI,
-		PIXEL_FORMAT_RGBA16I,
-		PIXEL_FORMAT_RGBA16UI,
-		PIXEL_FORMAT_RGBA32I,
-		PIXEL_FORMAT_RGBA32UI,
+		R8I,
+		R8UI,
+		R16I,
+		R16UI,
+		R32I,
+		R32UI,
+		RG8I,
+		RG8UI,
+		RG16I,
+		RG16UI,
+		RG32I,
+		RG32UI,
+		RGB8I,
+		RGB8UI,
+		RGB16I,
+		RGB16UI,
+		RGB32I,
+		RGB32UI,
+		RGBA8I,
+		RGBA8UI,
+		RGB10_A2UI,
+		RGBA16I,
+		RGBA16UI,
+		RGBA32I,
+		RGBA32UI,
 
 		// depth-stencil formats
-		PIXEL_FORMAT_DEPTH16,
-		PIXEL_FORMAT_DEPTH24,
-		PIXEL_FORMAT_DEPTH32,
-		PIXEL_FORMAT_DEPTH32F,
-		PIXEL_FORMAT_DEPTH24_STENCIL8,
-		PIXEL_FORMAT_DEPTH32F_STENCIL8,
-		PIXEL_FORMAT_STENCIL1,
-		PIXEL_FORMAT_STENCIL4,
-		PIXEL_FORMAT_STENCIL8,
-		PIXEL_FORMAT_STENCIL16,
+		Depth16,
+		Depth24,
+		Depth32,
+		Depth32F,
+		Depth24_Stencil8,
+		Depth32F_Stencil8,
+		Stencil1,
+		Stencil4,
+		Stencil8,
+		Stencil16,
 
 		// compressed formats
-		PIXEL_FORMAT_COMPRESSED_R,
-		PIXEL_FORMAT_COMPRESSED_RG,
-		PIXEL_FORMAT_COMPRESSED_RGB,
-		PIXEL_FORMAT_COMPRESSED_RGBA,
-		PIXEL_FORMAT_COMPRESSED_SRGB,
-		PIXEL_FORMAT_COMPRESSED_SRGB_A,
-		PIXEL_FORMAT_COMPRESSED_R_RGTC1,
-		PIXEL_FORMAT_COMPRESSED_SIGNED_R_RGTC1,
-		PIXEL_FORMAT_COMPRESSED_RG_RGTC2,
-		PIXEL_FORMAT_COMPRESSED_SIGNED_RG_RGTC2,
-		PIXEL_FORMAT_COMPRESSED_RGB_DXT1,
-		PIXEL_FORMAT_COMPRESSED_RGBA_DXT1,
-		PIXEL_FORMAT_COMPRESSED_RGBA_DXT3,
-		PIXEL_FORMAT_COMPRESSED_RGBA_DXT5,
-		PIXEL_FORMAT_COMPRESSED_SRGB_DXT1,
-		PIXEL_FORMAT_COMPRESSED_SRGB_A_DXT1,
-		PIXEL_FORMAT_COMPRESSED_SRGB_A_DXT3,
-		PIXEL_FORMAT_COMPRESSED_SRGB_A_DXT5,
-		PIXEL_FORMAT_COMPRESSED_RGBA_BPTC_UNORM,
-		PIXEL_FORMAT_COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
-		PIXEL_FORMAT_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
-		PIXEL_FORMAT_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
-		PIXEL_FORMAT_COMPRESSED_RGB8_ETC2,
-		PIXEL_FORMAT_COMPRESSED_SRGB8_ETC2,
-		PIXEL_FORMAT_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2,
-		PIXEL_FORMAT_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2,
-		PIXEL_FORMAT_COMPRESSED_RGBA8_ETC2_EAC,
-		PIXEL_FORMAT_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC,
-		PIXEL_FORMAT_COMPRESSED_R11_EAC,
-		PIXEL_FORMAT_COMPRESSED_SIGNED_R11_EAC,
-		PIXEL_FORMAT_COMPRESSED_RG11_EAC,
-		PIXEL_FORMAT_COMPRESSED_SIGNED_RG11_EAC,
+		Compressed_R,
+		Compressed_RG,
+		Compressed_RGB,
+		Compressed_RGBA,
+		Compressed_SRGB,
+		Compressed_SRGB_A,
+		Compressed_R_RGTC1,
+		Compressed_Signed_R_RGTC1,
+		Compressed_RG_RGTC2,
+		Compressed_Signed_RG_RGTC2,
+		Compressed_RGB_DXT1,
+		Compressed_RGBA_DXT1,
+		Compressed_RGBA_DXT3,
+		Compressed_RGBA_DXT5,
+		Compressed_SRGB_DXT1,
+		Compressed_SRGB_A_DXT1,
+		Compressed_SRGB_A_DXT3,
+		Compressed_SRGB_A_DXT5,
+		Compressed_RGBA_BPTC_UNorm,
+		Compressed_SRGB_Alpha_BPTC_UNorm,
+		Compressed_RGB_BPTC_SignedFloat,
+		Compressed_RGB_BPTC_UnsignedFloat,
+		Compressed_RGB8_ETC2,
+		Compressed_SRGB8_ETC2,
+		Compressed_RGB8_PunchthroughAlpha1_ETC2,
+		Compressed_SRGB8_PunchthroughAlpha1_ETC2,
+		Compressed_RGBA8_ETC2_EAC,
+		Compressed_SRGB8_ALPHA8_ETC2_EAC,
+		Compressed_R11_EAC,
+		Compressed_Signed_R11_EAC,
+		Compressed_RG11_EAC,
+		Compressed_Signed_RG11_EAC,
 	};
 
-	enum CubeFace
+	enum class CubeFace
 	{
-		CUBE_FACE_POSITIVE_X,
-		CUBE_FACE_NEGATIVE_X,
-		CUBE_FACE_POSITIVE_Y,
-		CUBE_FACE_NEGATIVE_Y,
-		CUBE_FACE_POSITIVE_Z,
-		CUBE_FACE_NEGATIVE_Z,
+		PositiveX,
+		NegativeX,
+		PositiveY,
+		NegativeY,
+		PositiveZ,
+		NegativeZ,
 	};
 
 	// Buffer storage flags
@@ -372,11 +372,11 @@ namespace gls
 		BUFFER_CLIENT_STORAGE_BIT = 0x0200,		// Hint that suggests that storage for the buffer should reside in client memory.
 	};
 
-	enum BufferAccess
+	enum class BufferAccess
 	{
-		ACCESS_READ_ONLY,
-        ACCESS_WRITE_ONLY,
-        ACCESS_READ_WRITE,
+		ReadOnly,
+        WriteOnly,
+        ReadWrite,
 	};
 
 	// Buffer map flags
@@ -390,54 +390,54 @@ namespace gls
 		MAP_UNSYNCHRONIZED_BIT = 0x0020,	// cannot be used with MAP_READ_BIT
 	};
 
-	enum ColorBuffer
+	enum class ColorBuffer
 	{
-		COLOR_BUFFER_NONE,
+		None,
 
-		COLOR_BUFFER_FRONT_LEFT,
-		COLOR_BUFFER_FRONT_RIGHT,
-		COLOR_BUFFER_BACK_LEFT,
-		COLOR_BUFFER_BACK_RIGHT,
+		FrontLeft,
+		FrontRight,
+		BackLeft,
+		BackRight,
 
-		COLOR_BUFFER_COLOR0,
-		COLOR_BUFFER_COLOR1,
-		COLOR_BUFFER_COLOR2,
-		COLOR_BUFFER_COLOR3,
-		COLOR_BUFFER_COLOR4,
-		COLOR_BUFFER_COLOR5,
-		COLOR_BUFFER_COLOR6,
-		COLOR_BUFFER_COLOR7,
-		COLOR_BUFFER_COLOR8,
-		COLOR_BUFFER_COLOR9,
-		COLOR_BUFFER_COLOR10,
-		COLOR_BUFFER_COLOR11,
-		COLOR_BUFFER_COLOR12,
-		COLOR_BUFFER_COLOR13,
-		COLOR_BUFFER_COLOR14,
-		COLOR_BUFFER_COLOR15,
+		Color0,
+		Color1,
+		Color2,
+		Color3,
+		Color4,
+		Color5,
+		Color6,
+		Color7,
+		Color8,
+		Color9,
+		Color10,
+		Color11,
+		Color12,
+		Color13,
+		Color14,
+		Color15,
 	};
 
-	enum AttachmentBuffer
+	enum class AttachmentBuffer
 	{
-		ATTACH_BUFFER_COLOR0,
-		ATTACH_BUFFER_COLOR1,
-		ATTACH_BUFFER_COLOR2,
-		ATTACH_BUFFER_COLOR3,
-		ATTACH_BUFFER_COLOR4,
-		ATTACH_BUFFER_COLOR5,
-		ATTACH_BUFFER_COLOR6,
-		ATTACH_BUFFER_COLOR7,
-		ATTACH_BUFFER_COLOR8,
-		ATTACH_BUFFER_COLOR9,
-		ATTACH_BUFFER_COLOR10,
-		ATTACH_BUFFER_COLOR11,
-		ATTACH_BUFFER_COLOR12,
-		ATTACH_BUFFER_COLOR13,
-		ATTACH_BUFFER_COLOR14,
-		ATTACH_BUFFER_COLOR15,
-		ATTACH_BUFFER_DEPTH,
-		ATTACH_BUFFER_STENCIL,
-		ATTACH_BUFFER_DEPTH_STENCIL,
+		Color0,
+		Color1,
+		Color2,
+		Color3,
+		Color4,
+		Color5,
+		Color6,
+		Color7,
+		Color8,
+		Color9,
+		Color10,
+		Color11,
+		Color12,
+		Color13,
+		Color14,
+		Color15,
+		Depth,
+		Stencil,
+		DepthStencil,
 	};
 
 	// Renderbuffer type flags, used in BlitFramebuffer
@@ -448,249 +448,249 @@ namespace gls
 		STENCIL_BUFFER_BIT = 0x0004
 	};
 
-	enum PolygonFace
+	enum class PolygonFace
 	{
-		FACE_FRONT,
-		FACE_BACK,
-		FACE_FRONT_AND_BACK,
+		Front,
+		Back,
+		FrontAndBack,
 	};
 
-	enum PrimitiveType
+	enum class PrimitiveType
 	{
-		PRIM_POINTS,
-		PRIM_LINES,
-		PRIM_LINES_ADJACENCY,
-		PRIM_LINE_STRIP,
-		PRIM_LINE_STRIP_ADJACENCY,
-		PRIM_LINE_LOOP,
-		PRIM_TRIANGLES,
-		PRIM_TRIANGLES_ADJACENCY,
-		PRIM_TRIANGLE_STRIP,
-		PRIM_TRIANGLE_STRIP_ADJACENCY,
-		PRIM_TRIANGLE_FAN,
-		PRIM_PATCHES,
+		Points,
+		Lines,
+		LinesAdjacency,
+		LineStrip,
+		LineStripAdjacency,
+		LineLoop,
+		Triangles,
+		TrianglesAdjacency,
+		TriangleStrip,
+		TriangleStripAdjacency,
+		TriangleFan,
+		Patches,
 	};
 
-	enum TessGenPrimitiveType
+	enum class TessGenPrimitiveType
 	{
-		TESS_GEN_PRIM_QUADS,
-		TESS_GEN_PRIM_TRIANGLES,
-		TESS_GEN_PRIM_ISOLINES,
+		Quads,
+		Triangles,
+		Isolines,
 	};
 
-	enum TessGenSpacing
+	enum class TessGenSpacing
 	{
-		TESS_GEN_SPACING_EQUAL,
-		TESS_GEN_SPACING_FRACTIONAL_EVEN,
-		TESS_GEN_SPACING_FRACTIONAL_ODD,
+		Equal,
+		FractionalEven,
+		FractionalOdd,
 	};
 
-	enum RasterMode
+	enum class RasterMode
 	{
-		RASTER_POINT,
-		RASTER_LINE,
-		RASTER_FILL,
+		Point,
+		Line,
+		Fill,
 	};
 
-	enum VertexOrder
+	enum class VertexWinding
 	{
-		ORIENT_CW,
-		ORIENT_CCW,
+		Clockwise,
+		Counterclockwise,
 	};
 
-	enum CompareFunc
+	enum class CompareFunc
 	{
-		FUNC_NEVER,
-		FUNC_LESS,
-		FUNC_EQUAL,
-		FUNC_LEQUAL,
-		FUNC_GREATER,
-		FUNC_NOTEQUAL,
-		FUNC_GEQUAL,
-		FUNC_ALWAYS,
+		Never,
+		Less,
+		Equal,
+		LessOrEqual,
+		Greater,
+		NotEqual,
+		GreaterOrEqual,
+		Always,
 	};
 
-	enum StencilOp
+	enum class StencilOp
 	{
-		STENCIL_OP_KEEP,
-		STENCIL_OP_ZERO,
-		STENCIL_OP_REPLACE,
-		STENCIL_OP_INCR,
-		STENCIL_OP_INCR_WRAP,
-		STENCIL_OP_DECR,
-		STENCIL_OP_DECR_WRAP,
-		STENCIL_OP_INVERT,
+		Keep,
+		Zero,
+		Replace,
+		Increment,
+		IncrementWrap,
+		Decrement,
+		DecrementWrap,
+		Invert,
 	};
 
-	enum BlendOp
+	enum class BlendOp
 	{
-		BLEND_OP_ADD,
-		BLEND_OP_SUBTRACT,
-		BLEND_OP_REVERSE_SUBTRACT,
-		BLEND_OP_MIN,
-		BLEND_OP_MAX,
+		Add,
+		Subtract,
+		ReverseSubtract,
+		Min,
+		Max,
 	};
 
-	enum BlendFunc
+	enum class BlendFunc
 	{
-		BLEND_FUNC_ZERO,
-		BLEND_FUNC_ONE,
-		BLEND_FUNC_SRC_COLOR,
-		BLEND_FUNC_ONE_MINUS_SRC_COLOR,
-		BLEND_FUNC_DST_COLOR,
-		BLEND_FUNC_ONE_MINUS_DST_COLOR,
-		BLEND_FUNC_SRC_ALPHA,
-		BLEND_FUNC_ONE_MINUS_SRC_ALPHA,
-		BLEND_FUNC_DST_ALPHA,
-		BLEND_FUNC_ONE_MINUS_DST_ALPHA,
-		BLEND_FUNC_CONSTANT_COLOR,
-		BLEND_FUNC_ONE_MINUS_CONSTANT_COLOR,
-		BLEND_FUNC_CONSTANT_ALPHA,
-		BLEND_FUNC_ONE_MINUS_CONSTANT_ALPHA,
-		BLEND_FUNC_SRC_ALPHA_SATURATE,
-		BLEND_FUNC_SRC1_COLOR,
-		BLEND_FUNC_SRC1_ALPHA,
-		BLEND_FUNC_ONE_MINUS_SRC1_COLOR,
-		BLEND_FUNC_ONE_MINUS_SRC1_ALPHA,
+		Zero,
+		One,
+		SrcColor,
+		OneMinusSrcColor,
+		DstColor,
+		OneMinusDstColor,
+		SrcAlpha,
+		OneMinusSrcAlpha,
+		DstAlpha,
+		OneMinusDstAlpha,
+		ConstantColor,
+		OneMinusConstantColor,
+		ConstantAlpha,
+		OneMinusConstantAlpha,
+		SrcAlphaSaturate,
+		Src1Color,
+		Src1Alpha,
+		OneMinusSrc1Color,
+		OneMinusSrc1Alpha,
 	};
 
-	enum ColorReadClamp
+	enum class ColorReadClamp
 	{
-		COLOR_READ_CLAMP_OFF,
-		COLOR_READ_CLAMP_ON,
-		COLOR_READ_CLAMP_FIXED_ONLY,
+		Off,
+		On,
+		FixedOnly,
 	};
 
-	enum LogicOp
+	enum class LogicOp
 	{
-		LOGIC_OP_CLEAR,
-		LOGIC_OP_AND,
-		LOGIC_OP_AND_REVERSE,
-		LOGIC_OP_COPY,
-		LOGIC_OP_AND_INVERTED,
-		LOGIC_OP_NOOP,
-		LOGIC_OP_XOR,
-		LOGIC_OP_OR,
-		LOGIC_OP_NOR,
-		LOGIC_OP_EQUIV,
-		LOGIC_OP_INVERT,
-		LOGIC_OP_OR_REVERSE,
-		LOGIC_OP_COPY_INVERTED,
-		LOGIC_OP_OR_INVERTED,
-		LOGIC_OP_NAND,
-		LOGIC_OP_SET,
+		Clear,
+		And,
+		AndReverse,
+		Copy,
+		AndInverted,
+		Noop,
+		XOr,
+		Or,
+		NOr,
+		Equiv,
+		Invert,
+		OrReverse,
+		CopyInverted,
+		OrInverted,
+		NAnd,
+		Set,
 	};
 
-	enum TexAddressMode
+	enum class TexAddressMode
 	{
-		TEX_ADDRESS_CLAMP_TO_BORDER,
-		TEX_ADDRESS_CLAMP_TO_EDGE,
-		TEX_ADDRESS_REPEAT,
-		TEX_ADDRESS_MIRRORED_REPEAT,
-		TEX_ADDRESS_MIRROR_CLAMP_TO_EDGE,
+		ClampToBorder,
+		ClampToEdge,
+		Repeat,
+		MirroredRepeat,
+		MirrorClampToEdge,
 	};
 
-	enum TexFilter
+	enum class TexFilter
 	{
-		TEX_FILTER_NEAREST,
-		TEX_FILTER_LINEAR,
-		TEX_FILTER_NEAREST_MIPMAP_NEAREST,
-		TEX_FILTER_NEAREST_MIPMAP_LINEAR,
-		TEX_FILTER_LINEAR_MIPMAP_NEAREST,
-		TEX_FILTER_LINEAR_MIPMAP_LINEAR,
+		Nearest,
+		Linear,
+		NearestMipmapNearest,
+		NearestMipmapLinear,
+		LinearMipmapNearest,
+		LinearMipmapLinear,
 	};
 
-	enum TexCompareMode
+	enum class TexCompareMode
 	{
-		DEPTH_CMP_NONE,
-		DEPTH_CMP_REF_TO_TEXTURE,
+		None,
+		RefToTexture,
 	};
 
-	enum TexSwizzleSource
+	enum class TexSwizzleSource
 	{
-		TEX_SWIZZLE_SRC_RED,
-		TEX_SWIZZLE_SRC_GREEN,
-		TEX_SWIZZLE_SRC_BLUE,
-		TEX_SWIZZLE_SRC_ALPHA,
-		TEX_SWIZZLE_SRC_ZERO,
-		TEX_SWIZZLE_SRC_ONE,
+		Red,
+		Green,
+		Blue,
+		Alpha,
+		Zero,
+		One,
 	};
 
-	enum TexSwizzleDest
+	enum class TexSwizzleDest
 	{
-		TEX_SWIZZLE_DST_RED,
-		TEX_SWIZZLE_DST_GREEN,
-		TEX_SWIZZLE_DST_BLUE,
-		TEX_SWIZZLE_DST_ALPHA,
+		Red,
+		Green,
+		Blue,
+		Alpha,
 	};
 
-	enum FramebufferStatus
+	enum class FramebufferStatus
 	{
-		FBUF_STATUS_COMPLETE,
-		FBUF_STATUS_INCOMPLETE_ATTACHMENT,
-		FBUF_STATUS_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT,
-		FBUF_STATUS_INCOMPLETE_DRAW_BUFFER,
-		FBUF_STATUS_INCOMPLETE_READ_BUFFER,
-		FBUF_STATUS_FRAMEBUFFER_UNSUPORTED,
-		FBUF_STATUS_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE,
-		FBUF_STATUS_FRAMEBUFFER_UNDEFINED,
+		Complete,
+		IncompleteAttachment,
+		FramebufferIncompleteMissingAttachment,
+		IncompleteDrawBuffer,
+		IncompleteReadBuffer,
+		FramebufferUnsuported,
+		FramebufferIncompleteMultisample,
+		FramebufferUndefined,
 	};
 
-	enum SwapMethod
+	enum class SwapMethod
 	{
-		SWAP_EXCHANGE,
-		SWAP_COPY,
-		SWAP_UNDIFINED,
+		Exchange,
+		Copy,
+		Undifined,
 	};
 
-	enum ColorBufferType
+	enum class ColorBufferType
 	{
-		COLOR_BUFFER_TYPE_RGBA,
-		COLOR_BUFFER_TYPE_RGBA_FLOAT,
+		RGBA,
+		RGBA_Float,
 	};
 
-	enum ProgramParam
+	enum class ProgramParam
 	{
-		PROG_PARAM_GEOMETRY_VERT_OUT,
-		PROG_PARAM_GEOMETRY_INPUT_TYPE,
-		PROG_PARAM_GEOMETRY_OUTPUT_TYPE,
+		GeometryVertOut,
+		GeometryInputType,
+		GeometryOutputType,
 	};
 
-	enum ConditionalRenderMode
+	enum class ConditionalRenderQueryMode
 	{
-		COND_RENDER_QUERY_WAIT,
-		COND_RENDER_QUERY_NO_WAIT,
-		COND_RENDER_QUERY_BY_REGION_WAIT,
-		COND_RENDER_QUERY_BY_REGION_NO_WAIT,
-		COND_RENDER_QUERY_WAIT_INVERTED,
-		COND_RENDER_QUERY_NO_WAIT_INVERTED,
-		COND_RENDER_QUERY_BY_REGION_WAIT_INVERTED,
-		COND_RENDER_QUERY_BY_REGION_NO_WAIT_INVERTED,
+		Wait,
+		NoWait,
+		ByRegionWait,
+		ByRegionNoWait,
+		WaitInverted,
+		NoWaitInverted,
+		ByRegionWaitInverted,
+		ByRegionNoWaitInverted,
 	};
 
-	enum TransformFeedbackBufferMode
+	enum class TransformFeedbackBufferMode
 	{
-		TF_BUFFER_MODE_INTERLEAVED_ATTRIBS,
-		TF_BUFFER_MODE_SEPARATE_ATTRIBS,
+		InterleavedAttribs,
+		SeparateAttribs,
 	};
 
-	enum VertexConvention
+	enum class VertexConvention
 	{
-		VERT_CONVENTION_FIRST_VERTEX,
-		VERT_CONVENTION_LAST_VERTEX,
+		FirstVertex,
+		LastVertex,
 	};
 
-	enum FenceSyncCondition
+	enum class FenceSyncCondition
 	{
-		SYNC_GPU_COMMANDS_COMPLETE
+		GPUCommandsComplete
 	};
 
-	enum SyncWaitStatus
+	enum class SyncWaitStatus
 	{
-		SYNC_STATUS_ALREADY_SIGNALED,
-		SYNC_STATUS_TIMEOUT_EXPIRED,
-		SYNC_STATUS_CONDITION_SATISFIED,
-		SYNC_STATUS_WAIT_FAILED,
+		AlreadySignaled,
+		TimeoutExpired,
+		ConditionSatisfied,
+		WaitFailed,
 	};
 
 	// Sync wait flags
@@ -719,130 +719,130 @@ namespace gls
 		BARRIER_ALL_BITS = 0xFFFFFFFF,
 	};
 
-	enum FeatureSupport
+	enum class FeatureSupport
 	{
-		FEATURE_SUPPORT_NONE,
-		FEATURE_SUPPORT_CAVEAT,
-		FEATURE_SUPPORT_FULL,
+		None,
+		Caveat,
+		Full,
 	};
 
-	enum TextureComponentType
+	enum class TextureComponentType
 	{
-		TEX_COMPONENT_TYPE_NONE,
-		TEX_COMPONENT_TYPE_SIGNED_NORMALIZED,
-		TEX_COMPONENT_TYPE_UNSIGNED_NORMALIZED,
-		TEX_COMPONENT_TYPE_FLOAT,
-		TEX_COMPONENT_TYPE_INT,
-		TEX_COMPONENT_TYPE_UNSIGNED_INT,
+		None,
+		SignedNormalized,
+		UnsignedNormalized,
+		Float,
+		Int,
+		UnsignedInt,
 	};
 
-	enum ColorEncoding
+	enum class ColorEncoding
 	{
-		COLOR_ENCODING_NONE,
-		COLOR_ENCODING_LINEAR,
-		COLOR_ENCODING_SRGB,
+		None,
+		Linear,
+		SRGB,
 	};
 
-	enum ImageClass
+	enum class ImageClass
 	{
-		IMAGE_CLASS_NONE,
-		IMAGE_CLASS_4_X_32,
-		IMAGE_CLASS_2_X_32,
-		IMAGE_CLASS_1_X_32,
-		IMAGE_CLASS_4_X_16,
-		IMAGE_CLASS_2_X_16,
-		IMAGE_CLASS_1_X_16,
-		IMAGE_CLASS_4_X_8,
-		IMAGE_CLASS_2_X_8,
-		IMAGE_CLASS_1_X_8,
-		IMAGE_CLASS_11_11_10,
-		IMAGE_CLASS_10_10_10_2,
+		None,
+		Class_4_X_32,
+		Class_2_X_32,
+		Class_1_X_32,
+		Class_4_X_16,
+		Class_2_X_16,
+		Class_1_X_16,
+		Class_4_X_8,
+		Class_2_X_8,
+		Class_1_X_8,
+		Class_11_11_10,
+		Class_10_10_10_2,
 	};
 
-	enum ImageFormatCompatibilityType
+	enum class ImageFormatCompatibilityType
 	{
-		IMAGE_FORMAT_COMPATIBILITY_NONE,
-		IMAGE_FORMAT_COMPATIBILITY_BY_SIZE,
-		IMAGE_FORMAT_COMPATIBILITY_BY_CLASS,
+		None,
+		BySize,
+		ByClass,
 	};
 
-	enum ViewClass
+	enum class ViewClass
 	{
-		VIEW_CLASS_NONE,
-		VIEW_CLASS_128_BITS,
-		VIEW_CLASS_96_BITS,
-		VIEW_CLASS_64_BITS,
-		VIEW_CLASS_48_BITS,
-		VIEW_CLASS_32_BITS,
-		VIEW_CLASS_24_BITS,
-		VIEW_CLASS_16_BITS,
-		VIEW_CLASS_8_BITS,
-		VIEW_CLASS_RGTC1_RED,
-		VIEW_CLASS_RGTC2_RG,
-		VIEW_CLASS_BPTC_UNORM,
-		VIEW_CLASS_BPTC_FLOAT,
+		None,
+		Class_128_Bits,
+		Class_96_Bits,
+		Class_64_Bits,
+		Class_48_Bits,
+		Class_32_Bits,
+		Class_24_Bits,
+		Class_16_Bits,
+		Class_8_Bits,
+		Class_RGTC1_Red,
+		Class_RGTC2_RG,
+		Class_BPTC_UNorm,
+		Class_BPTC_Float,
 	};
 
-	enum DepthStencilTexMode
+	enum class DepthStencilTexMode
 	{
-		DS_TEX_MODE_DEPTH_COMPONENT,
-		DS_TEX_MODE_STENCIL_INDEX,
+		DepthComponent,
+		StencilIndex,
 	};
 
-	enum ErrorCode
+	enum class ErrorCode
 	{
-		ERROR_CODE_NONE,
-		ERROR_CODE_INVALID_ENUM,
-		ERROR_CODE_INVALID_VALUE,
-		ERROR_CODE_INVALID_OPERATION,
-		ERROR_CODE_INVALID_FRAMEBUFFER_OPERATION,
-		ERROR_CODE_OUT_OF_MEMORY,
-		ERROR_CODE_STACK_UNDERFLOW,
-		ERROR_CODE_STACK_OVERFLOW,
+		None,
+		InvalidEnum,
+		InvalidValue,
+		InvalidOperation,
+		InvalidFramebufferOperation,
+		OutOfMemory,
+		StackUnderflow,
+		StackOverflow,
 	};
 
-	enum DebugMessageSource
+	enum class DebugMessageSource
 	{
-		DEBUG_SOURCE_API,
-		DEBUG_SOURCE_WINDOW_SYSTEM,
-		DEBUG_SOURCE_SHADER_COMPILER,
-		DEBUG_SOURCE_THIRD_PARTY,
-		DEBUG_SOURCE_APPLICATION,
-		DEBUG_SOURCE_OTHER,
-		DEBUG_SOURCE_ALL,
+		API,
+		WindowSystem,
+		ShaderCompiler,
+		ThirdParty,
+		Application,
+		Other,
+		All,
 	};
 
-	enum DebugMessageType
+	enum class DebugMessageType
 	{
-		DEBUG_TYPE_ERROR,
-		DEBUG_TYPE_DEPRECATED_BEHAVIOR,
-		DEBUG_TYPE_UNDEFINED_BEHAVIOR,
-		DEBUG_TYPE_PORTABILITY,
-		DEBUG_TYPE_PERFORMANCE,
-		DEBUG_TYPE_OTHER,
-		DEBUG_TYPE_MARKER,
-		DEBUG_TYPE_ALL,
+		Error,
+		DeprecatedBehavior,
+		UndefinedBehavior,
+		Portability,
+		Performance,
+		Other,
+		Marker,
+		All,
 	};
 
-	enum DebugMessageSeverity
+	enum class DebugMessageSeverity
 	{
-		DEBUG_SEVERITY_HIGH,
-		DEBUG_SEVERITY_MEDIUM,
-		DEBUG_SEVERITY_LOW,
-		DEBUG_SEVERITY_NOTIFICATION,
-		DEBUG_SEVERITY_ALL,
+		High,
+		Medium,
+		Low,
+		Notification,
+		All,
 	};
 
-	enum ClipOrigin
+	enum class ClipOrigin
 	{
-		CLIP_ORIGIN_LOWER_LEFT,
-		CLIP_ORIGIN_UPPER_LEFT,
+		LowerLeft,
+		UpperLeft,
 	};
 
-	enum ClipDepth
+	enum class ClipDepth
 	{
-		CLIP_DEPTH_NEGATIVE_ONE_TO_ONE,
-		CLIP_DEPTH_ZERO_TO_ONE,
+		NegativeOneToOne,
+		ZeroToOne,
 	};
 
 
@@ -860,34 +860,18 @@ namespace gls
 	
 	struct PixelStore
 	{
-		PixelStore()
-		{
-			swapBytes = false;
-			lsbFirst = false;
-			rowLength = 0;
-			skipRows = 0;
-			skipPixels = 0;
-			alignment = 4;
-			imageHeight = 0;
-			skipImages = 0;
-			compressedBlockWidth = 0;
-			compressedBlockHeight = 0;
-			compressedBlockDepth = 0;
-			compressedBlockSize = 0;
-		}
-
-		bool swapBytes;
-		bool lsbFirst;
-		int rowLength;	// Number of pixels in a row.
-		int skipRows;
-		int skipPixels;
-		int alignment;
-		int imageHeight;
-		int skipImages;
-		int compressedBlockWidth;
-		int compressedBlockHeight;
-		int compressedBlockDepth;
-		int compressedBlockSize;
+		bool swapBytes = false;
+		bool lsbFirst = false;
+		int rowLength = 0;	// Number of pixels in a row.
+		int skipRows = 0;
+		int skipPixels = 0;
+		int alignment = 4;
+		int imageHeight = 0;
+		int skipImages = 0;
+		int compressedBlockWidth = 0;
+		int compressedBlockHeight = 0;
+		int compressedBlockDepth = 0;
+		int compressedBlockSize = 0;
 	};
 
 	struct FramebufferFormat

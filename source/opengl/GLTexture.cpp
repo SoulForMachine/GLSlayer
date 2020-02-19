@@ -42,38 +42,38 @@ bool IsCompressedFormat(PixelFormat format)
 {
 	switch(format)
 	{
-	case PIXEL_FORMAT_COMPRESSED_R:
-	case PIXEL_FORMAT_COMPRESSED_RG:
-	case PIXEL_FORMAT_COMPRESSED_RGB:
-	case PIXEL_FORMAT_COMPRESSED_RGBA:
-	case PIXEL_FORMAT_COMPRESSED_SRGB:
-	case PIXEL_FORMAT_COMPRESSED_SRGB_A:
-	case PIXEL_FORMAT_COMPRESSED_R_RGTC1:
-	case PIXEL_FORMAT_COMPRESSED_SIGNED_R_RGTC1:
-	case PIXEL_FORMAT_COMPRESSED_RG_RGTC2:
-	case PIXEL_FORMAT_COMPRESSED_SIGNED_RG_RGTC2:
-	case PIXEL_FORMAT_COMPRESSED_RGB_DXT1:
-	case PIXEL_FORMAT_COMPRESSED_RGBA_DXT1:
-	case PIXEL_FORMAT_COMPRESSED_RGBA_DXT3:
-	case PIXEL_FORMAT_COMPRESSED_RGBA_DXT5:
-	case PIXEL_FORMAT_COMPRESSED_SRGB_DXT1:
-	case PIXEL_FORMAT_COMPRESSED_SRGB_A_DXT1:
-	case PIXEL_FORMAT_COMPRESSED_SRGB_A_DXT3:
-	case PIXEL_FORMAT_COMPRESSED_SRGB_A_DXT5:
-	case PIXEL_FORMAT_COMPRESSED_RGBA_BPTC_UNORM:
-	case PIXEL_FORMAT_COMPRESSED_SRGB_ALPHA_BPTC_UNORM:
-	case PIXEL_FORMAT_COMPRESSED_RGB_BPTC_SIGNED_FLOAT:
-	case PIXEL_FORMAT_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT:
-	case PIXEL_FORMAT_COMPRESSED_RGB8_ETC2:
-	case PIXEL_FORMAT_COMPRESSED_SRGB8_ETC2:
-	case PIXEL_FORMAT_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2:
-	case PIXEL_FORMAT_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2:
-	case PIXEL_FORMAT_COMPRESSED_RGBA8_ETC2_EAC:
-	case PIXEL_FORMAT_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC:
-	case PIXEL_FORMAT_COMPRESSED_R11_EAC:
-	case PIXEL_FORMAT_COMPRESSED_SIGNED_R11_EAC:
-	case PIXEL_FORMAT_COMPRESSED_RG11_EAC:
-	case PIXEL_FORMAT_COMPRESSED_SIGNED_RG11_EAC:
+	case PixelFormat::Compressed_R:
+	case PixelFormat::Compressed_RG:
+	case PixelFormat::Compressed_RGB:
+	case PixelFormat::Compressed_RGBA:
+	case PixelFormat::Compressed_SRGB:
+	case PixelFormat::Compressed_SRGB_A:
+	case PixelFormat::Compressed_R_RGTC1:
+	case PixelFormat::Compressed_Signed_R_RGTC1:
+	case PixelFormat::Compressed_RG_RGTC2:
+	case PixelFormat::Compressed_Signed_RG_RGTC2:
+	case PixelFormat::Compressed_RGB_DXT1:
+	case PixelFormat::Compressed_RGBA_DXT1:
+	case PixelFormat::Compressed_RGBA_DXT3:
+	case PixelFormat::Compressed_RGBA_DXT5:
+	case PixelFormat::Compressed_SRGB_DXT1:
+	case PixelFormat::Compressed_SRGB_A_DXT1:
+	case PixelFormat::Compressed_SRGB_A_DXT3:
+	case PixelFormat::Compressed_SRGB_A_DXT5:
+	case PixelFormat::Compressed_RGBA_BPTC_UNorm:
+	case PixelFormat::Compressed_SRGB_Alpha_BPTC_UNorm:
+	case PixelFormat::Compressed_RGB_BPTC_SignedFloat:
+	case PixelFormat::Compressed_RGB_BPTC_UnsignedFloat:
+	case PixelFormat::Compressed_RGB8_ETC2:
+	case PixelFormat::Compressed_SRGB8_ETC2:
+	case PixelFormat::Compressed_RGB8_PunchthroughAlpha1_ETC2:
+	case PixelFormat::Compressed_SRGB8_PunchthroughAlpha1_ETC2:
+	case PixelFormat::Compressed_RGBA8_ETC2_EAC:
+	case PixelFormat::Compressed_SRGB8_ALPHA8_ETC2_EAC:
+	case PixelFormat::Compressed_R11_EAC:
+	case PixelFormat::Compressed_Signed_R11_EAC:
+	case PixelFormat::Compressed_RG11_EAC:
+	case PixelFormat::Compressed_Signed_RG11_EAC:
 		return true;
 
 	default:
@@ -101,7 +101,7 @@ TextureType GLTexture::GetTextureType()
 
 void GLTexture::GenerateMipmap()
 {
-	if(_textureType != TEXTURE_BUFFER_DATA && _textureType != TEXTURE_RECTANGLE)
+	if(_textureType != TextureType::TexBuffer && _textureType != TextureType::TexRectangle)
 	{
 		STATE_MACHINE_HACK
 		glGenerateMipmap(_target);
@@ -128,7 +128,7 @@ void GLTexture::SetMaxLevel(int max_level)
 
 int GLTexture::GetCompressedSize(int level) const
 {
-	if(_textureType != TEXTURE_BUFFER_DATA && _textureType != TEXTURE_RECTANGLE)
+	if(_textureType != TextureType::TexBuffer && _textureType != TextureType::TexRectangle)
 	{
 		STATE_MACHINE_HACK
 		GLint size;
@@ -181,8 +181,8 @@ bool GLTexture1D::Create(GLState* gl_state)
 
 	glBindTexture(GL_TEXTURE_1D, _id);
 	_glState->imageUnits[0].texture = _id;
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_1D;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::Tex1D;
 	_target = GL_TEXTURE_1D;
 	_width = 0;
 
@@ -215,8 +215,8 @@ bool GLTexture1D::CreateView(GLState* gl_state, GLuint orig_tex, PixelFormat int
 
 	glTextureView(_id, GL_TEXTURE_1D, orig_tex, GetGLEnum(internal_format), min_level, num_levels, min_layer, 1);
 
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_1D;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::Tex1D;
 	_target = GL_TEXTURE_1D;
 	_format = internal_format;
 
@@ -375,8 +375,8 @@ bool GLTexture2D::Create(GLState* gl_state)
 
 	glBindTexture(GL_TEXTURE_2D, _id);
 	_glState->imageUnits[0].texture = _id;
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_2D;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::Tex2D;
 	_target = GL_TEXTURE_2D;
 	_width = 0;
 	_height = 0;
@@ -411,8 +411,8 @@ bool GLTexture2D::CreateView(GLState* gl_state, GLuint orig_tex, PixelFormat int
 
 	glTextureView(_id, GL_TEXTURE_2D, orig_tex, GetGLEnum(internal_format), min_level, num_levels, min_layer, 1);
 
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_2D;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::Tex2D;
 	_target = GL_TEXTURE_2D;
 	_format = internal_format;
 
@@ -574,8 +574,8 @@ bool GLTexture2DMultisample::Create(GLState* gl_state)
 
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _id);
 	_glState->imageUnits[0].texture = _id;
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_2D_MULTISAMPLE;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::Tex2DMultisample;
 	_target = GL_TEXTURE_2D_MULTISAMPLE;
 	_width = 0;
 	_height = 0;
@@ -610,8 +610,8 @@ bool GLTexture2DMultisample::CreateView(GLState* gl_state, GLuint orig_tex, Pixe
 
 	glTextureView(_id, GL_TEXTURE_2D_MULTISAMPLE, orig_tex, GetGLEnum(internal_format), min_level, num_levels, 0, 1);
 
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_2D_MULTISAMPLE;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::Tex2DMultisample;
 	_target = GL_TEXTURE_2D_MULTISAMPLE;
 	_format = internal_format;
 
@@ -663,8 +663,8 @@ bool GLTexture3D::Create(GLState* gl_state)
 
 	glBindTexture(GL_TEXTURE_3D, _id);
 	_glState->imageUnits[0].texture = _id;
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_3D;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::Tex3D;
 	_target = GL_TEXTURE_3D;
 	_width = 0;
 	_height = 0;
@@ -701,8 +701,8 @@ bool GLTexture3D::CreateView(GLState* gl_state, GLuint orig_tex, PixelFormat int
 
 	glTextureView(_id, GL_TEXTURE_3D, orig_tex, GetGLEnum(internal_format), min_level, num_levels, 0, 1);
 
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_3D;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::Tex3D;
 	_target = GL_TEXTURE_3D;
 	_format = internal_format;
 
@@ -851,8 +851,8 @@ bool GLTextureCube::Create(GLState* gl_state)
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, _id);
 	_glState->imageUnits[0].texture = _id;
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_CUBE;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::TexCube;
 	_target = GL_TEXTURE_CUBE_MAP;
 	_width = 0;
 
@@ -885,8 +885,8 @@ bool GLTextureCube::CreateView(GLState* gl_state, GLuint orig_tex, PixelFormat i
 
 	glTextureView(_id, GL_TEXTURE_CUBE_MAP, orig_tex, GetGLEnum(internal_format), min_level, num_levels, min_layer, num_layers);
 
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_2D;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::TexCube;
 	_target = GL_TEXTURE_CUBE_MAP;
 	_format = internal_format;
 
@@ -1046,8 +1046,8 @@ bool GLTexture1DArray::Create(GLState* gl_state)
 
 	glBindTexture(GL_TEXTURE_1D_ARRAY, _id);
 	_glState->imageUnits[0].texture = _id;
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_1D_ARRAY;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::Tex1DArray;
 	_target = GL_TEXTURE_1D_ARRAY;
 	_width = 0;
 	_height = 0;
@@ -1082,8 +1082,8 @@ bool GLTexture1DArray::CreateView(GLState* gl_state, GLuint orig_tex, PixelForma
 
 	glTextureView(_id, GL_TEXTURE_1D_ARRAY, orig_tex, GetGLEnum(internal_format), min_level, num_levels, min_layer, num_layers);
 
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_1D_ARRAY;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::Tex1DArray;
 	_target = GL_TEXTURE_1D_ARRAY;
 	_format = internal_format;
 
@@ -1245,8 +1245,8 @@ bool GLTexture2DArray::Create(GLState* gl_state)
 
 	glBindTexture(GL_TEXTURE_2D_ARRAY, _id);
 	_glState->imageUnits[0].texture = _id;
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_2D_ARRAY;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::Tex2DArray;
 	_target = GL_TEXTURE_2D_ARRAY;
 	_width = 0;
 	_height = 0;
@@ -1283,8 +1283,8 @@ bool GLTexture2DArray::CreateView(GLState* gl_state, GLuint orig_tex, PixelForma
 
 	glTextureView(_id, GL_TEXTURE_2D_ARRAY, orig_tex, GetGLEnum(internal_format), min_level, num_levels, min_layer, num_layers);
 
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_2D_ARRAY;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::Tex2DArray;
 	_target = GL_TEXTURE_2D_ARRAY;
 	_format = internal_format;
 
@@ -1431,8 +1431,8 @@ bool GLTexture2DMultisampleArray::Create(GLState* gl_state)
 
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, _id);
 	_glState->imageUnits[0].texture = _id;
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_2D_MULTISAMPLE_ARRAY;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::Tex2DMultisampleArray;
 	_target = GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
 	_width = 0;
 	_height = 0;
@@ -1469,8 +1469,8 @@ bool GLTexture2DMultisampleArray::CreateView(GLState* gl_state, GLuint orig_tex,
 
 	glTextureView(_id, GL_TEXTURE_2D_MULTISAMPLE_ARRAY, orig_tex, GetGLEnum(internal_format), min_level, num_levels, min_layer, num_layers);
 
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_2D_MULTISAMPLE_ARRAY;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::Tex2DMultisampleArray;
 	_target = GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
 	_format = internal_format;
 
@@ -1523,8 +1523,8 @@ bool GLTextureCubeArray::Create(GLState* gl_state)
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, _id);
 	_glState->imageUnits[0].texture = _id;
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_CUBE_ARRAY;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::TexCubeArray;
 	_target = GL_TEXTURE_CUBE_MAP_ARRAY;
 	_width = 0;
 	_depth = 0;
@@ -1559,8 +1559,8 @@ bool GLTextureCubeArray::CreateView(GLState* gl_state, GLuint orig_tex, PixelFor
 
 	glTextureView(_id, GL_TEXTURE_CUBE_MAP_ARRAY, orig_tex, GetGLEnum(internal_format), min_level, num_levels, min_layer, num_layers);
 
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_CUBE_ARRAY;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::TexCubeArray;
 	_target = GL_TEXTURE_CUBE_MAP_ARRAY;
 	_format = internal_format;
 
@@ -1677,8 +1677,8 @@ bool GLTextureBuffer::Create(GLState* gl_state)
 
 	glBindTexture(GL_TEXTURE_BUFFER, _id);
 	_glState->imageUnits[0].texture = _id;
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_BUFFER_DATA;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::TexBuffer;
 	_target = GL_TEXTURE_BUFFER;
 	_size = 0;
 
@@ -1720,12 +1720,11 @@ void GLTextureBuffer::InvalidateTexSubImage(int xoffset, int yoffset, int width,
 }
 
 //==================== TextureRectangle ====================
-// - REPEAT AND MIRRORED_REPEAT not alowed for texture wrap mode
-// - minification filter must be NEAREST or LINEAR
+// - Repeat AND MirroredRepeat not alowed for texture wrap mode
+// - minification filter must be Nearest or Linear
 // - compressed formats not allowed
 // - mipmaps not allowed
 // - texture base level must be 0
-
 bool GLTextureRectangle::Create(GLState* gl_state)
 {
 	if(_id)
@@ -1739,8 +1738,8 @@ bool GLTextureRectangle::Create(GLState* gl_state)
 
 	glBindTexture(GL_TEXTURE_RECTANGLE, _id);
 	_glState->imageUnits[0].texture = _id;
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_RECTANGLE;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::TexRectangle;
 	_target = GL_TEXTURE_RECTANGLE;
 	_width = 0;
 	_height = 0;
@@ -1775,8 +1774,8 @@ bool GLTextureRectangle::CreateView(GLState* gl_state, GLuint orig_tex, PixelFor
 
 	glTextureView(_id, GL_TEXTURE_RECTANGLE, orig_tex, GetGLEnum(internal_format), min_level, num_levels, 0, 1);
 
-	_resType = RES_TEXTURE;
-	_textureType = TEXTURE_RECTANGLE;
+	_resType = ResourceType::Texture;
+	_textureType = TextureType::TexRectangle;
 	_target = GL_TEXTURE_RECTANGLE;
 	_format = internal_format;
 

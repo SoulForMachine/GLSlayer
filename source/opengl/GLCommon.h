@@ -27,7 +27,7 @@
 #define DECL_GL_ENUM_LOOKUP_TABLE(type, table) \
 	extern const GLenum table[]; \
 	type GetFromGLEnum_##type(GLenum value); \
-	template <> inline GLenum GetGLEnum<type>(type value) { return table[value]; } \
+	template <> inline GLenum GetGLEnum<type>(type value) { return table[static_cast<int>(value)]; } \
 	template <> inline type GetFromGLEnum<type>(GLenum value) { return GetFromGLEnum_##type(value); }
 
 
@@ -58,7 +58,7 @@ DECL_GL_ENUM_LOOKUP_TABLE(PrimitiveType, __primitiveTypeTable)
 DECL_GL_ENUM_LOOKUP_TABLE(TessGenPrimitiveType, __tessGenPrimitiveTypeTable)
 DECL_GL_ENUM_LOOKUP_TABLE(TessGenSpacing, __tessGenSpacingTable)
 DECL_GL_ENUM_LOOKUP_TABLE(RasterMode, __rasterModeTable)
-DECL_GL_ENUM_LOOKUP_TABLE(VertexOrder, __vertexOrderTable)
+DECL_GL_ENUM_LOOKUP_TABLE(VertexWinding, __vertexOrderTable)
 DECL_GL_ENUM_LOOKUP_TABLE(CompareFunc, __compareFuncTable)
 DECL_GL_ENUM_LOOKUP_TABLE(StencilOp, __stencilOpTable)
 DECL_GL_ENUM_LOOKUP_TABLE(BlendOp, __blendOpTable)
@@ -72,7 +72,7 @@ DECL_GL_ENUM_LOOKUP_TABLE(FramebufferStatus, __framebufferStatusTable)
 DECL_GL_ENUM_LOOKUP_TABLE(SwapMethod, __swapMethodTable)
 DECL_GL_ENUM_LOOKUP_TABLE(ColorBufferType, __colorBufferTypeTable)
 DECL_GL_ENUM_LOOKUP_TABLE(ProgramParam, __programParamTable)
-DECL_GL_ENUM_LOOKUP_TABLE(ConditionalRenderMode, __condRenderModeTable)
+DECL_GL_ENUM_LOOKUP_TABLE(ConditionalRenderQueryMode, __condRenderModeTable)
 DECL_GL_ENUM_LOOKUP_TABLE(TransformFeedbackBufferMode, __tfBufferModeTable)
 DECL_GL_ENUM_LOOKUP_TABLE(VertexConvention, __vertConventionModeTable)
 DECL_GL_ENUM_LOOKUP_TABLE(FenceSyncCondition, __fenceSyncConditionTable)

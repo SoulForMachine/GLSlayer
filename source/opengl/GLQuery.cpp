@@ -8,7 +8,7 @@ namespace gls::internals
 void GLQuery::Create()
 {
 	glGenQueries(1, &_id);
-	_type = QUERY_UNDEFINED;
+	_type = QueryType::Undefined;
 	_target = 0;
 }
 

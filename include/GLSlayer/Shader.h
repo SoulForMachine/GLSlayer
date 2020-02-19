@@ -72,7 +72,7 @@ namespace gls
 	public:
 		virtual TessGenPrimitiveType GetMode() = 0;
 		virtual TessGenSpacing GetSpacing() = 0;
-		virtual VertexOrder GetVertexOrder() = 0;
+		virtual VertexWinding GetVertexOrder() = 0;
 		virtual bool GetPointMode() = 0;
 	};
 

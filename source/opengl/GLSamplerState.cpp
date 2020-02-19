@@ -9,7 +9,7 @@ namespace gls::internals
 GLSamplerState::GLSamplerState()
 {
 	_id = 0;
-	_resType = RES_SAMPLER_STATE;
+	_resType = ResourceType::SamplerState;
 	_target = 0;
 }
 

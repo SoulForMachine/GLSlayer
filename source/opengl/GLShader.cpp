@@ -350,8 +350,8 @@ void GLShader::RetrieveLog2(GLuint program, GLuint shader)
 
 GLVertexShader::GLVertexShader()
 {
-	_shaderType = VERTEX_SHADER;
-	_resType = RES_SHADER;
+	_shaderType = ShaderType::Vertex;
+	_resType = ResourceType::Shader;
 	_target = GL_VERTEX_SHADER;
 }
 
@@ -364,8 +364,8 @@ void GLVertexShader::TransformFeedbackVaryings(sizei count, const char** varying
 
 GLTessControlShader::GLTessControlShader()
 {
-	_shaderType = TESS_CONTROL_SHADER;
-	_resType = RES_SHADER;
+	_shaderType = ShaderType::TessControl;
+	_resType = ResourceType::Shader;
 	_target = GL_TESS_CONTROL_SHADER;
 }
 
@@ -380,8 +380,8 @@ int GLTessControlShader::GetOutputVertexCount()
 
 GLTessEvaluationShader::GLTessEvaluationShader()
 {
-	_shaderType = TESS_EVALUATION_SHADER;
-	_resType = RES_SHADER;
+	_shaderType = ShaderType::TessEvaluation;
+	_resType = ResourceType::Shader;
 	_target = GL_TESS_EVALUATION_SHADER;
 }
 
@@ -399,11 +399,11 @@ TessGenSpacing GLTessEvaluationShader::GetSpacing()
 	return GetFromGLEnum<TessGenSpacing>(spacing);
 }
 
-VertexOrder GLTessEvaluationShader::GetVertexOrder()
+VertexWinding GLTessEvaluationShader::GetVertexOrder()
 {
 	GLint order;
 	glGetProgramiv(_id, GL_TESS_GEN_VERTEX_ORDER, &order);
-	return GetFromGLEnum<VertexOrder>(order);
+	return GetFromGLEnum<VertexWinding>(order);
 }
 
 bool GLTessEvaluationShader::GetPointMode()
@@ -417,8 +417,8 @@ bool GLTessEvaluationShader::GetPointMode()
 
 GLGeometryShader::GLGeometryShader()
 {
-	_shaderType = GEOMETRY_SHADER;
-	_resType = RES_SHADER;
+	_shaderType = ShaderType::Geometry;
+	_resType = ResourceType::Shader;
 	_target = GL_GEOMETRY_SHADER;
 }
 
@@ -438,8 +438,8 @@ int GLGeometryShader::GetInvocations()
 
 GLFragmentShader::GLFragmentShader()
 {
-	_shaderType = FRAGMENT_SHADER;
-	_resType = RES_SHADER;
+	_shaderType = ShaderType::Fragment;
+	_resType = ResourceType::Shader;
 	_target = GL_FRAGMENT_SHADER;
 }
 
@@ -447,8 +447,8 @@ GLFragmentShader::GLFragmentShader()
 
 GLComputeShader::GLComputeShader()
 {
-	_shaderType = COMPUTE_SHADER;
-	_resType = RES_SHADER;
+	_shaderType = ShaderType::Compute;
+	_resType = ResourceType::Shader;
 	_target = GL_COMPUTE_SHADER;
 }
 

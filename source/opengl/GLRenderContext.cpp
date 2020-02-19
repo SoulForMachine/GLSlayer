@@ -16,9 +16,9 @@
 	if(!InitFuncPtr(ptr_##func, #func)) { \
 		result = false; \
 		DebugMessage( \
-			DEBUG_SOURCE_THIRD_PARTY, \
-			DEBUG_TYPE_ERROR, \
-			DEBUG_SEVERITY_NOTIFICATION, \
+			DebugMessageSource::ThirdParty, \
+			DebugMessageType::Error, \
+			DebugMessageSeverity::Notification, \
 			MESSAGE_ERROR_EXTENSION_MISSING_ENTRIES, \
 			#func); }
 
@@ -240,7 +240,7 @@ bool GLRenderContext::InitCommon(uint version)
 	if (!LoadOpenGLExtensions(version))
 	{
 		Destroy();
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "not all required extensions are available");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version, "not all required extensions are available");
 		return false;
 	}
 
@@ -551,7 +551,7 @@ void GLRenderContext::Clear()
 	_vertexFormat = nullptr;
 	_vertexAttribs = nullptr;
 	_vertAttribEnabledState = nullptr;
-	_indexType = TYPE_NONE;
+	_indexType = DataType::UnsignedShort;
 	_lastBoundTexTargets = nullptr;
 	_pipeline = 0;
 	_logger = nullptr;
@@ -612,7 +612,7 @@ void GLRenderContext::ActiveVertexFormat(IVertexFormat* format)
 				assert((int)desc.attribute < _info.maxVertexAttribs);
 				assert(desc.stream >= 0 && desc.stream < _info.maxVertexAttribBindings);
 
-				if (desc.type == TYPE_DOUBLE)
+				if (desc.type == DataType::Double)
 				{
 					glVertexAttribLFormat(desc.attribute, desc.numComponents, GetGLEnum(desc.type), (GLuint)desc.offset);
 				}
@@ -695,9 +695,9 @@ void GLRenderContext::PatchDefaultInnerLevels(const float values[2])
 	glPatchParameterfv(GL_PATCH_DEFAULT_INNER_LEVEL, values);
 }
 
-void GLRenderContext::BeginConditionalRender(IQuery* query, ConditionalRenderMode mode)
+void GLRenderContext::BeginConditionalRender(IQuery* query, ConditionalRenderQueryMode mode)
 {
-	glBeginConditionalRender(static_cast<GLQuery*>(query)->GetID(), mode);
+	glBeginConditionalRender(static_cast<GLQuery*>(query)->GetID(), GetGLEnum(mode));
 }
 
 void GLRenderContext::EndConditionalRender()
@@ -763,7 +763,7 @@ void GLRenderContext::CullFace(PolygonFace face)
 	glCullFace(GetGLEnum(face));
 }
 
-void GLRenderContext::FrontFace(VertexOrder orient)
+void GLRenderContext::FrontFace(VertexWinding orient)
 {
 	glFrontFace(GetGLEnum(orient));
 }
@@ -1025,7 +1025,7 @@ void GLRenderContext::SetFramebuffer(IFramebuffer* fbuf)
 	}
 }
 
-void GLRenderContext::ActiveColorBuffers(IFramebuffer* fbuf, sizei count, const ColorBuffer* buffers)
+void GLRenderContext::ActiveColorBuffers(IFramebuffer* fbuf, const ColorBuffer* buffers, sizei count)
 {
 	if (count < 0 || count > _info.maxDrawBuffers)
 	{
@@ -1181,7 +1181,7 @@ void GLRenderContext::ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_c
 		_glState.readFbuf = id;
 	}
 
-	if(source_color_buf != COLOR_BUFFER_NONE)
+	if(source_color_buf != ColorBuffer::None)
 	{
 		glReadBuffer(GetGLEnum(source_color_buf));
 	}
@@ -1215,7 +1215,7 @@ void GLRenderContext::ReadPixels(IFramebuffer* source_fbuf, ColorBuffer source_c
 		_glState.readFbuf = id;
 	}
 
-	if(source_color_buf != COLOR_BUFFER_NONE)
+	if(source_color_buf != ColorBuffer::None)
 	{
 		glReadBuffer(GetGLEnum(source_color_buf));
 	}
@@ -1246,7 +1246,7 @@ void GLRenderContext::BlitFramebuffer(IFramebuffer* source_fbuf, ColorBuffer sou
 		_glState.readFbuf = id;
 	}
 
-	if((buffers & COLOR_BUFFER_BIT) && (source_color_buf != COLOR_BUFFER_NONE))
+	if((buffers & COLOR_BUFFER_BIT) && (source_color_buf != ColorBuffer::None))
 	{
 		glReadBuffer(GetGLEnum(source_color_buf));
 	}
@@ -1696,10 +1696,10 @@ void GLRenderContext::CopyTextureData(
 	ITexture* dest, int dest_level, int dest_x, int dest_y, int dest_z)
 {
 	GLTexture* src_tex = dyn_cast_ptr<GLTexture*>(source);
-	assert(src_tex->GetTextureType() != TEXTURE_BUFFER_DATA);
+	assert(src_tex->GetTextureType() != TextureType::TexBuffer);
 
 	GLTexture* dst_tex = dyn_cast_ptr<GLTexture*>(dest);
-	assert(dst_tex->GetTextureType() != TEXTURE_BUFFER_DATA);
+	assert(dst_tex->GetTextureType() != TextureType::TexBuffer);
 
 	glCopyImageSubData(
 		src_tex->GetID(), src_tex->GetTarget(), source_level, source_x, source_y, source_z,
@@ -1755,7 +1755,7 @@ void GLRenderContext::DelayedDrawingStateSetup()
 							_glState.vertexBuf = vstream.buffer->GetID();
 						}
 
-						if (desc.type == TYPE_DOUBLE)
+						if (desc.type == DataType::Double)
 						{
 							glVertexAttribLPointer(desc.attribute, desc.numComponents, GL_DOUBLE, (GLsizei)vstream.stride, BUFFER_OFFSET(vstream.offset + desc.offset));
 						}
@@ -2971,7 +2971,7 @@ void GLRenderContext::EnableDebugMessages(DebugMessageSource source, DebugMessag
 
 void GLRenderContext::EnableDebugMessages(DebugMessageSource source, DebugMessageType type, uint id_count, uint* ids, bool enable)
 {
-	if(source != DEBUG_SOURCE_ALL && type != DEBUG_TYPE_ALL)
+	if(source != DebugMessageSource::All && type != DebugMessageType::All)
 	{
 		glDebugMessageControl(GetGLEnum(source), GetGLEnum(type), GL_DONT_CARE, id_count, ids, enable);
 	}
@@ -2979,7 +2979,7 @@ void GLRenderContext::EnableDebugMessages(DebugMessageSource source, DebugMessag
 
 void GLRenderContext::EnableDebugMessage(DebugMessageSource source, DebugMessageType type, uint id, bool enable)
 {
-	if(source != DEBUG_SOURCE_ALL && type != DEBUG_TYPE_ALL)
+	if(source != DebugMessageSource::All && type != DebugMessageType::All)
 	{
 		glDebugMessageControl(GetGLEnum(source), GetGLEnum(type), GL_DONT_CARE, 1, &id, enable);
 	}
@@ -2987,7 +2987,7 @@ void GLRenderContext::EnableDebugMessage(DebugMessageSource source, DebugMessage
 
 void GLRenderContext::InsertDebugMessage(DebugMessageSource source, DebugMessageType type, uint id, DebugMessageSeverity severity, const char* message)
 {
-	if( (source == DEBUG_SOURCE_APPLICATION || source == DEBUG_SOURCE_THIRD_PARTY)
+	if( (source == DebugMessageSource::Application || source == DebugMessageSource::ThirdParty)
 		&& ((int)strlen(message) < _info.maxDebugMessageLength) )
 	{
 		glDebugMessageInsert(GetGLEnum(source), GetGLEnum(type), id, GetGLEnum(severity), -1, message);
@@ -2996,7 +2996,7 @@ void GLRenderContext::InsertDebugMessage(DebugMessageSource source, DebugMessage
 
 void GLRenderContext::PushDebugGroup(DebugMessageSource source, uint id, const char* message)
 {
-	if( (source == DEBUG_SOURCE_APPLICATION || source == DEBUG_SOURCE_THIRD_PARTY)
+	if( (source == DebugMessageSource::Application || source == DebugMessageSource::ThirdParty)
 		&& ((int)strlen(message) < _info.maxDebugMessageLength) )
 	{
 		glPushDebugGroup(GetGLEnum(source), id, -1, message);

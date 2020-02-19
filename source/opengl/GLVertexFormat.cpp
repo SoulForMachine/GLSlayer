@@ -33,7 +33,7 @@ bool GLVertexFormat::Create(const GLContextInfo& ctxInfo, const VertexAttribDesc
 		if (desc.stream < 0 || desc.stream >= ctxInfo.maxVertexAttribBindings ||
 			static_cast<int>(desc.attribute) >= ctxInfo.maxVertexAttribs ||
 			desc.numComponents < 1 || desc.numComponents > 4 ||
-			desc.type == TYPE_NONE ||
+			desc.type == DataType::None ||
 			(ctxInfo.featuresGL.ARB_vertex_attrib_binding && static_cast<int>(desc.offset) > ctxInfo.maxVertexAttribRelativeOffset))
 		{
 			delete[] _descriptors;

@@ -21,7 +21,7 @@ bool GLBuffer::Create(GLState* gl_state, sizeiptr size, const void* data, uint f
 
 	_glState = gl_state;
 
-	_resType = RES_BUFFER;
+	_resType = ResourceType::Buffer;
 	_target = GL_COPY_WRITE_BUFFER;
 	_size = size;
 

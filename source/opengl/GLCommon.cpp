@@ -790,6 +790,7 @@ const GLenum __clipDepthTable[] =
 		for(size_t i = 0; i < (sizeof(table) / sizeof(*table)); ++i) { \
 			if(value == table[i]) \
 				return (type)i; } \
+		assert(false); \
 		return (type)-1; }
 
 FROM_GL_ENUM_TABLE_LOOKUP(BufferType, __bufferTypeTable)
@@ -809,7 +810,7 @@ FROM_GL_ENUM_TABLE_LOOKUP(PrimitiveType, __primitiveTypeTable)
 FROM_GL_ENUM_TABLE_LOOKUP(TessGenPrimitiveType, __tessGenPrimitiveTypeTable)
 FROM_GL_ENUM_TABLE_LOOKUP(TessGenSpacing, __tessGenSpacingTable)
 FROM_GL_ENUM_TABLE_LOOKUP(RasterMode, __rasterModeTable)
-FROM_GL_ENUM_TABLE_LOOKUP(VertexOrder, __vertexOrderTable)
+FROM_GL_ENUM_TABLE_LOOKUP(VertexWinding, __vertexOrderTable)
 FROM_GL_ENUM_TABLE_LOOKUP(CompareFunc, __compareFuncTable)
 FROM_GL_ENUM_TABLE_LOOKUP(StencilOp, __stencilOpTable)
 FROM_GL_ENUM_TABLE_LOOKUP(BlendOp, __blendOpTable)
@@ -823,7 +824,7 @@ FROM_GL_ENUM_TABLE_LOOKUP(FramebufferStatus, __framebufferStatusTable)
 FROM_GL_ENUM_TABLE_LOOKUP(SwapMethod, __swapMethodTable)
 FROM_GL_ENUM_TABLE_LOOKUP(ColorBufferType, __colorBufferTypeTable)
 FROM_GL_ENUM_TABLE_LOOKUP(ProgramParam, __programParamTable)
-FROM_GL_ENUM_TABLE_LOOKUP(ConditionalRenderMode, __condRenderModeTable)
+FROM_GL_ENUM_TABLE_LOOKUP(ConditionalRenderQueryMode, __condRenderModeTable)
 FROM_GL_ENUM_TABLE_LOOKUP(TransformFeedbackBufferMode, __tfBufferModeTable)
 FROM_GL_ENUM_TABLE_LOOKUP(VertexConvention, __vertConventionModeTable)
 FROM_GL_ENUM_TABLE_LOOKUP(FenceSyncCondition, __fenceSyncConditionTable)

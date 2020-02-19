@@ -31,7 +31,7 @@ bool GLRenderbuffer::Create(GLState* gl_state, sizei samples, PixelFormat intern
 
 	glBindRenderbuffer(GL_RENDERBUFFER, _id);
 	_glState->renderbuffer = _id;
-	_resType = RES_RENDERBUFFER;
+	_resType = ResourceType::Renderbuffer;
 	_target = GL_RENDERBUFFER;
 
 	glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GetGLEnum(internal_format), width, height);
@@ -76,7 +76,7 @@ bool GLFramebuffer::Create(GLState* gl_state)
 		return false;
 
 	_target = GL_DRAW_FRAMEBUFFER;
-	_resType = RES_FRAMEBUFFER;
+	_resType = ResourceType::Framebuffer;
 
 	glBindFramebuffer(_target, _id);
 	_glState->drawFbuf = _id;

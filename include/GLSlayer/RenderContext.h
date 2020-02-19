@@ -267,7 +267,7 @@ namespace gls
 		virtual void PatchDefaultInnerLevels(const float values[2]) = 0;
 
 		// conditional render
-		virtual void BeginConditionalRender(IQuery* query, ConditionalRenderMode mode) = 0;
+		virtual void BeginConditionalRender(IQuery* query, ConditionalRenderQueryMode mode) = 0;
 		virtual void EndConditionalRender() = 0;
 
 		// transform feedback
@@ -284,7 +284,7 @@ namespace gls
 		// back face culling
 		virtual void EnableFaceCulling(bool enable) = 0;
 		virtual void CullFace(PolygonFace face) = 0;
-		virtual void FrontFace(VertexOrder orient) = 0;
+		virtual void FrontFace(VertexWinding orient) = 0;
 
 		// rasterization
 		virtual void RasterizationMode(RasterMode mode) = 0;
@@ -341,7 +341,7 @@ namespace gls
 
 		// framebuffer
 		virtual void SetFramebuffer(IFramebuffer* fbuf) = 0;
-		virtual void ActiveColorBuffers(IFramebuffer* fbuf, sizei count, const ColorBuffer* buffers) = 0;
+		virtual void ActiveColorBuffers(IFramebuffer* fbuf, const ColorBuffer* buffers, sizei count) = 0;
 		virtual void EnableFramebufferSRGB(bool enable) = 0;
 		virtual void EnableColorWrite(bool r, bool g, bool b, bool a) = 0;
 		virtual void EnableColorWrite(uint buffer, bool r, bool g, bool b, bool a) = 0;

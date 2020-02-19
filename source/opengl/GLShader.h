@@ -122,7 +122,7 @@ public:
 	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_TESS_EVAL_SHADER) ? this : GLShader::DynamicCast(type_id); }
 	virtual TessGenPrimitiveType GetMode() override;
 	virtual TessGenSpacing GetSpacing() override;
-	virtual VertexOrder GetVertexOrder() override;
+	virtual VertexWinding GetVertexOrder() override;
 	virtual bool GetPointMode() override;
 };
 

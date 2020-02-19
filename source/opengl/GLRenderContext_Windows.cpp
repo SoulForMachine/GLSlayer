@@ -129,19 +129,19 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 
 	if (version < 330)
 	{
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_UNSUPPORTED_VERSION);
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_UNSUPPORTED_VERSION);
 		return false;
 	}
 
 	if (instance_handle == 0)
 	{
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "instance handle is 0.");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version, "instance handle is 0.");
 		return false;
 	}
 
 	if (window_handle == 0)
 	{
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "window handle is 0.");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version, "window handle is 0.");
 		return false;
 	}
 
@@ -162,7 +162,7 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	result = RegisterClass(&wc);
 	if (!result)
 	{
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "could not register window class");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "could not register window class");
 		return false;
 	}
 
@@ -174,7 +174,7 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	if (!tmp_hwnd)
 	{
 		UnregisterClass(tmp_wnd_class, _instanceHandle);
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "could not create window");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "could not create window");
 		return false;
 	}
 
@@ -193,7 +193,7 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	{
 		DestroyWindow(tmp_hwnd);
 		UnregisterClass(tmp_wnd_class, _instanceHandle);
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "could not get window DC");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "could not get window DC");
 		return false;
 	}
 
@@ -202,7 +202,7 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	{
 		DestroyWindow(tmp_hwnd);
 		UnregisterClass(tmp_wnd_class, _instanceHandle);
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "ChoosePixelFormat");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "ChoosePixelFormat");
 		return false;
 	}
 
@@ -211,7 +211,7 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	{
 		DestroyWindow(tmp_hwnd);
 		UnregisterClass(tmp_wnd_class, _instanceHandle);
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "SetPixelFormat");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "SetPixelFormat");
 		return false;
 	}
 
@@ -220,7 +220,7 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	{
 		DestroyWindow(tmp_hwnd);
 		UnregisterClass(tmp_wnd_class, _instanceHandle);
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "wglCreateContext");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "wglCreateContext");
 		return false;
 	}
 
@@ -230,7 +230,7 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 		wglDeleteContext(tmp_rc);
 		DestroyWindow(tmp_hwnd);
 		UnregisterClass(tmp_wnd_class, _instanceHandle);
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "wglMakeCurrent");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_TEMPORARY_CONTEXT, "wglMakeCurrent");
 		return false;
 	}
 
@@ -251,7 +251,7 @@ bool GLRenderContext::Create(uint version, HINSTANCE instance_handle, HWND windo
 	if (!result)
 	{
 		Destroy();
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "wglMakeCurrent");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version, "wglMakeCurrent");
 		return false;
 	}
 
@@ -264,28 +264,28 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 	HDC hdc = GetDC(_hwnd);
 	if (!hdc)
 	{
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "could not get window DC");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version, "could not get window DC");
 		return false;
 	}
 
 	// Initialize base GL version for some basic functions.
 	if (!glextLoad_GL_VERSION_1_0())
 	{
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "could not load version 1.0");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version, "could not load version 1.0");
 		return false;
 	}
 
 	// create rendering context with WGL_ARB_pixel_format extension
 	if (!IsExtSupported("WGL_ARB_pixel_format"))
 	{
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "WGL_ARB_pixel_format not supported.");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version, "WGL_ARB_pixel_format not supported.");
 		return false;
 	}
 
 	if (!glextLoad_WGL_ARB_pixel_format())
 	{
 		DebugMessage(
-			DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version,
+			DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version,
 			"the driver does not have all function entries for WGL_ARB_pixel_format");
 		return false;
 	}
@@ -314,7 +314,7 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 	result = ptr_wglChoosePixelFormatARB(hdc, int_atribs, 0, 1, &pixel_format, &num_formats);
 	if (!result || num_formats < 1)
 	{
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "wglChoosePixelFormatARB");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version, "wglChoosePixelFormatARB");
 		return false;
 	}
 
@@ -322,14 +322,14 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 	result = DescribePixelFormat(hdc, pixel_format, sizeof(pfd), &pfd);
 	if (!result)
 	{
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "DescribePixelFormat");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version, "DescribePixelFormat");
 		return false;
 	}
 
 	result = SetPixelFormat(hdc, pixel_format, &pfd);
 	if (!result)
 	{
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "SetPixelFormat");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version, "SetPixelFormat");
 		return false;
 	}
 
@@ -356,7 +356,7 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 	else
 	{
 		DebugMessage(
-			DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version,
+			DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version,
 			"extension WGL_ARB_create_context not supported, cannot create forward compatible context");
 	}
 
@@ -371,7 +371,7 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 	{
 		_hglrc = 0;
 		_hdc = 0;
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "wglCreateContextAttribsARB");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version, "wglCreateContextAttribsARB");
 		return false;
 	}
 }

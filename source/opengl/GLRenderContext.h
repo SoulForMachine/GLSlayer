@@ -19,11 +19,11 @@
 
 #define LOAD_EXTENSION(ext) \
 	if(!glextLoad_##ext()) \
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_NOTIFICATION, MESSAGE_ERROR_UNSUPPORTED_EXTENSION, #ext);
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::Notification, MESSAGE_ERROR_UNSUPPORTED_EXTENSION, #ext);
 
 #define LOAD_EXTENSION_REQ(ext) \
 	if(!glextLoad_##ext()){ \
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_UNSUPPORTED_EXTENSION, #ext); \
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_UNSUPPORTED_EXTENSION, #ext); \
 		result = false; } \
 
 
@@ -69,7 +69,7 @@ public:
 	virtual void PatchDefaultInnerLevels(const float values[2]) override;
 
 	// conditional render
-	virtual void BeginConditionalRender(IQuery* query, ConditionalRenderMode mode) override;
+	virtual void BeginConditionalRender(IQuery* query, ConditionalRenderQueryMode mode) override;
 	virtual void EndConditionalRender() override;
 
 	// transform feedback
@@ -86,7 +86,7 @@ public:
 	// back face culling
 	virtual void EnableFaceCulling(bool enable) override;
 	virtual void CullFace(PolygonFace face) override;
-	virtual void FrontFace(VertexOrder orient) override;
+	virtual void FrontFace(VertexWinding orient) override;
 
 	// rasterization
 	virtual void RasterizationMode(RasterMode mode) override;
@@ -143,7 +143,7 @@ public:
 
 	// framebuffer
 	virtual void SetFramebuffer(IFramebuffer* fbuf) override;
-	virtual void ActiveColorBuffers(IFramebuffer* fbuf, sizei count, const ColorBuffer* buffers) override;
+	virtual void ActiveColorBuffers(IFramebuffer* fbuf, const ColorBuffer* buffers, sizei count) override;
 	virtual void EnableFramebufferSRGB(bool enable) override;
 	virtual void EnableColorWrite(bool r, bool g, bool b, bool a) override;
 	virtual void EnableColorWrite(uint buffer, bool r, bool g, bool b, bool a) override;

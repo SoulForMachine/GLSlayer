@@ -8,7 +8,6 @@
 #include "Common/Utils.h"
 
 using namespace std;
-using namespace gls;
 using namespace math3d;
 
 
@@ -90,24 +89,24 @@ DeferredSample::DeferredSample()
 	_swapInterval = 1;
 }
 
-bool DeferredSample::Init(CreateContextInfo& info)
+bool DeferredSample::Init(gls::CreateContextInfo& info)
 {
 	info.version = 330;
 	info.debugContext = false;
 	info.logger = &_console;
 
-	_renderContext = CreateRenderContext(info);
+	_renderContext = gls::CreateRenderContext(info);
 
 	if(!_renderContext)
 		return false;
 
 	_renderContext->SetCurrentContext();
-	_renderContext->CullFace(FACE_BACK);
-	_renderContext->FrontFace(ORIENT_CCW);
+	_renderContext->CullFace(gls::PolygonFace::Back);
+	_renderContext->FrontFace(gls::VertexWinding::Counterclockwise);
 	_renderContext->EnableFaceCulling(true);
 	_renderContext->SwapInterval(_swapInterval);
 	_renderContext->EnableDebugOutput(true, true);
-	_renderContext->EnableDebugMessages(DEBUG_SOURCE_ALL, DEBUG_TYPE_ALL, DEBUG_SEVERITY_ALL, true);
+	_renderContext->EnableDebugMessages(gls::DebugMessageSource::All, gls::DebugMessageType::All, gls::DebugMessageSeverity::All, true);
 
 	// create shaders
 
@@ -258,58 +257,58 @@ bool DeferredSample::Init(CreateContextInfo& info)
 	_lightBoundsMax = _modelBoundsMax + (_modelBoundsMax - _modelBoundsMin) * 0.3f;
 	CreateRandomLights(MAX_LIGHTS, _lightBoundsMin, _lightBoundsMax);
 
-	_lightMatrixBuf = _renderContext->CreateBuffer(MAX_LIGHTS * sizeof(mat4f), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
+	_lightMatrixBuf = _renderContext->CreateBuffer(MAX_LIGHTS * sizeof(mat4f), nullptr, gls::BUFFER_DYNAMIC_STORAGE_BIT);
 	_lightMatrixTex = _renderContext->CreateTextureBuffer();
-	_lightMatrixTex->TexBuffer(PIXEL_FORMAT_RGBA32F, _lightMatrixBuf);
+	_lightMatrixTex->TexBuffer(gls::PixelFormat::RGBA32F, _lightMatrixBuf);
 
-	_lightInfoBuf = _renderContext->CreateBuffer(MAX_LIGHTS * sizeof(vec4f) * 2, nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
+	_lightInfoBuf = _renderContext->CreateBuffer(MAX_LIGHTS * sizeof(vec4f) * 2, nullptr, gls::BUFFER_DYNAMIC_STORAGE_BIT);
 	_lightInfoTex = _renderContext->CreateTextureBuffer();
-	_lightInfoTex->TexBuffer(PIXEL_FORMAT_RGBA32F, _lightInfoBuf);
+	_lightInfoTex->TexBuffer(gls::PixelFormat::RGBA32F, _lightInfoBuf);
 
 	CreateSphere(1.0f, 16, 16);
 
 	// vertex formats
 
-	VertexAttribDesc vert_desc[] =
+	gls::VertexAttribDesc vert_desc[] =
 	{
-		{ 0, 0, 3, TYPE_FLOAT, false, false, 0 },
-		{ 0, 1, 3, TYPE_FLOAT, false, false, 12 },
+		{ 0, 0, 3, gls::DataType::Float, false, false, 0 },
+		{ 0, 1, 3, gls::DataType::Float, false, false, 12 },
 	};
 	_vertexFormat = _renderContext->CreateVertexFormat(vert_desc, CountOf(vert_desc));
 
-	VertexAttribDesc rect_vert_desc[] =
+	gls::VertexAttribDesc rect_vert_desc[] =
 	{
-		{ 0, 0, 2, TYPE_FLOAT, false, false, 0 },
-		{ 0, 1, 2, TYPE_FLOAT, false, false, 8 },
+		{ 0, 0, 2, gls::DataType::Float, false, false, 0 },
+		{ 0, 1, 2, gls::DataType::Float, false, false, 8 },
 	};
 	_vertFmtScreenRect = _renderContext->CreateVertexFormat(rect_vert_desc, CountOf(rect_vert_desc));
 
 	// uniform buffers
 
-	_ubufVertShaderGBuffer = _renderContext->CreateBuffer(sizeof(GBufferTransformData), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
-	_ubufFragShaderGBuffer = _renderContext->CreateBuffer(sizeof(GBufferFragData), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
+	_ubufVertShaderGBuffer = _renderContext->CreateBuffer(sizeof(GBufferTransformData), nullptr, gls::BUFFER_DYNAMIC_STORAGE_BIT);
+	_ubufFragShaderGBuffer = _renderContext->CreateBuffer(sizeof(GBufferFragData), nullptr, gls::BUFFER_DYNAMIC_STORAGE_BIT);
 
-	_ubufVertShaderSSpace = _renderContext->CreateBuffer(sizeof(VSScreenSpaceData), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
-	_ubufFragShaderSimpleTex = _renderContext->CreateBuffer(sizeof(FSSimpleTextureData), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
-	_ubufFragShaderLighting = _renderContext->CreateBuffer(sizeof(vec4f), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
+	_ubufVertShaderSSpace = _renderContext->CreateBuffer(sizeof(VSScreenSpaceData), nullptr, gls::BUFFER_DYNAMIC_STORAGE_BIT);
+	_ubufFragShaderSimpleTex = _renderContext->CreateBuffer(sizeof(FSSimpleTextureData), nullptr, gls::BUFFER_DYNAMIC_STORAGE_BIT);
+	_ubufFragShaderLighting = _renderContext->CreateBuffer(sizeof(vec4f), nullptr, gls::BUFFER_DYNAMIC_STORAGE_BIT);
 
-	_rectVertBuf = _renderContext->CreateBuffer(2 * 2 * 6 * sizeof(SSRectVertex), nullptr, BUFFER_DYNAMIC_STORAGE_BIT);
+	_rectVertBuf = _renderContext->CreateBuffer(2 * 2 * 6 * sizeof(SSRectVertex), nullptr, gls::BUFFER_DYNAMIC_STORAGE_BIT);
 
 	// samplers
 
-	SamplerStateDesc sampler_gbuf_desc;
-	sampler_gbuf_desc.addressU = TEX_ADDRESS_CLAMP_TO_EDGE;
-	sampler_gbuf_desc.addressV = TEX_ADDRESS_CLAMP_TO_EDGE;
-	sampler_gbuf_desc.minFilter = TEX_FILTER_LINEAR;
-	sampler_gbuf_desc.magFilter = TEX_FILTER_LINEAR;
+	gls::SamplerStateDesc sampler_gbuf_desc;
+	sampler_gbuf_desc.addressU = gls::TexAddressMode::ClampToEdge;
+	sampler_gbuf_desc.addressV = gls::TexAddressMode::ClampToEdge;
+	sampler_gbuf_desc.minFilter = gls::TexFilter::Linear;
+	sampler_gbuf_desc.magFilter = gls::TexFilter::Linear;
 
 	_samplerGBuffer = _renderContext->CreateSamplerState(sampler_gbuf_desc);
 
-	SamplerStateDesc sampler_light_desc;
-	sampler_light_desc.addressU = TEX_ADDRESS_CLAMP_TO_EDGE;
-	sampler_light_desc.addressV = TEX_ADDRESS_CLAMP_TO_EDGE;
-	sampler_light_desc.minFilter = TEX_FILTER_NEAREST;
-	sampler_light_desc.magFilter = TEX_FILTER_NEAREST;
+	gls::SamplerStateDesc sampler_light_desc;
+	sampler_light_desc.addressU = gls::TexAddressMode::ClampToEdge;
+	sampler_light_desc.addressV = gls::TexAddressMode::ClampToEdge;
+	sampler_light_desc.minFilter = gls::TexFilter::Nearest;
+	sampler_light_desc.magFilter = gls::TexFilter::Nearest;
 
 	_samplerLight = _renderContext->CreateSamplerState(sampler_light_desc);
 
@@ -357,47 +356,47 @@ void DeferredSample::Deinit()
 void DeferredSample::GetFramebufferFormat(gls::FramebufferFormat& fbufFormat)
 {
 	fbufFormat.colorBits = 32;
-	fbufFormat.colorBufferType = COLOR_BUFFER_TYPE_RGBA;
+	fbufFormat.colorBufferType = gls::ColorBufferType::RGBA;
 	fbufFormat.depthBits = 24;
 	fbufFormat.stencilBits = 0;
 	fbufFormat.doubleBuffer = true;
 	fbufFormat.multisampleSamples = 0;
 	fbufFormat.sRGB = false;
-	fbufFormat.swapMethod = SWAP_EXCHANGE;
+	fbufFormat.swapMethod = gls::SwapMethod::Exchange;
 }
 
 void DeferredSample::CreateFramebuffers(int width, int height)
 {
 	DestroyFramebuffers();
 
-	_texPosition = _renderContext->CreateTexture2D(1, PIXEL_FORMAT_RGBA32F, width, height);
+	_texPosition = _renderContext->CreateTexture2D(1, gls::PixelFormat::RGBA32F, width, height);
 
-	_texNormal = _renderContext->CreateTexture2D(1, PIXEL_FORMAT_RGBA16F, width, height);
+	_texNormal = _renderContext->CreateTexture2D(1, gls::PixelFormat::RGBA16F, width, height);
 
-	_texDiffuse = _renderContext->CreateTexture2D(1, PIXEL_FORMAT_RGBA8, width, height);
+	_texDiffuse = _renderContext->CreateTexture2D(1, gls::PixelFormat::RGBA8, width, height);
 
-	_depthBuffer = _renderContext->CreateTexture2D(1, PIXEL_FORMAT_DEPTH24_STENCIL8, width, height);
+	_depthBuffer = _renderContext->CreateTexture2D(1, gls::PixelFormat::Depth24_Stencil8, width, height);
 
 	_gbuffer = _renderContext->CreateFramebuffer();
-	_gbuffer->AttachTexture(ATTACH_BUFFER_COLOR0, _texPosition, 0);
-	_gbuffer->AttachTexture(ATTACH_BUFFER_COLOR1, _texNormal, 0);
-	_gbuffer->AttachTexture(ATTACH_BUFFER_COLOR2, _texDiffuse, 0);
-	_gbuffer->AttachTexture(ATTACH_BUFFER_DEPTH_STENCIL, _depthBuffer, 0);
-	FramebufferStatus status = _gbuffer->CheckStatus();
-	assert(status == FBUF_STATUS_COMPLETE);
+	_gbuffer->AttachTexture(gls::AttachmentBuffer::Color0, _texPosition, 0);
+	_gbuffer->AttachTexture(gls::AttachmentBuffer::Color1, _texNormal, 0);
+	_gbuffer->AttachTexture(gls::AttachmentBuffer::Color2, _texDiffuse, 0);
+	_gbuffer->AttachTexture(gls::AttachmentBuffer::DepthStencil, _depthBuffer, 0);
+	gls::FramebufferStatus status = _gbuffer->CheckStatus();
+	assert(status == gls::FramebufferStatus::Complete);
 
-	ColorBuffer buffers[] = { COLOR_BUFFER_COLOR0, COLOR_BUFFER_COLOR1, COLOR_BUFFER_COLOR2 };
-	_renderContext->ActiveColorBuffers(_gbuffer, 3, buffers);
+	gls::ColorBuffer buffers[] = { gls::ColorBuffer::Color0, gls::ColorBuffer::Color1, gls::ColorBuffer::Color2 };
+	_renderContext->ActiveColorBuffers(_gbuffer, buffers, CountOf(buffers));
 
 	_sceneBuffer = _renderContext->CreateFramebuffer();
-	_texSceneColor = _renderContext->CreateTexture2D(1, PIXEL_FORMAT_RGBA8, width, height);
-	_sceneBuffer->AttachTexture(ATTACH_BUFFER_COLOR0, _texSceneColor, 0);
-	_sceneBuffer->AttachTexture(ATTACH_BUFFER_DEPTH_STENCIL, _depthBuffer, 0);
+	_texSceneColor = _renderContext->CreateTexture2D(1, gls::PixelFormat::RGBA8, width, height);
+	_sceneBuffer->AttachTexture(gls::AttachmentBuffer::Color0, _texSceneColor, 0);
+	_sceneBuffer->AttachTexture(gls::AttachmentBuffer::DepthStencil, _depthBuffer, 0);
 	status = _sceneBuffer->CheckStatus();
-	assert(status == FBUF_STATUS_COMPLETE);
+	assert(status == gls::FramebufferStatus::Complete);
 
-	buffers[0] = COLOR_BUFFER_COLOR0;
-	_renderContext->ActiveColorBuffers(_sceneBuffer, 1, buffers);
+	buffers[0] = gls::ColorBuffer::Color0;
+	_renderContext->ActiveColorBuffers(_sceneBuffer, buffers, 1);
 }
 
 void DeferredSample::DestroyFramebuffers()
@@ -465,7 +464,7 @@ void DeferredSample::RenderGeometryPass()
 	_renderContext->SetFragmentShader(_fragShaderGBuffer);
 	_renderContext->ActiveVertexFormat(_vertexFormat);
 	_renderContext->VertexSource(0, _vertexBuffer, sizeof(ObjLoader::ObjVertex), 0, 0);
-	_renderContext->IndexSource(_indexBuffer, TYPE_UNSIGNED_SHORT);
+	_renderContext->IndexSource(_indexBuffer, gls::DataType::UnsignedShort);
 
 	_renderContext->SetFramebuffer(_gbuffer);
 	_renderContext->ClearColorBuffer(_gbuffer, 0, vec4f(-10000.0f, -10000.0f, -10000.0f, 1.0f));
@@ -475,7 +474,7 @@ void DeferredSample::RenderGeometryPass()
 
 	_renderContext->EnableDepthTest(true);
 
-	_renderContext->DrawIndexed(PRIM_TRIANGLES, 0, 0, _skullIndexCount);
+	_renderContext->DrawIndexed(gls::PrimitiveType::Triangles, 0, 0, _skullIndexCount);
 
 	_renderContext->EnableDepthTest(false);
 
@@ -522,7 +521,7 @@ void DeferredSample::RenderLightingPass()
 	_renderContext->SetFragmentShader(_fragShaderLight);
 	_renderContext->ActiveVertexFormat(_vertFmtSphere);
 	_renderContext->VertexSource(0, _sphereVertBuf, sizeof(vec3f), 0, 0);
-	_renderContext->IndexSource(_sphereIndexBuf, TYPE_UNSIGNED_SHORT);
+	_renderContext->IndexSource(_sphereIndexBuf, gls::DataType::UnsignedShort);
 
 	_renderContext->SetSamplerState(0, nullptr);
 	_renderContext->SetSamplerState(1, nullptr);
@@ -537,7 +536,7 @@ void DeferredSample::RenderLightingPass()
 	_renderContext->SetSamplerTexture(4, _texNormal);
 
 	_renderContext->EnableBlending(true);
-	_renderContext->BlendingFunc(BLEND_FUNC_ONE, BLEND_FUNC_ONE);
+	_renderContext->BlendingFunc(gls::BlendFunc::One, gls::BlendFunc::One);
 
 	_renderContext->EnableDepthTest(true);
 	_renderContext->EnableDepthWrite(false);
@@ -546,10 +545,10 @@ void DeferredSample::RenderLightingPass()
 	_renderContext->SetFramebuffer(_sceneBuffer);
 	_renderContext->ClearColorBuffer(_sceneBuffer, 0, vec4f(0.0f, 0.0f, 0.0f, 0.0f));
 
-	_query->BeginQuery(QUERY_SAMPLES_PASSED);
-	_renderContext->DrawIndexedInstanced(PRIM_TRIANGLES, 0, 0, _sphereIndexCount, 0, static_cast<sizei>(_lights.size()));
+	_query->BeginQuery(gls::QueryType::SamplesPassed);
+	_renderContext->DrawIndexedInstanced(gls::PrimitiveType::Triangles, 0, 0, _sphereIndexCount, 0, static_cast<gls::sizei>(_lights.size()));
 	_query->EndQuery();
-	uint samples = _query->GetResultUI();
+	gls::uint samples = _query->GetResultUI();
 	//_console.Print("samples - %d       \r", samples);
 
 	_renderContext->SetFramebuffer(0);
@@ -611,7 +610,7 @@ void DeferredSample::RenderGBuffer()
 	_ubufFragShaderSimpleTex->BufferSubData(0, sizeof(FSSimpleTextureData), &fsData);
 
 	_renderContext->SetSamplerTexture(0, _texDiffuse);
-	_renderContext->Draw(PRIM_TRIANGLES, 0, 6);
+	_renderContext->Draw(gls::PrimitiveType::Triangles, 0, 6);
 
 	fsData.texComponents = 3;
 	fsData.rangeMin.set(_modelBoundsMin, 0.0f);
@@ -619,7 +618,7 @@ void DeferredSample::RenderGBuffer()
 	_ubufFragShaderSimpleTex->BufferSubData(0, sizeof(FSSimpleTextureData), &fsData);
 
 	_renderContext->SetSamplerTexture(0, _texPosition);
-	_renderContext->Draw(PRIM_TRIANGLES, 6, 6);
+	_renderContext->Draw(gls::PrimitiveType::Triangles, 6, 6);
 
 	fsData.texComponents = 3;
 	fsData.rangeMin.set(-1.0f, -1.0f, -1.0f);
@@ -627,7 +626,7 @@ void DeferredSample::RenderGBuffer()
 	_ubufFragShaderSimpleTex->BufferSubData(0, sizeof(FSSimpleTextureData), &fsData);
 
 	_renderContext->SetSamplerTexture(0, _texNormal);
-	_renderContext->Draw(PRIM_TRIANGLES, 12, 6);
+	_renderContext->Draw(gls::PrimitiveType::Triangles, 12, 6);
 
 	fsData.texComponents = 1;
 	fsData.rangeMin.set(0.92f, 0.92f, 0.92f);
@@ -635,7 +634,7 @@ void DeferredSample::RenderGBuffer()
 	_ubufFragShaderSimpleTex->BufferSubData(0, sizeof(FSSimpleTextureData), &fsData);
 
 	_renderContext->SetSamplerTexture(0, _depthBuffer);
-	_renderContext->Draw(PRIM_TRIANGLES, 18, 6);
+	_renderContext->Draw(gls::PrimitiveType::Triangles, 18, 6);
 }
 
 void DeferredSample::Render(int frame_time)
@@ -656,9 +655,9 @@ void DeferredSample::Render(int frame_time)
 	else
 	{
 		RenderLightingPass();
-		ColorBuffer buffer = COLOR_BUFFER_BACK_LEFT;
-		_renderContext->ActiveColorBuffers(nullptr, 1, &buffer);
-		_renderContext->BlitFramebuffer(_sceneBuffer, COLOR_BUFFER_COLOR0, 0, 0, _width, _height, nullptr, 0, 0, _width, _height, COLOR_BUFFER_BIT, TEX_FILTER_NEAREST);
+		gls::ColorBuffer buffer = gls::ColorBuffer::BackLeft;
+		_renderContext->ActiveColorBuffers(nullptr, &buffer, 1);
+		_renderContext->BlitFramebuffer(_sceneBuffer, gls::ColorBuffer::Color0, 0, 0, _width, _height, nullptr, 0, 0, _width, _height, gls::COLOR_BUFFER_BIT, gls::TexFilter::Nearest);
 	}
 
 	_renderContext->SwapBuffers();
@@ -745,10 +744,10 @@ void DeferredSample::CreateSphere(float radius, int slices, int stacks)
 	int num_tris = slices * 2 * (stacks - 1);
 	_sphereIndexCount = num_tris * 3;
 
-	_sphereVertBuf = _renderContext->CreateBuffer(_sphereVertCount * sizeof(vec3f), nullptr, BUFFER_MAP_WRITE_BIT);
-	vec3f* vertices =  (vec3f*)_sphereVertBuf->Map(MAP_WRITE_BIT);
-	_sphereIndexBuf = _renderContext->CreateBuffer(_sphereIndexCount * sizeof(ushort), nullptr, BUFFER_MAP_WRITE_BIT);
-	ushort* indices = (ushort*)_sphereIndexBuf->Map(MAP_WRITE_BIT);
+	_sphereVertBuf = _renderContext->CreateBuffer(_sphereVertCount * sizeof(vec3f), nullptr, gls::BUFFER_MAP_WRITE_BIT);
+	vec3f* vertices =  (vec3f*)_sphereVertBuf->Map(gls::MAP_WRITE_BIT);
+	_sphereIndexBuf = _renderContext->CreateBuffer(_sphereIndexCount * sizeof(gls::ushort), nullptr, gls::BUFFER_MAP_WRITE_BIT);
+	gls::ushort* indices = (gls::ushort*)_sphereIndexBuf->Map(gls::MAP_WRITE_BIT);
 
 	int i;
 	for(i = 1; i < stacks; ++i)
@@ -784,13 +783,13 @@ void DeferredSample::CreateSphere(float radius, int slices, int stacks)
 	}
 
 	// calc indices
-	ushort* ind = indices;
+	gls::ushort* ind = indices;
 	for(i = 0; i < stacks - 2; ++i)
 	{
 		int first_i = i * vert_per_row;
 		for(int j = 0; j < slices; ++j)
 		{
-			ushort v_index = first_i + j;
+			gls::ushort v_index = first_i + j;
 
 			ind[0] = v_index;
 			ind[1] = v_index + 1;
@@ -826,9 +825,9 @@ void DeferredSample::CreateSphere(float radius, int slices, int stacks)
 	_sphereIndexBuf->Unmap();
 	_sphereVertBuf->Unmap();
 
-	VertexAttribDesc desc[] =
+	gls::VertexAttribDesc desc[] =
 	{
-		{ 0, 0, 3, TYPE_FLOAT, false, false, 0 },
+		{ 0, 0, 3, gls::DataType::Float, false, false, 0 },
 	};
 	_vertFmtSphere = _renderContext->CreateVertexFormat(desc, CountOf(desc));
 }

@@ -29,7 +29,7 @@ bool GLTransformFeedback::Create(GLState* gl_state)
 		return false;
 
 	_target = GL_TRANSFORM_FEEDBACK;
-	_resType = RES_TRANSFORM_FEEDBACK;
+	_resType = ResourceType::TransformFeedback;
 
 	return true;
 }
