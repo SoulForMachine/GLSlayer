@@ -146,6 +146,11 @@ void SampleFramework::OnKeyDown(int key)
 	_sample->OnKeyDown(key);
 }
 
+void SampleFramework::OnKeyUp(int key)
+{
+	_sample->OnKeyUp(key);
+}
+
 bool SampleFramework::MyCreateWindow()
 {
 	TCHAR wndClass[] = TEXT("GLSlayer samples wnd class");
@@ -216,6 +221,10 @@ bool SampleFramework::WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 			DestroyWindow(_hwnd);
 		else
 			OnKeyDown((int)wParam);
+		return true;
+
+	case WM_KEYUP:
+		OnKeyUp((int)wParam);
 		return true;
 
 	case WM_MOUSEMOVE:

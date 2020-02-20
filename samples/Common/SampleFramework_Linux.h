@@ -2,7 +2,8 @@
 #define _SAMPLES_COMMON_SAMPLE_FRAMEWORK_LINUX_H_
 
 #include <string>
-#include <GL/glx.h>
+#include <X11/Xlib.h>
+#include <GLSlayer/FixXlibMacros.h>
 
 
 class ISample;

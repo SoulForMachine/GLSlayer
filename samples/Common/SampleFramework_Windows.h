@@ -29,6 +29,7 @@ private:
 	void OnRBtnUp(int x, int y);
 	void OnMBtnUp(int x, int y);
 	void OnKeyDown(int key);
+	void OnKeyUp(int key);
 	bool MyCreateWindow();
 	bool WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 

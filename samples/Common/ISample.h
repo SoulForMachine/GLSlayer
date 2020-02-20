@@ -2,14 +2,6 @@
 #ifndef _SAMPLES_COMMON_ISAMPLE_H_
 #define _SAMPLES_COMMON_ISAMPLE_H_
 
-#if defined (_WIN32)
-	#define WIN32_LEAN_AND_MEAN
-	#include <Windows.h>
-#elif defined (__linux__)
-	#include <X11/Xlib.h>
-	#include <X11/Xutil.h>
-#endif
-
 namespace gls
 {
 struct CreateContextInfo;
@@ -27,6 +19,7 @@ public:
 	virtual void Render(int frame_time) = 0;
 	virtual void OnResize(int width, int height) = 0;
 	virtual void OnKeyDown(int key)				{ }
+	virtual void OnKeyUp(int key)				{ }
 	virtual void OnMouseMove(int x, int y)		{ }
 	virtual void OnMouseDrag(int dx, int dy)	{ }
 	virtual void OnLBtnDown(int x, int y)		{ }

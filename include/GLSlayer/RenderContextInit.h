@@ -9,6 +9,7 @@
 #elif defined (__linux__)
 	#include <X11/Xlib.h>
 	#include <X11/Xutil.h>
+	#include "FixXlibMacros.h"
 #endif
 
 #include "Common.h"

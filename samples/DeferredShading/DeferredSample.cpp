@@ -548,7 +548,7 @@ void DeferredSample::RenderLightingPass()
 	_query->BeginQuery(gls::QueryType::SamplesPassed);
 	_renderContext->DrawIndexedInstanced(gls::PrimitiveType::Triangles, 0, 0, _sphereIndexCount, 0, static_cast<gls::sizei>(_lights.size()));
 	_query->EndQuery();
-	gls::uint samples = _query->GetResultUI();
+	//gls::uint samples = _query->GetResultUI();
 	//_console.Print("samples - %d       \r", samples);
 
 	_renderContext->SetFramebuffer(0);

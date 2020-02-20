@@ -157,7 +157,7 @@ bool GLRenderContext::Create(uint version, Display* display, Window window, cons
 
 	if(version < 330)
 	{
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_UNSUPPORTED_VERSION);
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_UNSUPPORTED_VERSION);
 		return false;
 	}
 
@@ -173,7 +173,7 @@ bool GLRenderContext::Create(uint version, Display* display, Window window, cons
 	if(!result)
 	{
 		Destroy();
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "glXMakeCurrent");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version, "glXMakeCurrent");
 		return false;
 	}
 
@@ -188,21 +188,21 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 	GLXFBConfig fb_config = GetFBConfig(_display, format);
 	if(!fb_config)
 	{
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "failed to get GLXFBConfig.");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version, "failed to get GLXFBConfig.");
 		return false;
 	}
 
 	// Initialize base GL version for some basic functions.
 	if (!glextLoad_GL_VERSION_1_0())
 	{
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "could not load version 1.0");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version, "could not load version 1.0");
 		return false;
 	}
 
 	GLXContext context = 0;
 	if( IsExtSupported("GLX_ARB_create_context") &&
 		glextLoad_GLX_ARB_create_context() &&
-		glXCreateContextAttribsARB )
+		ptr_glXCreateContextAttribsARB )
 	{
 		int context_flags = (version >= 300) ? GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB : 0;
 		if(debug_context)
@@ -222,7 +222,7 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 	else
 	{
 		DebugMessage(
-			DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version,
+			DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version,
 			"extension GLX_ARB_create_context not supported, cannot create forward compatible context");
 	}
 
@@ -238,7 +238,7 @@ bool GLRenderContext::CreateContext(uint version, const FramebufferFormat& forma
 	else
 	{
 		_context = 0;
-		DebugMessage(DEBUG_SOURCE_THIRD_PARTY, DEBUG_TYPE_ERROR, DEBUG_SEVERITY_HIGH, MESSAGE_ERROR_CREATE_CONTEXT, version, "glXCreateContextAttribsARB");
+		DebugMessage(DebugMessageSource::ThirdParty, DebugMessageType::Error, DebugMessageSeverity::High, MESSAGE_ERROR_CREATE_CONTEXT, version, "glXCreateContextAttribsARB");
 		return false;
 	}
 }

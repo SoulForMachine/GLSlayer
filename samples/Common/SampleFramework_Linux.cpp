@@ -125,7 +125,7 @@ void SampleFramework::OnKeyPress(XKeyEvent* event)
 void SampleFramework::OnKeyRelease(XKeyEvent* event)
 {
 	KeySym key = XLookupKeysym(event, 0);
-
+	_sample->OnKeyUp(key & 0xFF);
 }
 
 void SampleFramework::OnMotionNotify(XMotionEvent* event)

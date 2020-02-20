@@ -394,7 +394,7 @@ private:
 		DataType type;
 		bool integer;
 		bool normalized;
-		sizei offset;
+		uint offset;
 		uint divisor;
 	};
 

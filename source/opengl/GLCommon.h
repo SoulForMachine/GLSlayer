@@ -9,10 +9,7 @@
 	#include <tchar.h>
 	#pragma comment(lib, "opengl32.lib")
 #elif defined(__linux__)
-	#include <X11/Xlib.h>
-	#include <X11/Xutil.h>
 #endif
-
 
 #include "extensions/h_glext.h"
 
@@ -21,7 +18,7 @@
 
 
 
-#define BUFFER_OFFSET(offset) ((char*)0 + (offset))
+#define BUFFER_OFFSET(offset) ((char*)(offset))
 
 
 #define DECL_GL_ENUM_LOOKUP_TABLE(type, table) \
