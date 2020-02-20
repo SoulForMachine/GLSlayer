@@ -11,7 +11,7 @@
 class TriangleSample : public ISample
 {
 public:
-	TriangleSample();
+	TriangleSample() = default;
 	~TriangleSample();
 
 	virtual bool Init(gls::CreateContextInfo& info) override;
@@ -21,12 +21,12 @@ public:
 	virtual void OnResize(int width, int height) override;
 
 private:
-	gls::IRenderContext* _renderContext;
-	gls::IVertexShader* _vertexShader;
-	gls::IFragmentShader* _fragmentShader;
-	gls::IBuffer* _vertexBuffer;
-	gls::IBuffer* _vertShaderUniforms;
-	gls::IVertexFormat* _vertFormat;
+	gls::IRenderContext* _renderContext = nullptr;
+	gls::IVertexShader* _vertexShader = nullptr;
+	gls::IFragmentShader* _fragmentShader = nullptr;
+	gls::IBuffer* _vertexBuffer = nullptr;
+	gls::IBuffer* _vertShaderUniforms = nullptr;
+	gls::IVertexFormat* _vertFormat = nullptr;
 	math3d::mat4f _projMat;
 	Console _console;
 };

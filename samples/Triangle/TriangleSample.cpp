@@ -3,7 +3,6 @@
 #include "GLSlayer/RenderContextInit.h"
 #include "Common/Utils.h"
 
-using namespace std;
 using namespace math3d;
 
 #pragma pack(push, 1)
@@ -15,20 +14,9 @@ struct Vertex
 #pragma pack(pop)
 
 
-TriangleSample::TriangleSample()
-	: _renderContext(nullptr)
-	, _vertexShader(nullptr)
-	, _fragmentShader(nullptr)
-	, _vertexBuffer(nullptr)
-	, _vertShaderUniforms(nullptr)
-	, _vertFormat(nullptr)
-{
-
-}
-
 TriangleSample::~TriangleSample()
 {
-
+	Deinit();
 }
 
 bool TriangleSample::Init(gls::CreateContextInfo& info)
@@ -54,7 +42,7 @@ bool TriangleSample::Init(gls::CreateContextInfo& info)
 	// Create resources
 
 	bool success;
-	string source = LoadShaderSource("Shaders/Triangle/Simple.vert");
+	std::string source = LoadShaderSource("Shaders/Triangle/Simple.vert");
 	if(source.empty())
 	{
 		_console.PrintLn("Failed to load vertex shader from file: Shaders/Triangle/Simple.vert");

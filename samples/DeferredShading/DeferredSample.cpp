@@ -3,11 +3,11 @@
 #include <cassert>
 #include <string>
 #include <ctime>
+#include <algorithm>
 #include "GLSlayer/RenderContextInit.h"
 #include "Common/ObjLoader.h"
 #include "Common/Utils.h"
 
-using namespace std;
 using namespace math3d;
 
 
@@ -46,47 +46,9 @@ struct FSSimpleTextureData
 #pragma pack(pop)
 
 
-DeferredSample::DeferredSample()
+DeferredSample::~DeferredSample()
 {
-	_renderContext = nullptr;
-	_gbuffer = nullptr;
-	_texDiffuse = nullptr;
-	_texNormal = nullptr;
-	_texPosition = nullptr;
-	_depthBuffer = nullptr;
-	_sceneBuffer = nullptr;
-	_texSceneColor = nullptr;
-	_lightMatrixTex = nullptr;
-	_lightMatrixBuf = nullptr;
-	_lightInfoTex = nullptr;
-	_lightInfoBuf = nullptr;
-	_vertShaderGbuffer = nullptr;
-	_fragShaderGBuffer = nullptr;
-	_vertShaderScreenSpace = nullptr;
-	_fragShaderSimpleTex = nullptr;
-	_vertShaderLight = nullptr;
-	_fragShaderLight = nullptr;
-	_vertexFormat = nullptr;
-	_vertFmtScreenRect = nullptr;
-	_vertFmtSphere = nullptr;
-	_vertexBuffer = nullptr;
-	_indexBuffer = nullptr;
-	_ubufVertShaderGBuffer = nullptr;
-	_ubufFragShaderGBuffer = nullptr;
-	_ubufVertShaderSSpace = nullptr;
-	_ubufFragShaderSimpleTex = nullptr;
-	_ubufFragShaderLighting = nullptr;
-	_rectVertBuf = nullptr;
-	_sphereVertBuf = nullptr;
-	_sphereIndexBuf = nullptr;
-	_samplerGBuffer = nullptr;
-	_samplerLight = nullptr;
-	_query = nullptr;
-	_frameTime = 0.0f;
-	_rotX = 0.0f;
-	_rotY = 0.0f;
-	_showGBuffer = false;
-	_swapInterval = 1;
+	Deinit();
 }
 
 bool DeferredSample::Init(gls::CreateContextInfo& info)
@@ -110,7 +72,7 @@ bool DeferredSample::Init(gls::CreateContextInfo& info)
 
 	// create shaders
 
-	string source = LoadShaderSource("Shaders/DeferredShading/GBuffer.vert");
+	std::string source = LoadShaderSource("Shaders/DeferredShading/GBuffer.vert");
 	if(source.empty())
 	{
 		_console.PrintLn("Failed to load vertex shader from file: Shaders/DeferredShading/GBuffer.vert");
@@ -243,9 +205,9 @@ bool DeferredSample::Init(gls::CreateContextInfo& info)
 		return false;
 	}
 
-	_vertexBuffer = _renderContext->CreateBuffer(ldr.GetVertexCount() * 2 * 3 * 4, ldr.GetVertices(), 0);
+	_vertexBuffer = _renderContext->CreateBuffer(static_cast<gls::sizeiptr>(ldr.GetVertexCount()) * 2 * 3 * 4, ldr.GetVertices(), 0);
 
-	_indexBuffer = _renderContext->CreateBuffer(ldr.GetIndexCount() * 2, ldr.GetIndices(), 0);
+	_indexBuffer = _renderContext->CreateBuffer(static_cast<gls::sizeiptr>(ldr.GetIndexCount()) * 2, ldr.GetIndices(), 0);
 
 	_skullIndexCount = ldr.GetIndexCount();
 	ldr.GetBounds(_modelBoundsMin, _modelBoundsMax);
@@ -726,7 +688,7 @@ void DeferredSample::CreateRandomLights(int count, const vec3f& min_pt, const ve
 		light.color.b = float(rand()) / RAND_MAX;
 
 		vec3f bounds = max_pt - min_pt;
-		float min_dim = min(min(bounds.x, bounds.y), bounds.z);
+		float min_dim = std::min(std::min(bounds.x, bounds.y), bounds.z);
 		light.radius = lerp(min_dim / 4.0f, min_dim / 2.0f, float(rand()) / RAND_MAX);
 	}
 }
@@ -891,7 +853,7 @@ void DeferredSample::UpdateLights()
 void DeferredSample::Update(int frame_time)
 {
 	vec3f bounds = _modelBoundsMax - _modelBoundsMin;
-	float max_dim = max(max(bounds.x, bounds.y), bounds.z);
+	float max_dim = std::max(std::max(bounds.x, bounds.y), bounds.z);
 
 	_worldMat.set_rotation_y(_rotY);
 	_worldMat.rotate_x(_rotX);
