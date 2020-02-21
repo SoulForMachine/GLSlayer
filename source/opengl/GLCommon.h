@@ -2,15 +2,6 @@
 #ifndef _GL_COMMON_H_
 #define _GL_COMMON_H_
 
-#if defined(_WIN32)
-	#define WIN32_LEAN_AND_MEAN
-	#define NOMINMAX
-	#include <windows.h>
-	#include <tchar.h>
-	#pragma comment(lib, "opengl32.lib")
-#elif defined(__linux__)
-#endif
-
 #include "extensions/h_glext.h"
 
 #include "GLSlayer/Common.h"

@@ -6,6 +6,9 @@
 	#define WIN32_LEAN_AND_MEAN
 	#define NOMINMAX
 	#include <Windows.h>
+	#ifdef MemoryBarrier
+		#undef MemoryBarrier
+	#endif
 #elif defined (__linux__)
 	#include <X11/Xlib.h>
 	#include <X11/Xutil.h>

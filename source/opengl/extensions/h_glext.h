@@ -2,12 +2,22 @@
 #ifndef _H_GLEXT_H_
 #define _H_GLEXT_H_
 
+#if defined(_WIN32)
+	#define WIN32_LEAN_AND_MEAN
+	#define NOMINMAX
+	#include <Windows.h>
+	#ifdef MemoryBarrier
+		#undef MemoryBarrier
+	#endif
+#endif
+
 #include <cassert>
 #include "glcorearb.h"
 #include "glext.h"
 
 #if defined(_WIN32)
 	#include "wglext.h"
+	#pragma comment(lib, "opengl32.lib")
 #elif defined(__linux__)
 	#include <GL/glx.h>
 	#include "GLSlayer/FixXlibMacros.h"
