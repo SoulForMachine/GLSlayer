@@ -2,8 +2,8 @@
 #include "DeferredSample.h"
 #include <cassert>
 #include <string>
-#include <ctime>
 #include <algorithm>
+#include <random>
 #include "GLSlayer/RenderContextInit.h"
 #include "Common/ObjLoader.h"
 #include "Common/Utils.h"
@@ -11,7 +11,7 @@
 using namespace math3d;
 
 
-const int MAX_LIGHTS = 64;
+const int MAX_LIGHTS = 128;
 
 
 #pragma pack(push, 1)
@@ -198,25 +198,27 @@ bool DeferredSample::Init(gls::CreateContextInfo& info)
 	// model vertex and index buffers
 
 	ObjLoader ldr;
-	if(!ldr.Load("Models/skull.obj"))
+	if(!ldr.Load("Models/bunny.obj"))
 	{
 		Deinit();
 		_console.PrintLn("Error: failed to load 3D model.");
 		return false;
 	}
 
-	_vertexBuffer = _renderContext->CreateBuffer(static_cast<gls::sizeiptr>(ldr.GetVertexCount()) * 2 * 3 * 4, ldr.GetVertices(), 0);
+	_bunnyVertexBuffer = _renderContext->CreateBuffer(static_cast<gls::sizeiptr>(ldr.GetVertexCount()) * 2 * 3 * 4, ldr.GetVertices(), 0);
 
-	_indexBuffer = _renderContext->CreateBuffer(static_cast<gls::sizeiptr>(ldr.GetIndexCount()) * 2, ldr.GetIndices(), 0);
+	_bunnyIndexBuffer = _renderContext->CreateBuffer(static_cast<gls::sizeiptr>(ldr.GetIndexCount()) * 2, ldr.GetIndices(), 0);
 
-	_skullIndexCount = ldr.GetIndexCount();
+	_bunnyIndexCount = ldr.GetIndexCount();
 	ldr.GetBounds(_modelBoundsMin, _modelBoundsMax);
 	ldr.Unload();
 
 	// Lights
 
-	_lightBoundsMin = _modelBoundsMin - (_modelBoundsMax - _modelBoundsMin) * 0.3f;
-	_lightBoundsMax = _modelBoundsMax + (_modelBoundsMax - _modelBoundsMin) * 0.3f;
+	vec3 bounds = _modelBoundsMax - _modelBoundsMin;
+	float maxLen = std::max(bounds.x, std::max(bounds.y, bounds.z));
+	_lightBoundsMin = { _modelBoundsMin.x - maxLen * 3.0f, _modelBoundsMin.y, _modelBoundsMin.z - maxLen };
+	_lightBoundsMax = { _modelBoundsMax.x + maxLen * 3.0f, _modelBoundsMax.y + maxLen * 3.0f, _modelBoundsMin.z + maxLen * 6.0f };
 	CreateRandomLights(MAX_LIGHTS, _lightBoundsMin, _lightBoundsMax);
 
 	_lightMatrixBuf = _renderContext->CreateBuffer(MAX_LIGHTS * sizeof(mat4f), nullptr, gls::BUFFER_DYNAMIC_STORAGE_BIT);
@@ -228,6 +230,7 @@ bool DeferredSample::Init(gls::CreateContextInfo& info)
 	_lightInfoTex->TexBuffer(gls::PixelFormat::RGBA32F, _lightInfoBuf);
 
 	CreateSphere(1.0f, 16, 16);
+	CreateRoom();
 
 	// vertex formats
 
@@ -274,8 +277,6 @@ bool DeferredSample::Init(gls::CreateContextInfo& info)
 
 	_samplerLight = _renderContext->CreateSamplerState(sampler_light_desc);
 
-	_query = _renderContext->CreateQuery();
-
 	return true;
 }
 
@@ -284,6 +285,7 @@ void DeferredSample::Deinit()
 	if(_renderContext)
 	{
 		DestroySphere();
+		DestroyRoom();
 		DestroyFramebuffers();
 
 		_renderContext->DestroyTexture(_lightMatrixTex);
@@ -298,8 +300,8 @@ void DeferredSample::Deinit()
 		_renderContext->DestroyShader(_fragShaderLight);
 		_renderContext->DestroyVertexFormat(_vertexFormat);
 		_renderContext->DestroyVertexFormat(_vertFmtScreenRect);
-		_renderContext->DestroyBuffer(_vertexBuffer);
-		_renderContext->DestroyBuffer(_indexBuffer);
+		_renderContext->DestroyBuffer(_bunnyVertexBuffer);
+		_renderContext->DestroyBuffer(_bunnyIndexBuffer);
 		_renderContext->DestroyBuffer(_rectVertBuf);
 		_renderContext->DestroyBuffer(_ubufVertShaderGBuffer);
 		_renderContext->DestroyBuffer(_ubufFragShaderGBuffer);
@@ -308,7 +310,6 @@ void DeferredSample::Deinit()
 		_renderContext->DestroyBuffer(_ubufFragShaderLighting);
 		_renderContext->DestroySamplerState(_samplerGBuffer);
 		_renderContext->DestroySamplerState(_samplerLight);
-		_renderContext->DestroyQuery(_query);
 
 		DestroyRenderContext(_renderContext);
 		_renderContext = nullptr;
@@ -416,17 +417,11 @@ void DeferredSample::RenderGeometryPass()
 	transf.worldMatrix = _worldMat;
 	_ubufVertShaderGBuffer->BufferSubData(0, sizeof(GBufferTransformData), &transf);
 
-	GBufferFragData frag_data;
-	frag_data.color.set(1.0f, 1.0f, 1.0f, 1.0f);
-	_ubufFragShaderGBuffer->BufferSubData(0, sizeof(GBufferFragData), &frag_data);
-
 	_renderContext->SetUniformBuffer(0, _ubufVertShaderGBuffer);
 	_renderContext->SetUniformBuffer(1, _ubufFragShaderGBuffer);
 	_renderContext->SetVertexShader(_vertShaderGbuffer);
 	_renderContext->SetFragmentShader(_fragShaderGBuffer);
 	_renderContext->ActiveVertexFormat(_vertexFormat);
-	_renderContext->VertexSource(0, _vertexBuffer, sizeof(ObjLoader::ObjVertex), 0, 0);
-	_renderContext->IndexSource(_indexBuffer, gls::DataType::UnsignedShort);
 
 	_renderContext->SetFramebuffer(_gbuffer);
 	_renderContext->ClearColorBuffer(_gbuffer, 0, vec4f(-10000.0f, -10000.0f, -10000.0f, 1.0f));
@@ -436,28 +431,71 @@ void DeferredSample::RenderGeometryPass()
 
 	_renderContext->EnableDepthTest(true);
 
-	_renderContext->DrawIndexed(gls::PrimitiveType::Triangles, 0, 0, _skullIndexCount);
+	GBufferFragData frag_data;
+	frag_data.color.set(1.0f, 1.0f, 1.0f, 1.0f);
+	_ubufFragShaderGBuffer->BufferSubData(0, sizeof(GBufferFragData), &frag_data);
+
+	_renderContext->VertexSource(0, _roomVertBuf, sizeof(ObjLoader::ObjVertex), 0, 0);
+	_renderContext->IndexSource(_roomIndexBuf, gls::DataType::UnsignedShort);
+	_renderContext->DrawIndexed(gls::PrimitiveType::Triangles, 0, 0, 36);
+
+	frag_data.color.set(0.9f, 0.9f, 0.1f, 1.0f);
+	_ubufFragShaderGBuffer->BufferSubData(0, sizeof(GBufferFragData), &frag_data);
+
+	_renderContext->VertexSource(0, _bunnyVertexBuffer, sizeof(ObjLoader::ObjVertex), 0, 0);
+	_renderContext->IndexSource(_bunnyIndexBuffer, gls::DataType::UnsignedShort);
+	_renderContext->DrawIndexed(gls::PrimitiveType::Triangles, 0, 0, _bunnyIndexCount);
 
 	_renderContext->EnableDepthTest(false);
-
-	_renderContext->SetFramebuffer(0);
 }
 
-void DeferredSample::RenderLightingPass()
+void DeferredSample::RenderStencilPass()
 {
-	UpdateLights();
-
 	// update light matrix buffer
 	mat4f world_mat;
 	mat4f light_matrices[MAX_LIGHTS];
-	for(size_t i = 0; i < _lights.size(); ++i)
+	for (size_t i = 0; i < _lights.size(); ++i)
 	{
 		world_mat.set_scale(_lights[i].radius);
 		world_mat.transl_vec.rvec3 = _lights[i].position;
 		mul(light_matrices[i], world_mat, _viewProjMat);
 	}
+
+	// Draw the light spheres without face culling, filling the stencil buffer only.
+	// After this, stencil values will be non-zero for pixels which are inside light speheres.
+
 	_lightMatrixBuf->BufferSubData(0, _lights.size() * sizeof(mat4f), light_matrices);
 
+	_renderContext->SetVertexShader(_vertShaderLight);
+	_renderContext->SetFragmentShader(nullptr);
+
+	_renderContext->EnableColorWrite(false, false, false, false);
+	_renderContext->EnableFaceCulling(false);
+
+	_renderContext->EnableDepthTest(true);
+	_renderContext->EnableDepthWrite(false);
+
+	_renderContext->EnableStencilTest(true);
+	_renderContext->StencilTestFunc(gls::PolygonFace::FrontAndBack, gls::CompareFunc::AlwaysPass, 0, 0);
+	_renderContext->StencilOperation(gls::PolygonFace::Back, gls::StencilOp::Keep, gls::StencilOp::IncrementWrap, gls::StencilOp::Keep);
+	_renderContext->StencilOperation(gls::PolygonFace::Front, gls::StencilOp::Keep, gls::StencilOp::DecrementWrap, gls::StencilOp::Keep);
+
+	_renderContext->ActiveVertexFormat(_vertFmtSphere);
+	_renderContext->VertexSource(0, _sphereVertBuf, sizeof(vec3f), 0, 0);
+	_renderContext->IndexSource(_sphereIndexBuf, gls::DataType::UnsignedShort);
+
+	_renderContext->SetSamplerState(0, nullptr);
+	_renderContext->SetSamplerTexture(0, _lightMatrixTex);
+
+	_renderContext->DrawIndexedInstanced(gls::PrimitiveType::Triangles, 0, 0, _sphereIndexCount, 0, static_cast<gls::sizei>(_lights.size()));
+
+	_renderContext->EnableFaceCulling(true);
+	_renderContext->EnableColorWrite(true, true, true, true);
+	_renderContext->EnableDepthTest(false);
+}
+
+void DeferredSample::RenderLightingPass()
+{
 	// update light info buffer
 #pragma pack(push, 1)
 	struct LightInfo 
@@ -475,8 +513,10 @@ void DeferredSample::RenderLightingPass()
 	}
 	_lightInfoBuf->BufferSubData(0, _lights.size() * sizeof(LightInfo), light_info);
 
+	// Draw light spheres again using the GBuffer, affecting only pixels where stencil value is not 0.
+	// Add each light contribution by blending.
+
 	vec4f viewport(0.0f, 00.0f, (float)_width, (float)_height);
-	//_renderContext->GetViewport(viewport);
 	_ubufFragShaderLighting->BufferSubData(0, sizeof(vec4f), viewport);
 	_renderContext->SetUniformBuffer(0, _ubufFragShaderLighting);
 	_renderContext->SetVertexShader(_vertShaderLight);
@@ -500,25 +540,22 @@ void DeferredSample::RenderLightingPass()
 	_renderContext->EnableBlending(true);
 	_renderContext->BlendingFunc(gls::BlendFunc::One, gls::BlendFunc::One);
 
-	_renderContext->EnableDepthTest(true);
-	_renderContext->EnableDepthWrite(false);
 	_renderContext->EnableDepthClamp(true);
+	_renderContext->CullFace(gls::PolygonFace::Front);
+
+	_renderContext->StencilTestFunc(gls::PolygonFace::FrontAndBack, gls::CompareFunc::NotEqual, 0, static_cast<gls::uint>(-1));
+	_renderContext->StencilOperation(gls::PolygonFace::FrontAndBack, gls::StencilOp::Keep, gls::StencilOp::Keep, gls::StencilOp::Keep);
 
 	_renderContext->SetFramebuffer(_sceneBuffer);
 	_renderContext->ClearColorBuffer(_sceneBuffer, 0, vec4f(0.0f, 0.0f, 0.0f, 0.0f));
 
-	_query->BeginQuery(gls::QueryType::SamplesPassed);
 	_renderContext->DrawIndexedInstanced(gls::PrimitiveType::Triangles, 0, 0, _sphereIndexCount, 0, static_cast<gls::sizei>(_lights.size()));
-	_query->EndQuery();
-	//gls::uint samples = _query->GetResultUI();
-	//_console.Print("samples - %d       \r", samples);
 
-	_renderContext->SetFramebuffer(0);
-
-	_renderContext->EnableDepthTest(false);
 	_renderContext->EnableDepthWrite(true);
 	_renderContext->EnableDepthClamp(false);
 	_renderContext->EnableBlending(false);
+	_renderContext->EnableStencilTest(false);
+	_renderContext->CullFace(gls::PolygonFace::Back);
 }
 
 void DeferredSample::RenderGBuffer()
@@ -599,12 +636,10 @@ void DeferredSample::RenderGBuffer()
 	_renderContext->Draw(gls::PrimitiveType::Triangles, 18, 6);
 }
 
-void DeferredSample::Render(int frame_time)
+void DeferredSample::Render(float frame_time)
 {
 	if(!_renderContext)
 		return;
-
-	_frameTime = frame_time * 0.001f;
 
 	Update(frame_time);
 
@@ -616,7 +651,9 @@ void DeferredSample::Render(int frame_time)
 	}
 	else
 	{
+		RenderStencilPass();
 		RenderLightingPass();
+
 		gls::ColorBuffer buffer = gls::ColorBuffer::BackLeft;
 		_renderContext->ActiveColorBuffers(nullptr, &buffer, 1);
 		_renderContext->BlitFramebuffer(_sceneBuffer, gls::ColorBuffer::Color0, 0, 0, _width, _height, nullptr, 0, 0, _width, _height, gls::COLOR_BUFFER_BIT, gls::TexFilter::Nearest);
@@ -669,27 +706,32 @@ void DeferredSample::OnMouseDrag(int dx, int dy)
 void DeferredSample::CreateRandomLights(int count, const vec3f& min_pt, const vec3f& max_pt)
 {
 	_lights.resize(count);
-	srand((unsigned int)time(0));
+	//srand((unsigned int)time(0));
+	std::random_device rd;
+	std::mt19937 gen { rd() };
+	std::uniform_real_distribution<float> dist { 0.0f, 1.0f };
+	std::uniform_real_distribution<float> distNeg { -1.0f, 1.0f };
+	vec3f bounds = max_pt - min_pt;
+	float min_dim = std::min(std::min(bounds.x, bounds.y), bounds.z);
+
 	for(int i = 0; i < count; ++i)
 	{
 		PointLight& light = _lights[i];
 
-		light.position.x = lerp(min_pt.x, max_pt.x, float(rand()) / RAND_MAX);
-		light.position.y = lerp(min_pt.y, max_pt.y, float(rand()) / RAND_MAX);
-		light.position.z = lerp(min_pt.z, max_pt.z, float(rand()) / RAND_MAX);
+		light.position.x = lerp(min_pt.x, max_pt.x, dist(gen));
+		light.position.y = lerp(min_pt.y, max_pt.y, dist(gen));
+		light.position.z = lerp(min_pt.z, max_pt.z, dist(gen));
 
-		light.dir.x = float(rand()) / RAND_MAX;
-		light.dir.y = float(rand()) / RAND_MAX;
-		light.dir.z = float(rand()) / RAND_MAX;
+		light.dir.x = distNeg(gen);
+		light.dir.y = distNeg(gen);
+		light.dir.z = distNeg(gen);
 		light.dir.normalize();
 
-		light.color.r = float(rand()) / RAND_MAX;
-		light.color.g = float(rand()) / RAND_MAX;
-		light.color.b = float(rand()) / RAND_MAX;
+		light.color.r = dist(gen);
+		light.color.g = dist(gen);
+		light.color.b = dist(gen);
 
-		vec3f bounds = max_pt - min_pt;
-		float min_dim = std::min(std::min(bounds.x, bounds.y), bounds.z);
-		light.radius = lerp(min_dim / 4.0f, min_dim / 2.0f, float(rand()) / RAND_MAX);
+		light.radius = lerp(min_dim / 3.0f, min_dim / 2.0f, dist(gen));
 	}
 }
 
@@ -794,6 +836,63 @@ void DeferredSample::CreateSphere(float radius, int slices, int stacks)
 	_vertFmtSphere = _renderContext->CreateVertexFormat(desc, CountOf(desc));
 }
 
+void DeferredSample::CreateRoom()
+{
+	const float scale = 3.0f;
+	const vec3 minVert = _lightBoundsMin;
+	const vec3 maxVert = _lightBoundsMax;
+
+	vec3f roomVerts[24][2] = {
+		{ minVert, { 0.0f, 0.0f, 1.0f } },
+		{ { maxVert.x, minVert.y, minVert.z }, { 0.0f, 0.0f, 1.0f } },
+		{ { maxVert.x, maxVert.y, minVert.z }, { 0.0f, 0.0f, 1.0f } },
+		{ { minVert.x, maxVert.y, minVert.z }, { 0.0f, 0.0f, 1.0f } },
+		
+		{ maxVert, { 0.0f, 0.0f, -1.0f } },
+		{ { maxVert.x, minVert.y, maxVert.z }, { 0.0f, 0.0f, -1.0f } },
+		{ { minVert.x, minVert.y, maxVert.z }, { 0.0f, 0.0f, -1.0f } },
+		{ { minVert.x, maxVert.y, maxVert.z }, { 0.0f, 0.0f, -1.0f } },
+
+		{ minVert, { 1.0f, 0.0f, 0.0f } },
+		{ { minVert.x, maxVert.y, minVert.z }, { 1.0f, 0.0f, 0.0f } },
+		{ { minVert.x, maxVert.y, maxVert.z }, { 1.0f, 0.0f, 0.0f } },
+		{ { minVert.x, minVert.y, maxVert.z }, { 1.0f, 0.0f, 0.0f } },
+
+		{ { maxVert.x, minVert.y, minVert.z }, { -1.0f, 0.0f, 0.0f } },
+		{ { maxVert.x, minVert.y, maxVert.z }, { -1.0f, 0.0f, 0.0f } },
+		{ { maxVert.x, maxVert.y, maxVert.z }, { -1.0f, 0.0f, 0.0f } },
+		{ { maxVert.x, maxVert.y, minVert.z }, { -1.0f, 0.0f, 0.0f } },
+
+		{ minVert, { 0.0f, 1.0f, 0.0f } },
+		{ { minVert.x, minVert.y, maxVert.z }, { 0.0f, 1.0f, 0.0f } },
+		{ { maxVert.x, minVert.y, maxVert.z }, { 0.0f, 1.0f, 0.0f } },
+		{ { maxVert.x, minVert.y, minVert.z }, { 0.0f, 1.0f, 0.0f } },
+
+		{ maxVert, { 0.0f, -1.0f, 0.0f } },
+		{ { minVert.x, maxVert.y, maxVert.z }, { 0.0f, -1.0f, 0.0f } },
+		{ { minVert.x, maxVert.y, minVert.z }, { 0.0f, -1.0f, 0.0f } },
+		{ { maxVert.x, maxVert.y, minVert.z }, { 0.0f, -1.0f, 0.0f } },
+	};
+
+	unsigned short indices[36] = {
+		0, 1, 2,
+		0, 2, 3,
+		4, 5, 6,
+		4, 6, 7,
+		8, 9, 10,
+		8, 10, 11,
+		12, 13, 14,
+		12, 14, 15,
+		16, 17, 18,
+		16, 18, 19,
+		20, 21, 22,
+		20, 22, 23
+	};
+
+	_roomVertBuf = _renderContext->CreateBuffer(sizeof(roomVerts), roomVerts, 0);
+	_roomIndexBuf = _renderContext->CreateBuffer(sizeof(indices), indices, 0);
+}
+
 void DeferredSample::DestroySphere()
 {
 	_renderContext->DestroyBuffer(_sphereVertBuf);
@@ -804,59 +903,64 @@ void DeferredSample::DestroySphere()
 	_vertFmtSphere = nullptr;
 }
 
-void DeferredSample::UpdateLights()
+void DeferredSample::DestroyRoom()
+{
+	_renderContext->DestroyBuffer(_roomVertBuf);
+	_roomVertBuf = nullptr;
+	_renderContext->DestroyBuffer(_roomIndexBuf);
+	_roomIndexBuf = nullptr;
+}
+
+void DeferredSample::UpdateLights(float frame_time)
 {
 	for(auto it = _lights.begin(); it != _lights.end(); ++it)
 	{
-		it->position += it->dir * 15.0f * _frameTime;
+		it->position += it->dir * 7.0f * frame_time;
 		if(it->position.x < _lightBoundsMin.x)
 		{
 			it->position.x = _lightBoundsMin.x + (_lightBoundsMin.x - it->position.x);
-			clamp(it->position.x, _lightBoundsMin.x, _lightBoundsMax.x);
 			it->dir.x = - it->dir.x;
 		}
 		if(it->position.x > _lightBoundsMax.x)
 		{
 			it->position.x = _lightBoundsMax.x - (it->position.x - _lightBoundsMax.x);
-			clamp(it->position.x, _lightBoundsMin.x, _lightBoundsMax.x);
 			it->dir.x = - it->dir.x;
 		}
 
 		if(it->position.y < _lightBoundsMin.y)
 		{
 			it->position.y = _lightBoundsMin.y + (_lightBoundsMin.y - it->position.y);
-			clamp(it->position.y, _lightBoundsMin.y, _lightBoundsMax.y);
 			it->dir.y = - it->dir.y;
 		}
 		if(it->position.y > _lightBoundsMax.y)
 		{
 			it->position.y = _lightBoundsMax.y - (it->position.y - _lightBoundsMax.y);
-			clamp(it->position.y, _lightBoundsMin.y, _lightBoundsMax.y);
 			it->dir.y = - it->dir.y;
 		}
 
 		if(it->position.z < _lightBoundsMin.z)
 		{
 			it->position.z = _lightBoundsMin.z + (_lightBoundsMin.z - it->position.z);
-			clamp(it->position.z, _lightBoundsMin.z, _lightBoundsMax.z);
 			it->dir.z = - it->dir.z;
 		}
 		if(it->position.z > _lightBoundsMax.z)
 		{
 			it->position.z = _lightBoundsMax.z - (it->position.z - _lightBoundsMax.z);
-			clamp(it->position.z, _lightBoundsMin.z, _lightBoundsMax.z);
 			it->dir.z = - it->dir.z;
 		}
 	}
 }
 
-void DeferredSample::Update(int frame_time)
+void DeferredSample::Update(float frame_time)
 {
 	vec3f bounds = _modelBoundsMax - _modelBoundsMin;
 	float max_dim = std::max(std::max(bounds.x, bounds.y), bounds.z);
 
-	_worldMat.set_rotation_y(_rotY);
-	_worldMat.rotate_x(_rotX);
-	_viewMat.look_at(vec3f(0.0f, 0.0f, max_dim * 1.5f), vec3f::null, vec3f::y_axis);
+	_worldMat.set_identity();
+	_viewMat.look_at(vec3f(0.0f, max_dim * 1.5f, max_dim * 3.0f), vec3f(0.0f, max_dim * 1.5f, 0.0f), vec3f::y_axis);
+	_viewMat.rotate_y(_rotY);
+	_viewMat.rotate_x(_rotX);
 	mul(_viewProjMat, _viewMat, _projMat);
+
+	UpdateLights(frame_time);
 }

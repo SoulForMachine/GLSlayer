@@ -9,11 +9,6 @@
 	#undef Bool
 	using Bool = _dummy_xlib_Bool;
 #endif
-#ifdef Always
-	constexpr auto _dummy_xlib_Always = Always;
-	#undef Always
-	constexpr auto Always = _dummy_xlib_Always;
-#endif
 #ifdef None
 	constexpr auto _dummy_xlib_None = None;
 	#undef None

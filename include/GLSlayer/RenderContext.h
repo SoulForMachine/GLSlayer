@@ -319,7 +319,7 @@ namespace gls
 
 		// stencil test
 		virtual void EnableStencilTest(bool enable) = 0;
-		virtual void StencilFunc(PolygonFace face, CompareFunc func, int ref, uint mask) = 0;
+		virtual void StencilTestFunc(PolygonFace face, CompareFunc func, int ref, uint mask) = 0;
 		virtual void StencilOperation(PolygonFace face, StencilOp stencil_fail, StencilOp depth_fail, StencilOp depth_pass) = 0;
 
 		// blending

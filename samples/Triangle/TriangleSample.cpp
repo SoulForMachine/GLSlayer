@@ -124,7 +124,7 @@ void TriangleSample::GetFramebufferFormat(gls::FramebufferFormat& fbufFormat)
 	fbufFormat.swapMethod = gls::SwapMethod::Exchange;
 }
 
-void TriangleSample::Render(int frame_time)
+void TriangleSample::Render(float frame_time)
 {
 	if(!_renderContext)
 		return;

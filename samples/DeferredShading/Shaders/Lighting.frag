@@ -37,5 +37,4 @@ void main()
 	intensity *= dot(normal, normalize(lightVec));
 
 	fragColor = lightColor * diffuseColor * intensity;
-	//fragColor = vec4(0.01, 0.01, 0.01, 1.0);
 }

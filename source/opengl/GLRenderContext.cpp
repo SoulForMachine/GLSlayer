@@ -926,7 +926,7 @@ void GLRenderContext::EnableStencilTest(bool enable)
 		glDisable(GL_STENCIL_TEST);
 }
 
-void GLRenderContext::StencilFunc(PolygonFace face, CompareFunc func, int ref, uint mask)
+void GLRenderContext::StencilTestFunc(PolygonFace face, CompareFunc func, int ref, uint mask)
 {
 	glStencilFuncSeparate(GetGLEnum(face), GetGLEnum(func), ref, mask);
 }

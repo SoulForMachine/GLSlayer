@@ -128,7 +128,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\..\..\samples\Common\Models\skull.obj">
+    <CustomBuild Include="..\..\..\..\samples\Common\Models\bunny.obj">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy /Y "%(FullPath)" "$(OutputPath)Models\"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Copying model %(Filename)%(Extension)</Message>

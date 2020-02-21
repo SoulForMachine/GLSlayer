@@ -500,14 +500,14 @@ namespace gls
 
 	enum class CompareFunc
 	{
-		Never,
+		NeverPass,
 		Less,
 		Equal,
 		LessOrEqual,
 		Greater,
 		NotEqual,
 		GreaterOrEqual,
-		Always,
+		AlwaysPass,
 	};
 
 	enum class StencilOp

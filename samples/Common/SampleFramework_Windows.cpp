@@ -60,7 +60,7 @@ int SampleFramework::Run(ISample* sample)
 			DispatchMessage(&msg);
 		}
 
-		_sample->Render(frame_time);
+		_sample->Render(frame_time * 0.001f);
 	}
 
 	timeEndPeriod(1);
@@ -217,10 +217,13 @@ bool SampleFramework::WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 		return true;
 
 	case WM_KEYDOWN:
-		if(wParam == VK_ESCAPE)
-			DestroyWindow(_hwnd);
-		else
-			OnKeyDown((int)wParam);
+		if ((lParam & (1 << 30)) == 0)
+		{
+			if (wParam == VK_ESCAPE)
+				DestroyWindow(_hwnd);
+			else
+				OnKeyDown((int)wParam);
+		}
 		return true;
 
 	case WM_KEYUP:

@@ -121,7 +121,7 @@ public:
 
 	// stencil test
 	virtual void EnableStencilTest(bool enable) override;
-	virtual void StencilFunc(PolygonFace face, CompareFunc func, int ref, uint mask) override;
+	virtual void StencilTestFunc(PolygonFace face, CompareFunc func, int ref, uint mask) override;
 	virtual void StencilOperation(PolygonFace face, StencilOp stencil_fail, StencilOp depth_fail, StencilOp depth_pass) override;
 
 	// blending

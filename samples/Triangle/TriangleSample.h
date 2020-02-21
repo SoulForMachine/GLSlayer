@@ -17,7 +17,7 @@ public:
 	virtual bool Init(gls::CreateContextInfo& info) override;
 	virtual void Deinit() override;
 	virtual void GetFramebufferFormat(gls::FramebufferFormat& fbufFormat) override;
-	virtual void Render(int frame_time) override;
+	virtual void Render(float frame_time) override;
 	virtual void OnResize(int width, int height) override;
 
 private:
