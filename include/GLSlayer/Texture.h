@@ -16,8 +16,6 @@ namespace gls
 	class ITexture: public IResource
 	{
 	public:
-		virtual ~ITexture() {}
-
 		virtual TextureType GetTextureType() = 0;
 		virtual void GenerateMipmap() = 0;
 		virtual PixelFormat GetFormat() const = 0;

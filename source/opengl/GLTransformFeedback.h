@@ -29,7 +29,7 @@ public:
 	bool Create(GLState* gl_state);
 	void Destroy();
 
-	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_TRANSFORM_FEEDBACK) ? this : GLResource::DynamicCast(type_id); }
+	virtual void* DynamicCast(int type_id) override { return (type_id == TYPE_ID_TRANSFORM_FEEDBACK) ? this : GLResource::DynamicCast(type_id); }
 	virtual void BindBuffer(uint index, IBuffer* buffer) override;
 	virtual void BindBuffer(uint index, IBuffer* buffer, intptr offset, sizeiptr size) override;
 

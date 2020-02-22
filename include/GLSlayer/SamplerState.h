@@ -9,7 +9,6 @@
 namespace gls
 {
 
-
 	struct SamplerStateDesc
 	{
 		TexAddressMode addressU = TexAddressMode::Repeat;
@@ -30,14 +29,7 @@ namespace gls
 	class ISamplerState : public IResource
 	{
 	public:
-		virtual ~ISamplerState() = 0;
 	};
-
-
-	inline
-	ISamplerState::~ISamplerState()
-	{
-	}
 
 }
 

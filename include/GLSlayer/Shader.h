@@ -39,8 +39,6 @@ namespace gls
 	class IShader : public IResource
 	{
 	public:
-		virtual ~IShader() {}
-
 		virtual ShaderType GetShaderType() = 0;
 		virtual const char* GetInfoLog() = 0;
 		virtual int GetInfoLogLength() = 0;

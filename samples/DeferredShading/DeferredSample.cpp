@@ -11,7 +11,7 @@
 using namespace math3d;
 
 
-const int MAX_LIGHTS = 128;
+const int MAX_LIGHTS = 64;
 
 
 #pragma pack(push, 1)
@@ -462,7 +462,7 @@ void DeferredSample::RenderStencilPass()
 	}
 
 	// Draw the light spheres without face culling, filling the stencil buffer only.
-	// After this, stencil values will be non-zero for pixels which are inside light speheres.
+	// After this, stencil values will be non-zero for pixels which are inside light spheres.
 
 	_lightMatrixBuf->BufferSubData(0, _lights.size() * sizeof(mat4f), light_matrices);
 
@@ -731,7 +731,7 @@ void DeferredSample::CreateRandomLights(int count, const vec3f& min_pt, const ve
 		light.color.g = dist(gen);
 		light.color.b = dist(gen);
 
-		light.radius = lerp(min_dim / 3.0f, min_dim / 2.0f, dist(gen));
+		light.radius = lerp(min_dim , min_dim / 6.0f, dist(gen));
 	}
 }
 
@@ -838,7 +838,6 @@ void DeferredSample::CreateSphere(float radius, int slices, int stacks)
 
 void DeferredSample::CreateRoom()
 {
-	const float scale = 3.0f;
 	const vec3 minVert = _lightBoundsMin;
 	const vec3 maxVert = _lightBoundsMax;
 

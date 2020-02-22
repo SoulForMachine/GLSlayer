@@ -10,7 +10,7 @@ namespace gls
 	class IQuery
 	{
 	public:
-		virtual ~IQuery() {}
+		virtual ~IQuery() = default;
 
 		virtual void BeginQuery(QueryType type) = 0;
 		virtual void BeginQueryIndexed(QueryType type, uint index) = 0;

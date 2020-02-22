@@ -889,7 +889,7 @@ namespace gls
 	class IDebugLogger
 	{
 	public:
-		virtual ~IDebugLogger() {}
+		virtual ~IDebugLogger() = default;
 		virtual void DebugMessage(DebugMessageSource source, DebugMessageType type, uint id, DebugMessageSeverity severity, const char* message) = 0;
 	};
 

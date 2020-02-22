@@ -14,8 +14,6 @@ namespace gls
 	class ITransformFeedback : public IResource
 	{
 	public:
-		virtual ~ITransformFeedback() {}
-
 		virtual void BindBuffer(uint index, IBuffer* buffer) = 0;
 		virtual void BindBuffer(uint index, IBuffer* buffer, intptr offset, sizeiptr size) = 0;
 	};

@@ -14,7 +14,6 @@ namespace gls
 	class IRenderbuffer: public IResource
 	{
 	public:
-		virtual ~IRenderbuffer() = default;
 	};
 
 
@@ -31,8 +30,6 @@ namespace gls
 	class IFramebuffer: public IResource
 	{
 	public:
-		virtual ~IFramebuffer() {}
-
 		virtual void AttachTexture(AttachmentBuffer attachment, ITexture* texture, int level) = 0;
 		virtual void AttachTextureLayer(AttachmentBuffer attachment, ITexture* texture, int level, int layer) = 0;
 		virtual void AttachTextureFace(AttachmentBuffer attachment, ITexture* texture, int level, CubeFace face) = 0;

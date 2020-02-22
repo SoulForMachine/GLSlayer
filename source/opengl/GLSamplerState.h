@@ -21,7 +21,7 @@ public:
 	GLSamplerState(const GLSamplerState&) = delete;
 	GLSamplerState& operator = (const GLSamplerState&) = delete;
 
-	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_SAMPLER_STATE) ? this : GLResource::DynamicCast(type_id); }
+	virtual void* DynamicCast(int type_id) override { return (type_id == TYPE_ID_SAMPLER_STATE) ? this : GLResource::DynamicCast(type_id); }
 	bool Create(const SamplerStateDesc& desc);
 	void Destroy();
 };

@@ -23,7 +23,7 @@ public:
 	bool Create(GLState* gl_state, sizei samples, PixelFormat internal_format, sizei width, sizei height);
 	void Destroy();
 
-	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_RENDERBUFFER) ? this : GLResource::DynamicCast(type_id); }
+	virtual void* DynamicCast(int type_id) override { return (type_id == TYPE_ID_RENDERBUFFER) ? this : GLResource::DynamicCast(type_id); }
 
 private:
 	GLState* _glState;
@@ -45,7 +45,7 @@ public:
 	bool CreateWithoutAttachments(GLState* gl_state, const FramebufferParams& params);
 	void Destroy();
 
-	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_FRAMEBUFFER) ? this : GLResource::DynamicCast(type_id); }
+	virtual void* DynamicCast(int type_id) override { return (type_id == TYPE_ID_FRAMEBUFFER) ? this : GLResource::DynamicCast(type_id); }
 	virtual void AttachTexture(AttachmentBuffer attachment, ITexture* texture, int level) override;
 	virtual void AttachTextureLayer(AttachmentBuffer attachment, ITexture* texture, int level, int layer) override;
 	virtual void AttachTextureFace(AttachmentBuffer attachment, ITexture* texture, int level, CubeFace face) override;

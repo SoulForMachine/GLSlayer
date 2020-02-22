@@ -247,7 +247,7 @@ namespace gls
 	class IRenderContext
 	{
 	public:
-		virtual ~IRenderContext() {}
+		virtual ~IRenderContext() = default;
 		virtual bool SetCurrentContext() = 0;
 		virtual void UnsetCurrentContext() = 0;
 		virtual const ContextInfo& GetInfo() const = 0;

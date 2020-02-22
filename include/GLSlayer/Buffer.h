@@ -11,8 +11,6 @@ namespace gls
 	class IBuffer: public IResource
 	{
 	public:
-		virtual ~IBuffer() {}
-
 		virtual void BufferSubData(intptr offset, sizeiptr size, const void* data) = 0;
 		virtual void GetBufferSubData(intptr offset, sizeiptr size, void* data) = 0;
 		virtual void* Map(uint map_flags) = 0;

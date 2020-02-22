@@ -83,7 +83,7 @@ public:
 	GLVertexShader(const GLVertexShader&) = delete;
 	GLVertexShader& operator = (const GLVertexShader&) = delete;
 
-	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_VERTEX_SHADER) ? this : GLShader::DynamicCast(type_id); }
+	virtual void* DynamicCast(int type_id) override { return (type_id == TYPE_ID_VERTEX_SHADER) ? this : GLShader::DynamicCast(type_id); }
 	virtual void TransformFeedbackVaryings(sizei count, const char** varyings, TransformFeedbackBufferMode mode) override;
 };
 
@@ -101,7 +101,7 @@ public:
 	GLTessControlShader(const GLTessControlShader&) = delete;
 	GLTessControlShader& operator = (const GLTessControlShader&) = delete;
 
-	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_TESS_CONTROL_SHADER) ? this : GLShader::DynamicCast(type_id); }
+	virtual void* DynamicCast(int type_id) override { return (type_id == TYPE_ID_TESS_CONTROL_SHADER) ? this : GLShader::DynamicCast(type_id); }
 	virtual int GetOutputVertexCount() override;
 };
 
@@ -119,7 +119,7 @@ public:
 	GLTessEvaluationShader(const GLTessEvaluationShader&) = delete;
 	GLTessEvaluationShader& operator = (const GLTessEvaluationShader&) = delete;
 
-	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_TESS_EVAL_SHADER) ? this : GLShader::DynamicCast(type_id); }
+	virtual void* DynamicCast(int type_id) override { return (type_id == TYPE_ID_TESS_EVAL_SHADER) ? this : GLShader::DynamicCast(type_id); }
 	virtual TessGenPrimitiveType GetMode() override;
 	virtual TessGenSpacing GetSpacing() override;
 	virtual VertexWinding GetVertexOrder() override;
@@ -140,7 +140,7 @@ public:
 	GLGeometryShader(const GLGeometryShader&) = delete;
 	GLGeometryShader& operator = (const GLGeometryShader&) = delete;
 
-	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_GEOMETRY_SHADER) ? this : GLShader::DynamicCast(type_id); }
+	virtual void* DynamicCast(int type_id) override { return (type_id == TYPE_ID_GEOMETRY_SHADER) ? this : GLShader::DynamicCast(type_id); }
 	virtual void TransformFeedbackVaryings(sizei count, const char** varyings, TransformFeedbackBufferMode mode) override;
 	virtual int GetInvocations() override;
 };
@@ -159,7 +159,7 @@ public:
 	GLFragmentShader(const GLFragmentShader&) = delete;
 	GLFragmentShader& operator = (const GLFragmentShader&) = delete;
 
-	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_FRAGMENT_SHADER) ? this : GLShader::DynamicCast(type_id); }
+	virtual void* DynamicCast(int type_id) override { return (type_id == TYPE_ID_FRAGMENT_SHADER) ? this : GLShader::DynamicCast(type_id); }
 };
 
 
@@ -176,7 +176,7 @@ public:
 	GLComputeShader(const GLComputeShader&) = delete;
 	GLComputeShader& operator = (const GLComputeShader&) = delete;
 
-	void* DynamicCast(int type_id) { return (type_id == TYPE_ID_COMPUTE_SHADER) ? this : GLShader::DynamicCast(type_id); }
+	virtual void* DynamicCast(int type_id) override { return (type_id == TYPE_ID_COMPUTE_SHADER) ? this : GLShader::DynamicCast(type_id); }
 	virtual void GetWorkGroupSize(int work_group_size[3]) override;
 };
 
